@@ -1,0 +1,83 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2); /* слабая затемнённость для глубины */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px); /* поддержка Safari */
+}
+
+
+
+.modal-window {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    justify-content: center;
+    padding: 32px 24px;
+    width: 500px;
+    text-align: center;
+    color: #E5E5E5;
+}
+
+.modal-title {
+    font-size: 35px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+    white-space: normal;
+}
+
+.modal-text {
+    font-size: 17px;
+    color: #ccc;
+    margin-bottom: 24px;
+}
+
+.qr-code {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 24px auto;
+    display: block;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.apk-button,
+.tg-button {
+    padding: 10px 16px;
+    width: 180px;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.apk-button {
+    background-color: #ffc107;
+    color: #000;
+}
+
+    .apk-button:hover {
+        background-color: #e6ac00;
+    }
+
+.tg-button {
+    background-color: transparent;
+    border: 1px solid #888;
+    color: #fff;
+}
+
+    .tg-button:hover {
+        border-color: #aaa;
+        color: #ddd;
+    }

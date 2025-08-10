@@ -1,0 +1,648 @@
+﻿import React, { useEffect, useState } from 'react';
+import './BalancePage.css';
+import qrImage from '../assets/qr.png';
+
+import BinLogo from '../assets/b.png';
+import BBLogo from '../assets/bb.png';
+import OKXLogo from '../assets/okx.png';
+import HTXLogo from '../assets/htx.png';
+
+
+import useUserInfo from '../hooks/useUserInfo';
+import { isAdminRole } from '../utils/roles';
+import { getPublicWallet, savePublicWallet } from '../api/publicwalletUser';
+import { getMyWallet, saveMyWallet } from '../api/walletUser';
+import Spinner from '../components/Spinner';
+import { useEditMode } from '../context/EditModeContext';
+import { useDataScope } from '../context/DataScopeContext';
+import Breadcrumbs from '../components/Breadcrumbs';
+import { fetchBalanceHistory, createBalanceHistory, deleteBalanceHistory } from '../api/balanceHistory';
+
+/* === словари и порядок типов для чипсов и селектов === */
+const TYPE_LABELS = {
+    Deposit: 'Пополнение',
+    Withdrawal: 'Вывод',
+    Transaction: 'Транзакция',
+    TraderReward: 'Награда трейдеру',
+    MerchantEarning: 'Заработок мерчанта',
+    Dispute: 'Спор',
+};
+const TYPE_ORDER = ['Deposit', 'Withdrawal', 'Transaction', 'TraderReward', 'MerchantEarning', 'Dispute'];
+const TYPE_OPTIONS = TYPE_ORDER.map(v => ({ value: v, label: TYPE_LABELS[v] }));
+
+function Card({ title, value, editable, editing, onClick, onChange, onCommit, saving }) {
+    return (
+        <div className="card">
+            <h3 className="balance-title">{title}</h3>
+            {!editing ? (
+                <p
+                    className={`casa-style ${editable ? 'clickable' : ''}`}
+                    title={editable ? 'Нажмите, чтобы изменить' : ''}
+                    onClick={editable ? onClick : undefined}
+                >
+                    {value} USDT
+                </p>
+            ) : (
+                <input
+                    className="balance-input"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    onBlur={onCommit}
+                    onKeyDown={(e) => e.key === 'Enter' && onCommit()}
+                    disabled={saving}
+                    autoFocus
+                />
+            )}
+        </div>
+    );
+}
+
+export default function BalancePage() {
+    const me = useUserInfo();
+    const isAdmin = isAdminRole(me?.role);
+    const { editMode } = useEditMode();
+    const editable = isAdmin && editMode;
+
+    // глобальная область данных
+    const { scope, setScope } = useDataScope(); // 'public' | 'private'
+
+    const [showWallet, setShowWallet] = useState(false);
+
+    // данные
+    const [pub, setPub] = useState({ mainUsdt: 0, frozenUsdt: 0, insuranceUsdt: 0 });
+    const [priv, setPriv] = useState({ mainUsdt: 0, frozenUsdt: 0, insuranceUsdt: 0 });
+
+    // ui
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [err, setErr] = useState('');
+
+    // inline-редактирование
+    const [editing, setEditing] = useState({ main: false, frozen: false, insurance: false });
+    const [draft, setDraft] = useState({ main: '', frozen: '', insurance: '' });
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                setLoading(true);
+                const [p, m] = await Promise.all([
+                    getPublicWallet().catch(() => ({ mainUsdt: 0, frozenUsdt: 0, insuranceUsdt: 0 })),
+                    getMyWallet().catch(() => ({ mainUsdt: 0, frozenUsdt: 0, insuranceUsdt: 0 })),
+                ]);
+                if (cancelled) return;
+
+                setPub({
+                    mainUsdt: Number(p?.mainUsdt ?? p?.MainUsdt ?? 0),
+                    frozenUsdt: Number(p?.frozenUsdt ?? p?.FrozenUsdt ?? 0),
+                    insuranceUsdt: Number(p?.insuranceUsdt ?? p?.InsuranceUsdt ?? 0),
+                });
+                setPriv({
+                    mainUsdt: Number(m?.mainUsdt ?? m?.MainUsdt ?? 0),
+                    frozenUsdt: Number(m?.frozenUsdt ?? m?.FrozenUsdt ?? 0),
+                    insuranceUsdt: Number(m?.insuranceUsdt ?? m?.InsuranceUsdt ?? 0),
+                });
+            } catch (e) {
+                if (!cancelled) setErr(e?.message || 'Не удалось загрузить балансы');
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, []);
+
+    const isPublic = scope === 'public';
+    const data = isPublic ? pub : priv;
+    const setData = isPublic ? setPub : setPriv;
+    const saver = isPublic ? savePublicWallet : saveMyWallet;
+
+    useEffect(() => {
+        if (!editable && (editing.main || editing.frozen || editing.insurance)) {
+            setEditing({ main: false, frozen: false, insurance: false });
+            setErr('');
+        }
+    }, [editable, editing.main, editing.frozen, editing.insurance]);
+
+    useEffect(() => {
+        setEditing({ main: false, frozen: false, insurance: false });
+        setErr('');
+    }, [scope]);
+
+    function openEdit(field) {
+        if (!editable) return;
+        setErr('');
+        const current = Number(data?.[field + 'Usdt'] ?? 0);
+        setDraft(d => ({ ...d, [field]: String(current) }));
+        setEditing(e => ({ ...e, [field]: true }));
+    }
+
+    async function commitEdit(field) {
+        if (!editable) return;
+        try {
+            setSaving(true);
+            setErr('');
+
+            const raw = String(draft[field] ?? '').replace(',', '.').trim();
+            const value = Number(raw);
+            if (!Number.isFinite(value)) throw new Error('Некорректное число');
+
+            const patch = {};
+            if (field === 'main') patch.mainUsdt = value;
+            if (field === 'frozen') patch.frozenUsdt = value;
+            if (field === 'insurance') patch.insuranceUsdt = value;
+
+            const saved = await saver(patch);
+            const next = {
+                mainUsdt: Number(saved?.mainUsdt ?? saved?.MainUsdt ?? data.mainUsdt),
+                frozenUsdt: Number(saved?.frozenUsdt ?? saved?.FrozenUsdt ?? data.frozenUsdt),
+                insuranceUsdt: Number(saved?.insuranceUsdt ?? saved?.InsuranceUsdt ?? data.insuranceUsdt),
+            };
+            setData(next);
+            setEditing(e => ({ ...e, [field]: false }));
+        } catch (e) {
+            setErr(e?.message || 'Не удалось сохранить');
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    // ===== История/Заморозка =====
+    const [historyKind, setHistoryKind] = useState('simple'); // 'simple' | 'frozen'
+
+    // Мультивыбор типов
+    const [selectedTypes, setSelectedTypes] = useState([]); // [] = все
+    const toggleType = (t) => {
+        setSelectedTypes(prev =>
+            prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
+        );
+    };
+
+    const [rows, setRows] = useState([]);
+    const [histLoading, setHistLoading] = useState(false);
+    const [histErr, setHistErr] = useState('');
+
+    // форма добавления (только для админа)
+    const canAddHistory = editable;
+    const [showAdd, setShowAdd] = useState(false);
+    const [savingHist, setSavingHist] = useState(false);
+
+    // поля формы - simple
+    const [hDate, setHDate] = useState(() => new Date().toISOString().slice(0, 10));
+    const [hType, setHType] = useState('Deposit');
+    const [hAmount, setHAmount] = useState('');
+    const [hBefore, setHBefore] = useState('');
+    const [hAfter, setHAfter] = useState('');
+    const [hUserId, setHUserId] = useState(''); // для private
+
+    // поля формы - frozen
+    const [fFreeze, setFFreeze] = useState(() => new Date().toISOString().slice(0, 10));
+    const [fUnfreeze, setFUnfreeze] = useState('');
+    const [fType, setFType] = useState('Deposit');
+    const [fAmount, setFAmount] = useState('');
+    const [fUserId, setFUserId] = useState(''); // для private
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                setHistLoading(true);
+                setHistErr('');
+                const list = await fetchBalanceHistory(scope, historyKind, {
+                    types: selectedTypes && selectedTypes.length ? selectedTypes : undefined,
+                });
+                if (!cancelled) setRows(list);
+            } catch (e) {
+                if (!cancelled) setHistErr(e?.message || 'Не удалось загрузить историю');
+            } finally {
+                if (!cancelled) setHistLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [scope, historyKind, selectedTypes]);
+
+    async function addHistory() {
+        try {
+            setSavingHist(true);
+            setHistErr('');
+
+            if (historyKind === 'simple') {
+                if (hAmount === '' || hBefore === '' || hAfter === '') throw new Error('Заполните суммы');
+                const body = {
+                    date: new Date(hDate).toISOString(),
+                    type: hType,
+                    amount: Number(hAmount),
+                    balanceBefore: Number(hBefore),
+                    balanceAfter: Number(hAfter),
+                };
+                if (scope === 'private') {
+                    if (!/^\d+$/.test(hUserId || '')) throw new Error('UserId обязателен (число) для private');
+                    body.userId = Number(hUserId);
+                }
+                await createBalanceHistory(scope, 'simple', body);
+            } else {
+                if (fAmount === '') throw new Error('Укажите сумму');
+                const body = {
+                    freezeDate: new Date(fFreeze).toISOString(),
+                    unfreezeDate: fUnfreeze ? new Date(fUnfreeze).toISOString() : null,
+                    type: fType,
+                    amount: Number(fAmount),
+                };
+                if (scope === 'private') {
+                    if (!/^\d+$/.test(fUserId || '')) throw new Error('UserId обязателен (число) для private');
+                    body.userId = Number(fUserId);
+                }
+                await createBalanceHistory(scope, 'frozen', body);
+            }
+
+            setShowAdd(false);
+            // очистка форм
+            setHDate(new Date().toISOString().slice(0, 10));
+            setHType('Deposit');
+            setHAmount(''); setHBefore(''); setHAfter(''); setHUserId('');
+
+            setFFreeze(new Date().toISOString().slice(0, 10));
+            setFUnfreeze('');
+            setFType('Deposit');
+            setFAmount(''); setFUserId('');
+
+            const list = await fetchBalanceHistory(scope, historyKind, {
+                types: selectedTypes && selectedTypes.length ? selectedTypes : undefined,
+            });
+            setRows(list);
+        } catch (e) {
+            setHistErr(e?.message || 'Не удалось добавить запись');
+        } finally {
+            setSavingHist(false);
+        }
+    }
+
+    async function removeRow(id) {
+        if (!window.confirm('Удалить запись?')) return;
+        try {
+            await deleteBalanceHistory(scope, historyKind, id);
+            setRows(rows => rows.filter(x => x.id !== id));
+        } catch (e) {
+            setHistErr(e?.message || 'Не удалось удалить запись');
+        }
+    }
+
+    return (
+        <div className="balance-page">
+            <Breadcrumbs />
+
+            <div className="balance-head">
+                <h2 className="page-title">Баланс</h2>
+
+                {editable && (
+                    <div className="mode-switch">
+                        <label>
+                            <input
+                                type="radio"
+                                name="mode"
+                                value="public"
+                                checked={scope === 'public'}
+                                onChange={() => setScope('public')}
+                                disabled={saving}
+                            /> Публичный
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="mode"
+                                value="private"
+                                checked={scope === 'private'}
+                                onChange={() => setScope('private')}
+                                disabled={saving}
+                            /> Приватный (мой)
+                        </label>
+                    </div>
+                )}
+            </div>
+
+            {err && <div className="error">{err}</div>}
+            {loading && <Spinner center label="Загрузка…" size={30} />}
+
+            <div className="balance-cards">
+                <Card
+                    title="Основной баланс"
+                    editable={editable}
+                    value={editing.main ? draft.main : (data.mainUsdt ?? 0)}
+                    editing={editing.main}
+                    onClick={() => openEdit('main')}
+                    onChange={(v) => setDraft(d => ({ ...d, main: v }))}
+                    onCommit={() => commitEdit('main')}
+                    saving={saving}
+                />
+                <Card
+                    title="Заморожено"
+                    editable={editable}
+                    value={editing.frozen ? draft.frozen : (data.frozenUsdt ?? 0)}
+                    editing={editing.frozen}
+                    onClick={() => openEdit('frozen')}
+                    onChange={(v) => setDraft(d => ({ ...d, frozen: v }))}
+                    onCommit={() => commitEdit('frozen')}
+                    saving={saving}
+                />
+                <Card
+                    title="Страховой депозит"
+                    editable={editable}
+                    value={editing.insurance ? draft.insurance : (data.insuranceUsdt ?? 0)}
+                    editing={editing.insurance}
+                    onClick={() => openEdit('insurance')}
+                    onChange={(v) => setDraft(d => ({ ...d, insurance: v }))}
+                    onCommit={() => commitEdit('insurance')}
+                    saving={saving}
+                />
+            </div>
+
+            <div className="balance-sections">
+                <div className="withdraw-section">
+                    <div className="withdraw">
+                        <h3 className="balance-title">Вывод USDT</h3>
+                        <p>Сеть для вывода: <span className="badge">TRC20</span></p>
+                        <input className="input-koshelok" type="text" placeholder="Адрес кошелька" />
+                        <p className="warning">Будьте внимательны при вводе адреса, отменить операцию невозможно</p>
+                        <div className="input-row">
+                            <input type="number" placeholder="0" min="0" className="amount-input" />
+                            <button className="all-btn">Всё</button>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="info-label">Доступно</span>
+                            <span className="info-value">{(data.mainUsdt ?? 0)} USDT</span>
+                        </div>
+                        <div className="info-row">
+                            <span className="info-label">Комиссия</span>
+                            <span className="info-value">5%</span>
+                        </div>
+                        <button className="submit-btn">Вывести</button>
+                    </div>
+                </div>
+
+                <div className="deposit-section">
+                    <div className="deposit">
+                        <h3 className="balance-title">Пополнение USDT</h3>
+                        <p className="deposit-warning">
+                            Зачисляем перевод только с доверенных бирж: <b>Binance, Bybit, OKX, HTX</b><br />
+                            Депозиты с Garantеx запрещены
+                        </p>
+                        <div className="exchange-logos">
+                            <a href="https://www.binance.com/" target="_blank" rel="noopener noreferrer">
+                                <img src={BinLogo} width="200" alt="Binance" />
+                            </a>
+                            <a href="https://www.bybit.com/" target="_blank" rel="noopener noreferrer">
+                                <img src={BBLogo} width="90" alt="Bybit" />
+                            </a>
+                            <a href="https://www.okx.com/" target="_blank" rel="noopener noreferrer">
+                                <img src={OKXLogo} width="90" alt="OKX" />
+                            </a>
+                            <a href="https://www.htx.com/" target="_blank" rel="noopener noreferrer">
+                                <img src={HTXLogo} alt="HTX" />
+                            </a>
+                        </div>
+
+                        <div className="wallet-container">
+                            <div className={`wallet-blur-wrap ${!showWallet ? 'blurred' : ''}`}>
+                                <div className="wallet-info">
+                                    <div className="wallet-body">
+                                        <img src={qrImage} alt="QR-код" className="qr-code" />
+
+                                        <div className="wallet-content">
+                                            <div className="wallet-label-row">
+                                                <span className="wallet-label">Адрес кошелька</span>
+                                                <span className="badge">TRC20</span>
+                                            </div>
+
+                                            <div className="wallet-address-box">
+                                                <svg
+                                                    onClick={() => navigator.clipboard.writeText('THtizmopwxsNdBGNTxGAT1fnaPxGNNLnGw')}
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    color="#c89629"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                                                        <path d="M7 9.667A2.667 2.667 0 0 1 9.667 7h8.666A2.667 2.667 0 0 1 21 9.667v8.666A2.667 2.667 0 0 1 18.333 21H9.667A2.667 2.667 0 0 1 7 18.333z" />
+                                                        <path d="M4.012 16.737A2 2 0 0 1 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1" />
+                                                    </g>
+                                                </svg>
+                                                <span className="info-value">THtizmopwxsNdBGNTxGAT1fnaPxGNNLnGw</span>
+                                            </div>
+
+                                            <div className="wallet-bottom">
+                                                <button className="check-deposit-btn">Проверить зачисления</button>
+                                                <p className="wallet-note"><span>⚠</span> Кошелёк может обновляться</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {!showWallet && (
+                                <button className="overlay-btn" onClick={() => setShowWallet(true)}>
+                                    Показать кошелёк для пополнения
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ===== История / Замороженный + фильтры ===== */}
+            <div className="history-section">
+                <div className="history-head">
+                    <div className="segmented">
+                        <button
+                            className={`seg ${historyKind === 'simple' ? 'active' : ''}`}
+                            onClick={() => setHistoryKind('simple')}
+                            type="button"
+                        >
+                            <span className="ico" aria-hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6h18v2H3zM3 11h18v2H3zm0 5h12v2H3z" /></svg>
+                            </span>
+                            История баланса
+                        </button>
+
+                        <button
+                            className={`seg ${historyKind === 'frozen' ? 'active' : ''}`}
+                            onClick={() => setHistoryKind('frozen')}
+                            type="button"
+                        >
+                            <span className="ico" aria-hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5h2v14H8zM14 5h2v14h-2z" /></svg>
+                            </span>
+                            Замороженный баланс
+                        </button>
+                    </div>
+                </div>
+                {canAddHistory && (
+                    <div>
+                        <button className="add-btn" onClick={() => setShowAdd(v => !v)}>
+                            {showAdd ? 'Скрыть форму' : 'Добавить запись'}
+                        </button>
+                    </div>
+                )}
+
+                {/* Фильтры по типам (мультивыбор) */}
+                <div className="filters-card">
+                    <div className="filters-title">Типы</div>
+                    <div className="chips">
+                        {TYPE_ORDER.map(t => (
+                            <button
+                                key={t}
+                                type="button"
+                                className={`chip ${selectedTypes.includes(t) ? 'active' : ''}`}
+                                onClick={() => toggleType(t)}
+                            >
+                                {TYPE_LABELS[t]}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {histErr && <div className="error">{histErr}</div>}
+                {histLoading && <Spinner center label="Загрузка…" size={30} />}
+
+                {/* Форма добавления */}
+                {showAdd && canAddHistory && (
+                    <div className="add-form">
+                        {historyKind === 'simple' ? (
+                            <>
+                                <div className="field">
+                                    <label>Дата</label>
+                                    <input type="date" value={hDate} onChange={e => setHDate(e.target.value)} />
+                                </div>
+                                <div className="field">
+                                    <label>Тип</label>
+                                    <select value={hType} onChange={e => setHType(e.target.value)}>
+                                        {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                                    </select>
+                                </div>
+                                {scope === 'private' && (
+                                    <div className="field">
+                                        <label>UserId</label>
+                                        <input type="number" value={hUserId} onChange={e => setHUserId(e.target.value)} placeholder="ID пользователя" />
+                                    </div>
+                                )}
+                                <div className="field">
+                                    <label>Сумма (USDT)</label>
+                                    <input type="number" min="0" step="0.01" value={hAmount} onChange={e => setHAmount(e.target.value)} />
+                                </div>
+                                <div className="field">
+                                    <label>Баланс до (USDT)</label>
+                                    <input type="number" min="0" step="0.01" value={hBefore} onChange={e => setHBefore(e.target.value)} />
+                                </div>
+                                <div className="field">
+                                    <label>Баланс после (USDT)</label>
+                                    <input type="number" min="0" step="0.01" value={hAfter} onChange={e => setHAfter(e.target.value)} />
+                                </div>
+                                <div className="actions">
+                                    <button className="submit" onClick={addHistory} disabled={savingHist}>
+                                        {savingHist ? 'Сохраняем…' : 'Добавить'}
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="field">
+                                    <label>Дата заморозки</label>
+                                    <input type="date" value={fFreeze} onChange={e => setFFreeze(e.target.value)} />
+                                </div>
+                                <div className="field">
+                                    <label>Дата разморозки (опц.)</label>
+                                    <input type="date" value={fUnfreeze} onChange={e => setFUnfreeze(e.target.value)} />
+                                </div>
+                                <div className="field">
+                                    <label>Тип</label>
+                                    <select value={fType} onChange={e => setFType(e.target.value)}>
+                                        {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                                    </select>
+                                </div>
+                                {scope === 'private' && (
+                                    <div className="field">
+                                        <label>UserId</label>
+                                        <input type="number" value={fUserId} onChange={e => setFUserId(e.target.value)} placeholder="ID пользователя" />
+                                    </div>
+                                )}
+                                <div className="field">
+                                    <label>Сумма (USDT)</label>
+                                    <input type="number" min="0" step="0.01" value={fAmount} onChange={e => setFAmount(e.target.value)} />
+                                </div>
+                                <div className="actions">
+                                    <button className="submit" onClick={addHistory} disabled={savingHist}>
+                                        {savingHist ? 'Сохраняем…' : 'Добавить'}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+
+                {/* Таблицы */}
+                {historyKind === 'simple' ? (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Тип</th>
+                                <th>Сумма</th>
+                                <th>Баланс до</th>
+                                <th>Баланс после</th>
+                                {canAddHistory && <th></th>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.length === 0 ? (
+                                <tr><td colSpan={canAddHistory ? 6 : 5} style={{ textAlign: 'center', opacity: 0.4 }}>Здесь пока пусто</td></tr>
+                            ) : rows.map(r => (
+                                <tr key={r.id}>
+                                    <td>{new Date(r.date).toLocaleDateString('ru-RU')}</td>
+                                    <td>{TYPE_LABELS[r.type] ?? r.type}</td>
+                                    <td>{Number(r.amount).toFixed(2)} USDT</td>
+                                    <td>{Number(r.before).toFixed(2)} USDT</td>
+                                    <td>{Number(r.after).toFixed(2)} USDT</td>
+                                    {canAddHistory && (
+                                        <td>
+                                            <button className="delete-btn" onClick={() => removeRow(r.id)}>Удалить</button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Дата заморозки</th>
+                                <th>Дата разморозки</th>
+                                <th>Тип</th>
+                                <th>Сумма</th>
+                                {canAddHistory && <th></th>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.length === 0 ? (
+                                <tr><td colSpan={canAddHistory ? 5 : 4} style={{ textAlign: 'center', opacity: 0.4 }}>Здесь пока пусто</td></tr>
+                            ) : rows.map(r => (
+                                <tr key={r.id}>
+                                    <td>{new Date(r.freezeDate).toLocaleDateString('ru-RU')}</td>
+                                    <td>{r.unfreezeDate ? new Date(r.unfreezeDate).toLocaleDateString('ru-RU') : '—'}</td>
+                                    <td>{TYPE_LABELS[r.type] ?? r.type}</td>
+                                    <td>{Number(r.amount).toFixed(2)} USDT</td>
+                                    {canAddHistory && (
+                                        <td>
+                                            <button className="delete-btn" onClick={() => removeRow(r.id)}>Удалить</button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        </div>
+    );
+}

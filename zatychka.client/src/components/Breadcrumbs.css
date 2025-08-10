@@ -1,0 +1,36 @@
+.breadcrumbs {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    user-select: none;
+    font-family: 'Mulish', sans-serif;
+}
+
+.crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crumb-link {
+    margin-top: 1px;
+    color: #b9c7d6;
+    text-decoration: none;
+}
+
+    .crumb-link:hover {
+        color: #E5E5E5;
+    }
+
+.crumb-current {
+    color: #FFB900;
+    font-weight: 600;
+    margin-top: 3px;
+}
+
+.crumb-sep {
+    opacity: 1;
+    font-size: 20px;
+}

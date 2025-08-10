@@ -1,0 +1,95 @@
+.edit-owner-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+}
+
+.edit-owner-modal {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 32px 24px;
+    width: 500px;
+    max-width: 90%;
+    text-align: center;
+    color: #E5E5E5;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.1);
+    align-items:center;
+}
+
+.edit-owner-modal h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+    .edit-owner-modal input {
+        max-width: 95%;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        border: 1px solid #444;
+        background-color: #2a2a2a;
+        color: #f1f1f1;
+        font-size: 14px;
+        outline: none;
+        transition: border 0.2s;
+    }
+    .edit-owner-modal select {
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        border: 1px solid #444;
+        background-color: #2a2a2a;
+        color: #f1f1f1;
+        font-size: 14px;
+        outline: none;
+        transition: border 0.2s;
+    }
+
+        .edit-owner-modal input:focus,
+        .edit-owner-modal select:focus {
+            border-color: #ffc107;
+        }
+
+    .edit-owner-modal .modal-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 100%;
+    }
+
+    .edit-owner-modal .edit-button {
+        background-color: #ffc107;
+        color: #000;
+        font-weight: bold;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background 0.2s ease;
+    }
+
+        .edit-owner-modal .edit-button:hover {
+            background-color: #e6ac00;
+        }
+
+    .edit-owner-modal .delete-button {
+        background: none;
+        border: none;
+        color: #e06666;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: color 0.2s ease;
+    }
+
+        .edit-owner-modal .delete-button:hover {
+            color: #ff4444;
+        }

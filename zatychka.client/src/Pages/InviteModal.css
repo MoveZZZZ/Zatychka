@@ -1,0 +1,120 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.title-style {
+    font-family: 'Mulish', sans-serif;
+    font-size: 30px;
+}
+.invite-modal {
+    background: #1f1f1f;
+    padding: 30px;
+    border-radius: 14px;
+    max-width: 500px;
+    width: 100%;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+}
+
+    .invite-modal h2 {
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 16px;
+    }
+
+.invite-description {
+    font-size: 18px;
+    color: #ccc;
+    text-align: center;
+    margin-bottom: 24px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.invite-link-box {
+    margin-top: 20px;
+}
+
+.invite-link-label {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 6px;
+}
+
+.invite-link-field {
+    display: flex;
+    align-items: center;
+    background: #2a2a2a;
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.referral-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ffc107;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+.styled-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-top: 30px;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: #1f1f1f;
+}
+
+.styled-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    font-size: 13px;
+    color: #aaa;
+    background-color: #1f1f1f;
+    padding: 0 4px;
+}
+
+.styled-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.styled-link-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: monospace;
+    font-size: 14px;
+    padding-right: 10px;
+}
+
+.copy-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}

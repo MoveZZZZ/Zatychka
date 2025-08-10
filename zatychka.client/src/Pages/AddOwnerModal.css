@@ -1,0 +1,77 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-window {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 32px 24px;
+    width: 450px;
+    color: #fff;
+    text-align: center;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.owner-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+    .owner-form input {
+        background-color: #2a2a2a;
+        border: 1px solid #444;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #fff;
+        outline: none;
+        max-width: 95%;
+    }
+    .owner-form select {
+        background-color: #2a2a2a;
+        border: 1px solid #444;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #fff;
+        outline: none;
+    }
+
+        .owner-form input::placeholder {
+            color: #888;
+        }
+
+    .owner-form select {
+        color: #ccc;
+    }
+
+.submit-button {
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s ease;
+}
+
+    .submit-button:hover {
+        background-color: #e6ac00;
+    }

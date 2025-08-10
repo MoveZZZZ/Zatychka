@@ -1,0 +1,37 @@
+.modal-input {
+    max-width: 95%;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ffc107;
+    background-color: transparent;
+    color: #fff;
+}
+
+.modal-action {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: bold;
+    padding: 12px;
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+    margin-bottom: 12px;
+}
+
+    .modal-action:hover {
+        background-color: #e6ac00;
+    }
+
+.modal-delete {
+    background: transparent;
+    color: #ff4d4d;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+}

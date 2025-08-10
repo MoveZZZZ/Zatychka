@@ -1,0 +1,50 @@
+﻿using System.Collections.Generic;
+using Zatychka.Server.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
+
+namespace Zatychka.Server.Data
+{
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<Device> Devices { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Owner> Owners => Set<Owner>();
+        public DbSet<OwnerRequisite> OwnerRequisites => Set<OwnerRequisite>();
+        public DbSet<Link> Links { get; set; } = null!;
+        public DbSet<AppSetting> AppSettings { get; set; } = null!;
+        public DbSet<UserWallet> UserWallets => Set<UserWallet>();
+        public DbSet<PublicWallet> PublicWallets { get; set; }
+
+        public DbSet<PublicWalletUser> PublicWalletUser { get; set; }
+        public DbSet<PrivateWalletUser> PrivateWalletUser { get; set; }
+        public DbSet<PrivateStatisticsUser> PrivateStatisticsUsers { get; set; } = null!;
+
+        public DbSet<PayinTransactionPublic> PayinTransactionsPublic => Set<PayinTransactionPublic>();
+
+        public DbSet<BalanceChange> BalanceChanges => Set<BalanceChange>();
+        public DbSet<FrozenBalanceChange> FrozenBalanceChanges => Set<FrozenBalanceChange>();
+        public DbSet<PublicDispute> PublicDisputes { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder b)
+        {
+            b.Entity<PublicDispute>(e =>
+            {
+                e.ToTable("PublicDisputes");
+                e.HasKey(x => x.Id);
+                e.Property(x => x.DealAmount).HasPrecision(18, 2);
+                e.HasOne(x => x.Requisite)
+                    .WithMany()
+                    .HasForeignKey(x => x.RequisiteId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                e.HasOne(x => x.Device)
+                    .WithMany()
+                    .HasForeignKey(x => x.DeviceId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+        }
+    }
+}

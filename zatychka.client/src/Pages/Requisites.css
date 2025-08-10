@@ -1,0 +1,289 @@
+.requisites-page {
+    color: #fff;
+    flex: 1;
+    margin-top: -20px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.requisites-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-owner-button {
+    background-color: #ffb900;
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 600;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .add-owner-button:hover {
+        background-color: #e6ac00;
+    }
+
+.plus-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.empty-message {
+    font-size: 18px;
+    color: #aaa;
+    margin-top: 20px;
+}
+
+.requisite-table {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+.requisite-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-top: 1px solid #333;
+}
+
+    .requisite-row:first-child {
+        border-top: none;
+    }
+
+.requisite-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bank-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.owner-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.requisite-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.add-requisite-btn {
+    background: transparent;
+    border: 1px solid #ffc107;
+    color: #E5E5E5;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.arrow-btn {
+    background: transparent;
+    border: 1px solid #555;
+    color: #ffc107;
+    font-size: 20px;
+    padding: 4px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.requisites-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.requisites-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.btn-yellow {
+    background-color: #ffb900;
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-weight: 700;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: transform .1s ease, background-color .2s ease;
+}
+
+    .btn-yellow:hover {
+        background-color: #e6ac00;
+    }
+
+    .btn-yellow:active {
+        transform: translateY(1px);
+    }
+
+.requisites-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@media (min-width: 900px) {
+    .requisites-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Карточка владельца */
+.owner-card {
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 14px;
+    transition: border-color .2s ease, transform .08s ease;
+}
+
+    .owner-card:hover {
+        border-color: #333;
+    }
+
+    .owner-card:active {
+        transform: translateY(1px);
+    }
+
+.owner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.owner-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: transparent;
+    background: transparent;
+}
+
+.bank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #2d2d2d;
+    background: #111;
+}
+
+.owner-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.owner-title {
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.owner-sub {
+    font-size: 12px;
+    color: #9aa0a6;
+}
+
+.owner-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid #3a3a3a;
+    color: #e5e5e5;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+    .btn-ghost:hover {
+        border-color: #555;
+        background: #212121;
+    }
+
+/* Чипы реквизитов */
+.requisites-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #121212;
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+    padding: 6px 10px;
+}
+
+.chip-type {
+    font-size: 12px;
+    color: #9aa0a6;
+    border: 1px solid #2f2f2f;
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+
+.chip-value {
+    font-weight: 700;
+}
+
+.chip-actions {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 2px;
+}
+
+.chip-btn {
+    background: transparent;
+    border: 1px solid #3a3a3a;
+    color: #e5e5e5;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+    .chip-btn:hover {
+        border-color: #555;
+        background: #1c1c1c;
+    }
+
+    .chip-btn.danger:hover {
+        border-color: #7a2e2e;
+        background: #261515;
+        color: #ffb4b4;
+    }
+
+/* Пусто */
+.requisites-empty {
+    margin-top: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #9aa0a6;
+    background: #151515;
+    border: 1px dashed #2a2a2a;
+    border-radius: 10px;
+}

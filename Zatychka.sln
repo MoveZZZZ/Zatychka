@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zatychka.Server", "Zatychka.Server\Zatychka.Server.csproj", "{1FB405D7-4C28-4F5C-B38F-30AF76422B30}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "zatychka.client", "zatychka.client\zatychka.client.esproj", "{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FB405D7-4C28-4F5C-B38F-30AF76422B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FB405D7-4C28-4F5C-B38F-30AF76422B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FB405D7-4C28-4F5C-B38F-30AF76422B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FB405D7-4C28-4F5C-B38F-30AF76422B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{335582AC-3BAF-4644-A11A-6A1A9CFFB0CC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

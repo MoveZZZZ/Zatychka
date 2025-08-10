@@ -1,0 +1,61 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Mulish&display=swap&subset=cyrillic');
+
+.dashboard {
+    display: flex;
+    font-family: 'Mulish', 'Roboto', 'Arial', sans-serif;
+    background-color: #111;
+    color: #fff;
+    min-height: 100vh;
+}
+
+
+.sidebar {
+    width: 260px;
+    background-color: #1a1a1a;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+    .sidebar h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .sidebar button {
+        background: none;
+        border: none;
+        color: #fff;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 14px;
+    }
+
+        .sidebar button:hover {
+            background: #333;
+        }
+
+.content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #1c1c1c;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: #222;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+    .card h3 {
+        margin-bottom: 10px;
+    }

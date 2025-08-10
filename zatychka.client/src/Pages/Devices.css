@@ -1,0 +1,110 @@
+.devices-container {
+    color: #fff;
+    flex: 1;
+    margin-top: -20px;
+}
+
+.devices-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-device-btn {
+    background-color: #ffb900;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.devices-table-wrapper {
+    margin-top: 20px;
+    border: 1px solid #444;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.devices-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1f1f1f;
+    color: #fff;
+}
+
+    .devices-table th, .devices-table td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid #333;
+    }
+.devices-table {
+    border: 1px solid #444;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.devices-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #333;
+    background-color: #1e1e1e;
+}
+
+.devices-header-row {
+    background-color: #252525;
+    font-weight: bold;
+    color: #888;
+}
+
+.device-col {
+    flex: 1;
+}
+
+    .device-col.status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1.5;
+    }
+
+.status-label.offline {
+    color: #fff;
+    font-weight: 500;
+}
+
+.offline-icon {
+    color: #3498db;
+}
+
+.device-col.actions {
+    display: flex;
+    justify-content: flex-end;
+    flex: 0.5;
+}
+
+.arrow-btn {
+    background-color: #2c2c2c;
+    border: 1px solid #666;
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #ffc107;
+    transition: background 0.2s ease;
+}
+
+    .arrow-btn:hover {
+        background-color: #3a3a3a;
+    }
+
+.empty-message {
+    text-align: center;
+    padding: 40px 0;
+    color: #aaa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}

@@ -1,0 +1,546 @@
+.balance-page {
+    color: #fff;
+    flex: 1;
+    margin-top: -20px;
+}
+
+/* ===== Карточки баланса сверху ===== */
+.balance-cards {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #262626;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #525252;
+    flex: 1;
+}
+
+.balance-title {
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+    gap: 5px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #E5E5E5;
+}
+
+.casa-style {
+    margin-top: -5px;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #E5E5E5;
+}
+
+/* ===== Блоки Вывод/Пополнение ===== */
+.balance-sections {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+}
+
+.withdraw-section {
+    grid-column: 1 / 2;
+}
+
+.deposit-section {
+    grid-column: 2 / 3;
+}
+
+.withdraw,
+.deposit {
+    background: #1f1f1f;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #525252;
+    min-height: 100%;
+}
+
+/* ===== Значок TRC20 ===== */
+.badge {
+    font-family: 'Mulish', sans-serif;
+    display: inline-block;
+    padding: 4px 12px;
+    background-color: #3a2f12;
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    border-radius: 999px;
+    font-weight: bold;
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* ===== Инпуты ===== */
+.input-koshelok,
+.input-row input {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #2a2a2a;
+    border: 1px solid #555;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+    .input-koshelok::placeholder,
+    .input-row input::placeholder {
+        color: #aaa;
+        opacity: 1;
+    }
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.amount-input {
+    flex: 1;
+    padding: 12px 16px;
+    background-color: #2a2a2a;
+    border: 1px solid #555;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    appearance: auto;
+}
+.exchange-logos {
+    display: flex;
+    gap: 30px;
+    margin-top: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+    .exchange-logos img {
+        height: 40px;
+        cursor: pointer;
+        transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+        .exchange-logos img:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+
+.all-btn {
+    background: none;
+    border: none;
+    color: #ffc107;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    margin-bottom: 10px;
+}
+
+    .all-btn:hover {
+        color: #ffac07; 
+    }
+
+
+.warning {
+    font-size: 14px;
+    margin: 8px 0;
+    color: #fff;
+}
+
+
+.submit-btn {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: #c89629; 
+    color: #000;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(200, 150, 41, 0.3); 
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+}
+
+    .submit-btn:hover {
+        background-color: #daa520; 
+        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5); 
+    }
+
+
+/* ===== QR-код ===== */
+.qr-block {
+    position: relative;
+    margin-top: 20px;
+}
+
+.qr-code {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    display: block;
+}
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.info-label {
+    color: #a0a0a0; /* светло-серый */
+    font-weight: 400;
+}
+
+.info-value {
+    color: #fff;
+    font-weight: 600;
+}
+.address-mask {
+    margin-top: 10px;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: #aaa;
+}
+
+/* ===== История баланса ===== */
+.history-section {
+    margin-top: 40px;
+}
+
+.accordion {
+    width: 100%;
+    padding: 10px;
+    background: #222;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+    .filters span {
+        padding: 6px 12px;
+        background: #333;
+        border-radius: 16px;
+        font-size: 14px;
+        color: #ccc;
+        cursor: default;
+    }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+}
+
+thead {
+    background-color: #333;
+    font-size: 12px;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    text-align: left;
+    font-family: 'Mulish', sans-serif;
+    font-size: 12px;
+    color: #a0a0a0;
+}
+
+.wallet-container {
+    position: relative;
+    border: 1px solid #444;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.wallet-blur-wrap {
+    transition: filter 0.3s ease;
+    border-radius: 12px;
+}
+
+.blurred {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.wallet-info {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.wallet-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+/* Левая часть — QR */
+.qr-code {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+/* Правая часть */
+.wallet-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.wallet-blur-wrap {
+    transition: filter 0.3s ease;
+}
+
+.blurred {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.wallet-info {
+    background-color: #1f1f1f;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.wallet-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+/* QR слева */
+.qr-code {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+/* Контейнер справа */
+.wallet-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Верхняя строка */
+.wallet-label-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Адрес */
+.wallet-address-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #2a2a2a;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: #fff;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+/* Кнопка + уведомление */
+.wallet-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.check-deposit-btn {
+    background: none;
+    border: 1px solid #b5862d;
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.wallet-note {
+    font-size: 14px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 12px;
+    background: #3a2f12;
+    color: #ffc107;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid #ffc107;
+    font-weight: bold;
+    align-self: self-end;
+}
+
+/* Кнопка "Показать кошелёк" */
+.overlay-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffb900;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(255, 185, 0, 0.5);
+}
+/* === Segmented control (История / Замороженный) === */
+.history-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0 12px;
+}
+
+.segmented {
+    min-width: 100%;
+    display: flex;
+    grid-template-columns: 1fr 1fr;
+    background: #1F1F1F;
+    border-radius: 999px;
+    padding: 6px;
+    gap: 6px;
+    text-align: center;
+}
+
+    .segmented .seg {
+        flex: 1;
+        appearance: none;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #d9dde3;
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-size: 15px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        text-align: center;
+        justify-content: center; gap: 8px;
+        cursor: pointer;
+        transition: background .18s ease, color .18s ease, transform .04s ease;
+    }
+
+        .segmented .seg:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .segmented .seg:active {
+            transform: translateY(1px);
+        }
+
+        .segmented .seg.active {
+            background: #1f2126;
+            color: #ffcc66;
+            box-shadow: inset 0 0 0 1px rgba(255,204,102,0.25);
+        }
+
+        .segmented .seg .ico {
+            opacity: .9;
+            display: inline-flex;
+        }
+
+/* === Карточка фильтров (Типы) === */
+.filters-card {
+    background: #1F1F1F;
+    border: 1px solid #2b2f36;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.filters-title {
+    font-size: 13px;
+    color: #9aa3ad;
+    margin-bottom: 10px;
+}
+
+/* === Чипсы типов === */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    appearance: none;
+    border: 1px solid #3a3f47;
+    background: #fff;
+    color: #cfd6df;
+    padding: 7px 12px;
+    line-height: 1;
+    border-radius: 999px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease, transform .04s ease;
+}
+
+    .chip:hover {
+        border-color: #505763;
+    }
+
+    .chip.active {
+        background: #2b2416;
+        color: #ffcc66;
+        border-color: #c89629;
+        box-shadow: 0 0 0 1px rgba(200,150,41,0.25) inset;
+    }
+
+    .chip:active {
+        transform: translateY(1px);
+    }
+
+/* === таблица/пустые состояния не трогаем, останутся как были === */
+
+
+

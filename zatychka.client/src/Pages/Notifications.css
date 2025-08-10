@@ -1,0 +1,108 @@
+.notifications-page {
+    color: #fff;
+    flex: 1;
+    margin-top: -20px;
+}
+
+.notifications-title {
+    font-size: 30px;
+    font-weight: 550;
+    color: #E5E5E5;
+    margin-bottom: 24px;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.notification-filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filter-dropdown {
+    position: relative;
+}
+
+.filter-button {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+    .filter-button:hover {
+        background-color: #3a3a3a;
+    }
+
+.filter-search {
+    flex-grow: 1;
+    max-width: 260px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: #2a2a2a;
+    color: #fff;
+    font-size: 15px;
+}
+
+    .search-input::placeholder {
+        color: #aaa;
+    }
+.dropdown-menu {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    width: 200px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid #444;
+    padding: 8px;
+    z-index: 1000;
+}
+
+.dropdown-search {
+    width: 90%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    margin-bottom: 8px;
+    background-color: #2a2a2a;
+    color: white;
+    font-size: 14px;
+}
+
+.dropdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+    .dropdown-list li {
+        padding: 8px 10px;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+    }
+
+        .dropdown-list li:hover {
+            background-color: #333;
+        }
+.bank-logo {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+}

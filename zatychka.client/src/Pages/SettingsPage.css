@@ -1,0 +1,134 @@
+.settings-page {
+    color: #fff;
+    flex: 1;
+    margin-top: -20px;
+    padding: 0 24px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.settings-block {
+    background-color: #1f1f1f;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid #2a2a2a;
+}
+
+.settings-hint {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.telegram-notification {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ccc;
+    padding: 20px;
+    text-align: center;
+    border: 1px dashed #ffc107;
+    border-radius: 12px;
+    background-color: #121212;
+}
+
+    .telegram-notification .icon {
+        font-size: 30px;
+        color: #ffc107;
+        margin-bottom: 10px;
+    }
+
+.telegram-text {
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+.connect-btn {
+    background: transparent;
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+input[type="text"],
+input[type="email"] {
+    width: 99%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #2a2a2a;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+input[type="password"] {
+    width: 97%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #2a2a2a;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.password-fields {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.password-input {
+    flex: 1;
+}
+
+.save-btn {
+    margin-top: 24px;
+    background-color: #ffc107;
+    color: black;
+    padding: 14px;
+    width: 100%;
+    border: none;
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+    .save-btn:hover {
+        background-color: #ffb100;
+    }
+.connect-btn {
+    background: transparent;
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease;
+}
+
+    .connect-btn:hover {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
