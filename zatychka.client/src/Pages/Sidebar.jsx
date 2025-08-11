@@ -74,7 +74,6 @@ export default function Sidebar() {
                     }
 
                     setRate(numeric);
-                    setUpdatedAt(new Date());
                 } catch (e) {
                     if (!alive) return;
                     console.error(e); // Для отладки

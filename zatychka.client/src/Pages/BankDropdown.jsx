@@ -12,6 +12,7 @@ const BankDropdown = ({ value, onChange }) => {
     );
 
     const handleSelect = (bankName) => {
+        console.log('Selected bank name:', bankName);
         onChange(bankName);
         setOpen(false);
         setSearch('');
@@ -29,7 +30,7 @@ const BankDropdown = ({ value, onChange }) => {
         };
     }, []);
 
-    const selectedBank = banks.find(bank => bank.name === value);
+    const selectedBank = banks.find(bank => bank.name === value); // Ищем по name
 
     return (
         <div className="bank-dropdown" ref={dropdownRef}>
@@ -54,8 +55,8 @@ const BankDropdown = ({ value, onChange }) => {
                         {filteredBanks.map((bank, index) => (
                             <li
                                 key={index}
-                                onClick={() => handleSelect(bank.name)}
-                                className={value === bank.name ? 'selected' : ''}
+                                onClick={() => handleSelect(bank.name)} 
+                                className={value === bank.name ? 'selected' : ''} 
                             >
                                 {bank.logo && (
                                     <img src={bank.logo} alt={bank.name} className="bank-logo" />

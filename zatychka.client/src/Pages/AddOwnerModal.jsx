@@ -4,15 +4,15 @@ import './AddOwnerModal.css';
 import { banks } from '../constants/banks';
 import { addOwner } from '../api/owners';
 import { useToast } from '../context/ToastContext';
-
+import BankDropdown from './BankDropdown'; 
 const AddOwnerModal = ({ onClose, onAdded }) => {
     const toast = useToast();
     const [form, setForm] = useState({
         lastName: '',
         firstName: '',
         middleName: '',
-        bank: '', // value из banks
     });
+    const [selectedBankName, setSelectedBankName] = useState(''); // Храним bank.name
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState('');
 
@@ -29,16 +29,9 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
             setErr('Введите фамилию и имя');
             return;
         }
-        if (!form.bank) {
-            setErr('Выберите банк.');
-            toast.error('Выберите банк.');
-            return;
-        }
 
-        const bankObj = banks.find(b => b.value === form.bank);
-        const bankName = bankObj?.name || '';
+        const bankName = selectedBankName.trim();
         if (!bankName || bankName === 'Не выбран') {
-            setErr('Выберите банк.');
             toast.error('Выберите банк.');
             return;
         }
@@ -47,14 +40,12 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
             lastName: form.lastName.trim(),
             firstName: form.firstName.trim(),
             middleName: form.middleName.trim() || null,
-            bankName: bankName.trim(), 
+            bankName, // Используем selectedBankName
         };
 
         setLoading(true);
         try {
             const created = await addOwner(payload);
-
-            
             onAdded?.({
                 id: created.id,
                 firstName: payload.firstName,
@@ -63,7 +54,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                 bankName: payload.bankName,
                 requisites: [],
             });
-            toast.success('Владелец добавлен')
+            toast.success('Владелец добавлен');
             onClose();
         } catch (e) {
             setErr(e?.message || 'Не удалось добавить владельца');
@@ -72,6 +63,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -105,19 +97,10 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         disabled={loading}
                     />
 
-                    <select
-                        name="bank"
-                        value={form.bank}
-                        onChange={handleChange}
-                        required
-                        disabled={loading}
-                    >
-                        {banks.map((bank, i) => (
-                            <option key={i} value={bank.value}>
-                                {bank.name}
-                            </option>
-                        ))}
-                    </select>
+                    <BankDropdown
+                        value={selectedBankName}
+                        onChange={setSelectedBankName}
+                    />
 
                     {err && <div className="form-error">{err}</div>}
 
