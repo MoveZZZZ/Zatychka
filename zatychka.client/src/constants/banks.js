@@ -58,7 +58,7 @@ import BOS from '../assets/icons/BOS.png';
 import bank_pocztowy from '../assets/icons/bank_pocztowy.png';
 import plus from '../assets/icons/plus.png';
 import BPS from '../assets/icons/BPS.png';
-import SGB from '../assets/icons/SGB.png';
+import SGB from '../assets/icons/sgb.png';
 import getin from '../assets/icons/getin.png';
 import idea from '../assets/icons/idea.png';
 import santander from '../assets/icons/santander.png';
