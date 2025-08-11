@@ -25,7 +25,8 @@ builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<IRequisiteRepository, RequisiteRepository>();
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUserWalletRepository, UserWalletRepository>();
-
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
 
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Jwt"));
 
@@ -108,7 +109,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 

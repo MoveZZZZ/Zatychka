@@ -14,7 +14,7 @@ const LABELS = {
     notifications: 'Уведомления',
     settings: 'Настройки',
 
-    'payin': 'Приёим',
+    'payin': 'Приём',
     'quasi': 'Quasi-приём',
     'quasi/payment': 'Транзакции',
     'quasi/disuptes': 'Споры', 

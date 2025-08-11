@@ -12,12 +12,12 @@ import { getMyWallet, saveMyWallet } from '../api/wallet';
 import { getPublicWallet, savePublicWallet } from '../api/publicwallet';
 import { useEditMode } from '../context/EditModeContext';
 import { useDataScope } from '../context/DataScopeContext';
-
+import { fetchUsdtRub } from '../api/rates';
 export default function Sidebar() {
     const { editMode } = useEditMode();
-    const { scope, setScope } = useDataScope(); // <-- общий режим
+    const { scope, setScope } = useDataScope(); 
     const isPublic = scope === 'public';
-
+    const [rate, setRate] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [openSection, setOpenSection] = useState('main');
     const [activePage, setActivePage] = useState('statistics');
@@ -50,15 +50,45 @@ export default function Sidebar() {
 
     useEffect(() => { setOpenSection(computeInitialSection()); }, [location.pathname]);
     const [currentTime, setCurrentTime] = useState('');
+
+
     useEffect(() => {
+        let alive = true;
+
         const updateTime = () => {
             const now = new Date();
             const formatted = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', hour12: false });
             setCurrentTime(formatted);
+
+            const load = async () => {
+                try {
+                    const { rate: r, source: s } = await fetchUsdtRub(); // Извлекаем rate и source
+                    if (!alive) return;
+
+                    const numeric = typeof r === 'number'
+                        ? r
+                        : Number(String(r).replace(',', '.'));
+
+                    if (!Number.isFinite(numeric)) {
+                        throw new Error(`Bad rate from API: ${r}`);
+                    }
+
+                    setRate(numeric);
+                    setUpdatedAt(new Date());
+                } catch (e) {
+                    if (!alive) return;
+                    console.error(e); // Для отладки
+                }
+            };
+            load();
         };
+
         updateTime();
         const interval = setInterval(updateTime, 60000);
-        return () => clearInterval(interval);
+        return () => {
+            alive = false;
+            clearInterval(interval);
+        };
     }, []);
 
     const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -73,7 +103,6 @@ export default function Sidebar() {
         }
     };
 
-    // footer drag-scroll
     const scrollRef = useRef(null);
     useEffect(() => {
         const slider = scrollRef.current;
@@ -100,7 +129,6 @@ export default function Sidebar() {
 
     const me = useUserInfo();
     const isAdmin = isAdminRole(me?.role);
-    const [usdtRate] = useState(81.2);
 
     const [mainUsdt, setMainUsdt] = useState(0);
     const [frozenUsdt, setFrozenUsdt] = useState(0);
@@ -198,7 +226,7 @@ export default function Sidebar() {
 
                 <div className="sidebar-rate">
                     <img src={usdtIcon} alt="USDT" className="rate-icon" />
-                    <div className="rate-text">{usdtRate} RUB</div>
+                    <div className="rate-text">{rate} RUB</div>
                     <div className="rate-time">{currentTime}</div>
                 </div>
 
