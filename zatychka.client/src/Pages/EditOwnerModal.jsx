@@ -2,12 +2,16 @@
 import { banks } from '../constants/banks';
 import './EditOwnerModal.css';
 import { useToast } from '../context/ToastContext';
+import BankDropdown from './BankDropdown';
 export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
     const toast = useToast();
     const [lastName, setLastName] = useState(owner.lastName || '');
     const [firstName, setFirstName] = useState(owner.firstName || '');
     const [middleName, setMiddleName] = useState(owner.middleName || '');
     const [bankValue, setBankValue] = useState('');
+
+
+    const [selectedBankName, setSelectedBankName] = useState(''); 
 
     useEffect(() => {
         const v = banks.find(b => b.name === owner.bankName)?.value || '';
@@ -17,8 +21,11 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
     function handleSubmit(e) {
         e.preventDefault();
 
-        const bankName =
-            banks.find(b => b.value === bankValue)?.name || owner.bankName || '';
+        const bankName = selectedBankName.trim();
+        if (!bankName || bankName === 'Не выбран') {
+            toast.error('Выберите банк.');
+            return;
+        }
 
         onSave({
             id: owner.id,
@@ -58,17 +65,10 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
                         placeholder="Отчество (если есть)"
                     />
 
-                    <select
-                        value={bankValue}
-                        onChange={(e) => setBankValue(e.target.value)}
-                        required
-                    >
-                        {banks.map((b, i) => (
-                            <option key={i} value={b.value}>
-                                {b.name}
-                            </option>
-                        ))}
-                    </select>
+                    <BankDropdown
+                        value={selectedBankName}
+                        onChange={setSelectedBankName}
+                    />
 
                     <div className="modal-buttons">
                         <button type="submit" className="submit-button">Сохранить</button>

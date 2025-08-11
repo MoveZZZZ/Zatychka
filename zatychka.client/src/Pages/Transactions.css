@@ -84,9 +84,9 @@
     width: 250px;
 }
 
-.dropdown-search {
-    width: 90%;
-    margin: 0 auto 8px auto;
+.dropdown-search-priem {
+    max-width: 90%;
+    margin: auto 15px 8px auto;
     padding: 8px 12px;
     background: #1f1f1f;
     border: none;

@@ -12,7 +12,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
         firstName: '',
         middleName: '',
     });
-    const [selectedBankName, setSelectedBankName] = useState(''); // Храним bank.name
+    const [selectedBankName, setSelectedBankName] = useState(''); 
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState('');
 
@@ -40,7 +40,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
             lastName: form.lastName.trim(),
             firstName: form.firstName.trim(),
             middleName: form.middleName.trim() || null,
-            bankName, // Используем selectedBankName
+            bankName,
         };
 
         setLoading(true);

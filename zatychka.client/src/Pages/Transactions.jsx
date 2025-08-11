@@ -182,7 +182,7 @@ export default function Transactions() {
                             <input
                                 type="text"
                                 placeholder="Поиск статуса…"
-                                className="dropdown-search"
+                                className="dropdown-search-priem"
                                 value={statusSearch}
                                 onChange={(e) => setStatusSearch(e.target.value)}
                             />
