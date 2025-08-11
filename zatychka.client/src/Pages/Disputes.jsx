@@ -32,7 +32,7 @@ export default function Disputes() {
     const canEdit = isAdmin && editMode;
 
     // фильтры
-    const [selectedStatuses, setSelectedStatuses] = useState(['InProgress', 'Frozen']); // по умолчанию активные
+    const [selectedStatuses, setSelectedStatuses] = useState([]); // по умолчанию активные
     const toggleStatus = (val) => {
         setSelectedStatuses(prev =>
             prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]
@@ -167,17 +167,21 @@ export default function Disputes() {
             <h2>Споры</h2>
 
             {/* Фильтр статусов (чипсы) */}
-            <div className="filters chips">
+            <div className="filters-card">
+                <div className="filters-title">Типы</div>
+            <div className="chips">
                 {STATUS_OPTIONS.map(o => (
                     <span
                         key={o.value}
-                        className={selectedStatuses.includes(o.value) ? 'active' : ''}
+                        className={`chip ${selectedStatuses.includes(o.value) ? 'active' : ''}`}
                         onClick={() => toggleStatus(o.value)}
                     >
                         {o.label}
                     </span>
                 ))}
+                </div>
             </div>
+
 
             {/* Кнопка «добавить» для админа */}
             {canEdit && (

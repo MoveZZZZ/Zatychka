@@ -515,7 +515,7 @@ th, td {
 .chip {
     appearance: none;
     border: 1px solid #3a3f47;
-    background: #fff;
+    background: #000;
     color: #cfd6df;
     padding: 7px 12px;
     line-height: 1;

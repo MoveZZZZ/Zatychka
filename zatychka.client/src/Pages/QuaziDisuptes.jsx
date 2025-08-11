@@ -25,9 +25,9 @@ const Disputes = () => {
                     </thead>
                     <tbody>
                         {disputes.length === 0 ? (
-                            <tr>
-                                <td colSpan="7" className="no-disputes">
-                                    <div>Споров пока нет</div>
+                            <tr className="empty-row">
+                                <td colSpan={7}>
+                                    <div className="empty-message">Данных пока нет</div>
                                 </td>
                             </tr>
                         ) : (
