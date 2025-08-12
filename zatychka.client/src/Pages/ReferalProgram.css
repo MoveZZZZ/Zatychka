@@ -86,12 +86,13 @@
     vertical-align: middle;
 }
 
-.empty-message {
+.empty-message-table {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    width: 100%;
+    min-height: 100px;
+    max-height: 100px;
+    min-width: 100px;
     color: #888;
     text-align: center;
 }

@@ -55,7 +55,7 @@ export default function Devices() {
                 </div>
 
                 {devices.length === 0 ? (
-                    <div className="empty-message">Устройств пока нет</div>
+                    <div className="empty-message-table">Устройств пока нет</div>
                 ) : (
                     devices.map(device => (
                         <div key={device.id} className="devices-row">

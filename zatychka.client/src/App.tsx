@@ -18,6 +18,7 @@ import PrivateRoute from './components/PrivateRoute';
 
 import { EditModeProvider } from './context/EditModeContext';
 import { DataScopeProvider } from './context/DataScopeContext';
+import ComingSoon from './Pages/ComingSoon';
 
 export default function App() {
     return (
@@ -28,6 +29,8 @@ export default function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register/trader" element={<Register />} />
                         <Route path="/register/merchant" element={<Register />} />
+                        <Route path="/faq" element={<ComingSoon />} />
+                        <Route path="/learn" element={<ComingSoon />} />
                         <Route
                             path="/"
                             element={

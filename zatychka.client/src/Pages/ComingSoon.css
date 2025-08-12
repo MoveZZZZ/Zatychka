@@ -1,0 +1,107 @@
+:root {
+    --bg: #0f0f10;
+    --pill: #2a2a2d;
+    --pill-2: #323236;
+    --text: #cfcfcf;
+    --muted: #a7a7aa;
+    --white: #ffffff;
+    --shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+
+.wip {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    width: min(1180px, 92%);
+    margin: 0 auto;
+}
+
+.wip-header {
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-name {
+    font-weight: 800;
+    letter-spacing: .3px;
+}
+
+/* NAV (не кликабельный, только hover-эффект текста) */
+.wip-nav {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+.pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--pill);
+    color: var(--muted);
+    user-select: none;
+    transition: color .18s ease, background .18s ease;
+    white-space: nowrap;
+}
+
+.pill-muted {
+    cursor: default;
+}
+
+    .pill-muted:hover {
+        color: var(--white); 
+    }
+
+/* actions */
+.wip-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pill-action {
+    background: var(--pill-2);
+    color: var(--white);
+    text-decoration: none;
+}
+
+    .pill-action:hover {
+        filter: brightness(1.05);
+        color: #ffcc66;
+    }
+
+.pill-lang {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-inline: 12px;
+}
+
+/* MAIN */
+.wip-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10vh 0 14vh;
+}
+
+    .wip-main h1 {
+        font-size: clamp(28px, 6.5vw, 64px);
+        line-height: 1.1;
+        font-weight: 800;
+        color: var(--white);
+        text-shadow: var(--shadow);
+    }

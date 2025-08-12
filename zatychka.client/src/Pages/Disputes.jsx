@@ -293,7 +293,7 @@ export default function Disputes() {
                         {rows.length === 0 ? (
                             <tr>
                                 <td colSpan={canEdit ? 8 : 7} className="no-disputes">
-                                    <div className="empty-message">Споров пока нет</div>
+                                    <div className="empty-message-table">Споров пока нет</div>
                                 </td>
                             </tr>
                         ) : rows.map(r => (

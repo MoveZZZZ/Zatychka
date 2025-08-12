@@ -99,12 +99,13 @@
         background-color: #3a3a3a;
     }
 
-.empty-message {
-    text-align: center;
-    padding: 40px 0;
-    color: #aaa;
+.empty-message-table {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    min-height: 100px;
+    max-height: 100px;
+    min-width: 100px;
+    color: #888;
+    text-align: center;
 }

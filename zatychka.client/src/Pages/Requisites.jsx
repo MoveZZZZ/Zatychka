@@ -143,7 +143,7 @@ export default function Requisites() {
             {err && <p className="error">{err}</p>}
 
             {!loading && owners.length === 0 ? (
-                <p className="empty-message">Владельцев пока нет</p>
+                <p className="empty-message-table">Владельцев пока нет</p>
             ) : (
                     <div className="requisites-grid">
                         {owners.map((o) => (

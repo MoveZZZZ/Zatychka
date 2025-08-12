@@ -39,7 +39,7 @@ const ReferralProgram = () => {
                     <tbody>
                         <tr className="empty-row">
                             <td colSpan={4}>
-                                <div className="empty-message">Данных пока нет</div>
+                                <div className="empty-message-table">Данных пока нет</div>
                             </td>
                         </tr>
                     </tbody>

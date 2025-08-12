@@ -65,4 +65,8 @@
     color: #E5E5E5;
     font-family: 'Mulish', sans-serif;
 }
-
+    .section-heading .section-title-date {
+        margin-left: 6px;
+        opacity: .7;
+        font-weight: 500;
+    }

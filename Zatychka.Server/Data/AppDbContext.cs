@@ -28,22 +28,15 @@ namespace Zatychka.Server.Data
         public DbSet<BalanceChange> BalanceChanges => Set<BalanceChange>();
         public DbSet<FrozenBalanceChange> FrozenBalanceChanges => Set<FrozenBalanceChange>();
         public DbSet<PublicDispute> PublicDisputes { get; set; } = null!;
-
+        public DbSet<Zatychka.Server.Models.IntakeDateConfig> IntakeDateConfigs { get; set; }
         protected override void OnModelCreating(ModelBuilder b)
         {
-            b.Entity<PublicDispute>(e =>
+           b.Entity<IntakeDateConfig>().HasData(new IntakeDateConfig
             {
-                e.ToTable("PublicDisputes");
-                e.HasKey(x => x.Id);
-                e.Property(x => x.DealAmount).HasPrecision(18, 2);
-                e.HasOne(x => x.Requisite)
-                    .WithMany()
-                    .HasForeignKey(x => x.RequisiteId)
-                    .OnDelete(DeleteBehavior.SetNull);
-                e.HasOne(x => x.Device)
-                    .WithMany()
-                    .HasForeignKey(x => x.DeviceId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                Id = 1,
+                Mode = IntakeDateMode.Actual,
+                CustomDate = null,
+                UpdatedAt = DateTime.UtcNow
             });
         }
     }
