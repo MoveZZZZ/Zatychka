@@ -70,3 +70,34 @@ function numberOrNull(v) {
     const parsed = Number(n);
     return Number.isFinite(parsed) ? parsed : null;
 }
+
+const API = 'https://localhost:5132/api';
+
+function qs(obj = {}) {
+    const p = new URLSearchParams();
+    Object.entries(obj).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') p.append(k, String(v));
+    });
+    const s = p.toString();
+    return s ? `?${s}` : '';
+}
+
+export async function searchLinks({ login, activeOnly = true, take = 200 } = {}) {
+    const res = await fetch(`${API}/links/search${qs({ login, activeOnly, take })}`, { credentials: 'include' });
+    if (!res.ok) throw new Error('Не удалось загрузить связки');
+    return res.json();
+}
+
+export async function generateTransactions(linkIds, count) {
+    const res = await fetch(`${API}/payin/generate`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ linkIds, count }),
+    });
+    if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || 'Не удалось запустить генерацию');
+    }
+    return res.json(); 
+}

@@ -26,5 +26,7 @@ namespace Zatychka.Server.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal IncomeAmount { get; set; }
+        public int? LinkId { get; set; }
+        public Link? Link { get; set; }
     }
 }

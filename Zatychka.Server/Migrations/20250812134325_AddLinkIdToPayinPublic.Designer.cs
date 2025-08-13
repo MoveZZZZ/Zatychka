@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zatychka.Server.Data;
 
@@ -10,9 +11,11 @@ using Zatychka.Server.Data;
 namespace Zatychka.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250812134325_AddLinkIdToPayinPublic")]
+    partial class AddLinkIdToPayinPublic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -331,11 +334,11 @@ namespace Zatychka.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId");
-
-                    b.HasIndex("LinkId");
-
                     b.HasIndex("RequisiteId");
+
+                    b.HasIndex("LinkId", "Date");
+
+                    b.HasIndex("DeviceId", "RequisiteId", "Date");
 
                     b.ToTable("PayinTransactionsPublic");
                 });
@@ -644,17 +647,16 @@ namespace Zatychka.Server.Migrations
                 {
                     b.HasOne("Zatychka.Server.Models.Device", "Device")
                         .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("DeviceId");
 
                     b.HasOne("Zatychka.Server.Models.Link", "Link")
                         .WithMany()
-                        .HasForeignKey("LinkId");
+                        .HasForeignKey("LinkId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Zatychka.Server.Models.OwnerRequisite", "Requisite")
                         .WithMany()
-                        .HasForeignKey("RequisiteId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("RequisiteId");
 
                     b.Navigation("Device");
 
@@ -689,13 +691,11 @@ namespace Zatychka.Server.Migrations
                 {
                     b.HasOne("Zatychka.Server.Models.Device", "Device")
                         .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("DeviceId");
 
                     b.HasOne("Zatychka.Server.Models.OwnerRequisite", "Requisite")
                         .WithMany()
-                        .HasForeignKey("RequisiteId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("RequisiteId");
 
                     b.Navigation("Device");
 

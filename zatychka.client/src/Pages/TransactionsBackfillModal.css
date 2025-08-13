@@ -1,0 +1,202 @@
+.tbm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tbm-modal {
+    width: min(1024px, 96vw);
+    max-height: 92vh;
+    overflow-y: auto;
+    background: #1e1e1e;
+    color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tbm-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+    .tbm-head h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+.tbm-close {
+    border: none;
+    background: none;
+    color: #bbbbbb;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+    .tbm-close:hover {
+        color: #ffffff;
+    }
+
+.tbm-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 12px 0;
+}
+
+    .tbm-row.group {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+.tbm-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .tbm-col.sm {
+        max-width: 200px;
+    }
+
+    .tbm-col.align-end {
+        align-items: flex-end;
+        justify-content: flex-end;
+    }
+
+.tbm-input,
+.tbm-select,
+.tbm-btn,
+.tbm-modal input[type="month"] {
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #3a3a3a;
+    background: #252525;
+    color: #ffffff;
+    padding: 0 14px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+    .tbm-input:focus,
+    .tbm-select:focus,
+    .tbm-modal input[type="month"]:focus {
+        border-color: #4caf50;
+    }
+
+.tbm-select {
+    height: 42px;
+}
+
+.inline {
+    display: flex;
+    gap: 10px;
+}
+
+.tbm-btn {
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+    .tbm-btn.primary {
+        background: #4caf50;
+        border-color: #4caf50;
+    }
+
+        .tbm-btn.primary:hover:not(:disabled) {
+            background: #43a047;
+        }
+
+    .tbm-btn.ghost {
+        background: transparent;
+        border: 1px solid #555555;
+    }
+
+        .tbm-btn.ghost:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+    .tbm-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+.tbm-error {
+    color: #ff6666;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.tbm-pairs {
+    margin-top: 16px;
+}
+
+.tbm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+    .tbm-table th,
+    .tbm-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #333333;
+    }
+
+    .tbm-table th {
+        background: #252525;
+        font-weight: 600;
+        color: #dddddd;
+    }
+
+    .tbm-table tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tbm-table .table-input {
+        width: 100px;
+        height: 32px;
+        padding: 0 8px;
+    }
+
+.tbm-remove {
+    border: none;
+    background: rgba(255, 66, 66, 0.2);
+    color: #ff6666;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+    .tbm-remove:hover {
+        background: rgba(255, 66, 66, 0.3);
+    }
+
+.tbm-empty {
+    color: #888888;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.tbm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}

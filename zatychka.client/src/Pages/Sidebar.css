@@ -192,6 +192,10 @@
     font-size: 12px;
     cursor: pointer;
     font-weight: 400;
+    vertical-align: central;
+}
+.balance-select-option{
+    text-align: center;
 }
 .section-header {
     line-height: 1.2;

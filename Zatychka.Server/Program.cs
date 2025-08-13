@@ -17,8 +17,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     )
 );
-
-
+builder.Services.AddScoped<TransactionGenerationService>();
+builder.Services.AddScoped<TransactionGenerationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();

@@ -164,7 +164,7 @@ export default function Sidebar() {
     }, [isPublic]);
 
     function toDisplay(amountUsdt, currency) {
-        const n = currency === 'USDT' ? amountUsdt : amountUsdt * usdtRate;
+        const n = currency === 'USDT' ? amountUsdt : amountUsdt * rate;
         return Number(n || 0).toLocaleString('ru-RU', { maximumFractionDigits: 2 });
     }
 
@@ -287,7 +287,7 @@ export default function Sidebar() {
                             onChange={e => setCurMain(e.target.value)}
                             disabled={edit.main || editable}
                         >
-                            <option>USDT</option>
+                            <option clas>USDT</option>
                             <option>RUB</option>
                         </select>
                     </div>
@@ -334,7 +334,6 @@ export default function Sidebar() {
             <div className="sidebar-section">
                 <div className="section-header" onClick={() => setOpenSection(openSection === 'main' ? null : 'main')}>
                     <span className={`section-icon ${openSection === 'main' ? 'active' : ''}`}>
-                        {/* иконка */}
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 26 26"><g fill="currentColor" fillRule="evenodd" clipRule="evenodd"><path d="M13.5 26C20.404 26 26 20.404 26 13.5S20.404 1 13.5 1S1 6.596 1 13.5S6.596 26 13.5 26m0-2C19.299 24 24 19.299 24 13.5S19.299 3 13.5 3S3 7.701 3 13.5S7.701 24 13.5 24" opacity="0.2" /><path d="M7.5 6a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v14a.5.5 0 0 1-.855.352L13 15.676l-4.645 4.676A.5.5 0 0 1 7.5 20zm1 .5v12.287l4.145-4.172a.5.5 0 0 1 .71 0l4.145 4.172V6.5z" /></g></svg>
                     </span>
                     <span className="section-title">Основные страницы</span>
@@ -364,11 +363,9 @@ export default function Sidebar() {
                 )}
             </div>
 
-            {/* Приём */}
             <div className="sidebar-section">
                 <div className="section-header" onClick={() => setOpenSection(openSection === 'priem' ? null : 'priem')}>
                     <span className={`section-icon ${openSection === 'priem' ? 'active' : ''}`}>
-                        {/* иконка */}
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"><path d="M16.002 13.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 0 0-3 0" /><path d="M2.002 11c0-3.771 0-5.657 1.172-6.828S6.23 3 10.002 3h4c.93 0 1.395 0 1.776.102A3 3 0 0 1 17.9 5.224c.102.381.102.846.102 1.776m-8 0h6c2.828 0 4.243 0 5.121.879c.879.878.879 2.293.879 5.121v2c0 2.828 0 4.243-.879 5.121c-.878.879-2.293.879-5.121.879h-3.501M10 17H6m0 0H2m4 0v4m0-4v-4" /></g></svg>
                     </span>
                     <span className="section-title">Приём</span>

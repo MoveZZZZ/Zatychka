@@ -186,7 +186,7 @@ export default function Requisites() {
                                         {o.requisites.map(r => (
                                             <div key={r.id} className="chip">
                                                 <span className="chip-type">{humanType(r.type)}</span>
-                                                <span className="chip-value">{r.type === 'phone' ? `+${r.value}` : r.value}</span>
+                                                <span className="chip-value">{r.type === 'phone' ? "+"+r.value : r.value}</span>
                                                 <div className="chip-actions">
                                                     <button
                                                         className="chip-btn"

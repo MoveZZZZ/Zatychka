@@ -100,52 +100,6 @@
     cursor: pointer;
     color: white;
     font-size: 14px;
-}
-
-    .dropdown-item:hover {
-        background: #3a3a3a;
-    }
-
-.transactions-table .table-header,
-.transactions-table .table-row {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    align-items: center;
-}
-
-    /* ¬ј∆Ќќ: стилизуем именно €чейки-заголовки */
-    .transactions-table .table-header > * {
-        display: block; /* чтобы работал ellipsis */
-        padding: 10px 16px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* и такие же правила дл€ строк */
-    .transactions-table .table-row > * {
-        display: block;
-        padding: 14px 16px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-/* сам контейнер без внутреннего отступа */
-.transactions-table .table-header {
-    background: #1d1d1d;
-    border-bottom: 1px solid #444;
-    color: #ccc;
-    font-weight: 200;
-    font-size: 14px;
-    padding: 0; /* <= чтобы не мешал */
-}
-
-.dropdown-item {
-    padding: 10px 16px;
-    cursor: pointer;
-    color: white;
-    font-size: 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -161,3 +115,86 @@
     font-size: 16px;
     margin-left: 8px;
 }
+
+.transactions-table {
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .transactions-table .table-header,
+    .transactions-table .table-row {
+        display: grid;
+        align-items: center;
+    }
+
+    .transactions-table .table-header {
+        background: #1d1d1d;
+        border-bottom: 1px solid #444;
+        color: #ccc;
+        font-weight: 200;
+        font-size: 14px;
+        padding: 0;
+    }
+
+        .transactions-table .table-header > *,
+        .transactions-table .table-row > * {
+            display: block;
+            padding: 14px 16px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            border-right: 1px solid #444;
+        }
+
+            .transactions-table .table-header > *:last-child,
+            .transactions-table .table-row > *:last-child {
+                border-right: none;
+            }
+
+    .transactions-table .table-row.even {
+        background: #252525;
+    }
+
+    .transactions-table .table-row.odd {
+        background: #2b2b2b;
+    }
+
+    .transactions-table .table-row:hover {
+        background: #333;
+    }
+
+    .transactions-table .with-actions {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .transactions-table:not(.with-actions) .table-header,
+    .transactions-table:not(.with-actions) .table-row {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+    .pagination button {
+        background: #2b2b2b;
+        border: none;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    .pagination span {
+        color: #ccc;
+    }

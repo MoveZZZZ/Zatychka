@@ -12,6 +12,8 @@ import {
     lookupDevices,
 } from '../api/payin';
 import Spinner from '../components/Spinner';
+import GenerateByLinksModal from './TransactionsGenerateModal';
+import TransactionsBackfillModal from './TransactionsBackfillModal';
 const STATUS_OPTIONS = ['Создана', 'В процессе', 'Выполнена', 'Заморожена'];
 
 export default function Transactions() {
@@ -28,6 +30,9 @@ export default function Transactions() {
 
     // данные
     const [items, setItems] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 25;
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState('');
 
@@ -49,6 +54,9 @@ export default function Transactions() {
     const [dealAmount, setDealAmount] = useState('');
     const [incomeAmount, setIncomeAmount] = useState('');
 
+
+    const [backfillOpen, setBackfillOpen] = useState(false);
+
     // статусы в выпадашке
     const filteredStatuses = useMemo(
         () => STATUS_OPTIONS.filter(s => s.toLowerCase().includes(statusSearch.toLowerCase())),
@@ -62,12 +70,28 @@ export default function Transactions() {
     };
 
     async function reload() {
-        const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
-            ? Number(transactionSearch.trim())
-            : undefined;
-        const status = selectedStatuses.length === 1 ? selectedStatuses[0] : undefined;
-        const list = await fetchPayinTransactions({ status, id });
-        setItems(list);
+        try {
+            setLoading(true);
+            setErr('');
+            const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
+                ? Number(transactionSearch.trim())
+                : undefined;
+            const params = {
+                id,
+                page: currentPage,
+                pageSize
+            };
+            if (selectedStatuses.length > 0) {
+                params.status = selectedStatuses;
+            }
+            const response = await fetchPayinTransactions(params);
+            setItems(response?.items || []);
+            setTotal(response?.total || 0);
+        } catch (e) {
+            setErr(e?.message || 'Не удалось загрузить транзакции');
+        } finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -79,9 +103,19 @@ export default function Transactions() {
                 const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
                     ? Number(transactionSearch.trim())
                     : undefined;
-                const status = selectedStatuses.length === 1 ? selectedStatuses[0] : undefined;
-                const list = await fetchPayinTransactions({ status, id });
-                if (!cancelled) setItems(list);
+                const params = {
+                    id,
+                    page: currentPage,
+                    pageSize
+                };
+                if (selectedStatuses.length > 0) {
+                    params.status = selectedStatuses;
+                }
+                const response = await fetchPayinTransactions(params);
+                if (!cancelled) {
+                    setItems(response?.items || []);
+                    setTotal(response?.total || 0);
+                }
             } catch (e) {
                 if (!cancelled) setErr(e?.message || 'Не удалось загрузить транзакции');
             } finally {
@@ -89,7 +123,7 @@ export default function Transactions() {
             }
         })();
         return () => { cancelled = true; };
-    }, [selectedStatuses, transactionSearch]);
+    }, [selectedStatuses, transactionSearch, currentPage]);
 
     // lookup (по ЛОГИНУ)
     async function searchRequisites() {
@@ -152,6 +186,15 @@ export default function Transactions() {
             setErr(e?.message || 'Не удалось удалить транзакцию');
         }
     }
+    const [generateOpen, setGenerateOpen] = useState(false);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
 
     return (
         <div className="transactions-container">
@@ -195,11 +238,18 @@ export default function Transactions() {
                         </div>
                     )}
                 </div>
-
                 {canEdit && (
-                    <button className="add-btn" onClick={() => setAdding(v => !v)}>
-                        {adding ? 'Скрыть форму' : 'Добавить транзакцию'}
-                    </button>
+                    <div className="actions-row">
+                        <button className="add-btn" onClick={() => setAdding(v => !v)}>
+                            {adding ? 'Скрыть форму' : 'Добавить транзакцию'}
+                        </button>
+                        <button className="add-btn secondary" onClick={() => setGenerateOpen(true)}>
+                            Сгенерировать по связкам
+                        </button>
+                        <button className="add-btn secondary" onClick={() => setBackfillOpen(true)}>
+                            Сгенерировать за месяц
+                        </button>
+                    </div>
                 )}
             </div>
 
@@ -268,14 +318,14 @@ export default function Transactions() {
             )}
 
             <div className="transactions-table">
-                <div className="table-header">
+                <div className={`table-header ${canEdit ? 'with-actions' : ''}`}>
                     <span>ID и дата</span>
                     <span>Статус</span>
                     <span>Реквизиты</span>
                     <span>Устройство</span>
                     <span>Сумма сделки</span>
                     <span>Сумма поступления</span>
-                    {canEdit && <span />}
+                    {canEdit && <span>Действия</span>}
                 </div>
 
                 {loading ? (
@@ -283,8 +333,8 @@ export default function Transactions() {
                 ) : items.length === 0 ? (
                     <div className="no-transactions"><div className="text">Транзакций пока нет</div></div>
                 ) : (
-                    items.map(tx => (
-                        <div key={tx.id} className="table-row">
+                    items.map((tx, index) => (
+                        <div key={tx.id} className={`table-row ${index % 2 === 0 ? 'even' : 'odd'} ${canEdit ? 'with-actions' : ''}`}>
                             <span>{tx.id}<br /><small>{new Date(tx.date).toLocaleDateString('ru-RU')}</small></span>
                             <span>{tx.status}</span>
                             <span>{tx.requisiteDisplay ?? (tx.requisiteId ? `ID ${tx.requisiteId}` : '—')}</span>
@@ -300,6 +350,29 @@ export default function Transactions() {
                     ))
                 )}
             </div>
+
+            {total > 0 && (
+                <div className="pagination">
+                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Предыдущая</button>
+                    <span>Страница {currentPage} из {totalPages}</span>
+                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Следующая</button>
+                </div>
+            )}
+
+            {canEdit && generateOpen && (
+                <GenerateByLinksModal
+                    onClose={() => setGenerateOpen(false)}
+                    onDone={() => { setGenerateOpen(false); reload(); }}
+                />
+            )}
+            {canEdit && (
+                <TransactionsBackfillModal
+                    open={backfillOpen}
+                    onClose={() => setBackfillOpen(false)}
+                    onDone={() => { setBackfillOpen(false); reload(); }}
+                />
+            )}
+
         </div>
     );
 }

@@ -1,0 +1,139 @@
+.tg-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.tg-modal {
+    width: min(900px, 92%);
+    max-height: 86vh;
+    overflow: auto;
+    background: #2a2a2d;
+    color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.tg-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .tg-head h3 {
+        margin: 0;
+    }
+
+.tg-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.tg-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+    .tg-row label {
+        margin-right: 10px;
+        white-space: nowrap;
+    }
+
+.tg-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: #3a3a3d;
+    border: 1px solid #4a4a4d;
+    color: #fff;
+    border-radius: 4px;
+}
+
+    .tg-input.small {
+        width: 100px;
+        flex: none;
+    }
+
+.tg-btn {
+    padding: 8px 16px;
+    background: #4a4a4d;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+    .tg-btn.primary {
+        background: #007bff;
+    }
+
+    .tg-btn.ghost {
+        background: transparent;
+        border: 1px solid #4a4a4d;
+    }
+
+    .tg-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+.tg-err {
+    color: #ff4d4d;
+    margin-bottom: 15px;
+}
+
+.tg-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.tg-empty {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+}
+
+.tg-select-all {
+    margin-bottom: 10px;
+}
+
+.tg-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .tg-table th, .tg-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #4a4a4d;
+    }
+
+    .tg-table th {
+        background: #3a3a3d;
+        font-weight: bold;
+    }
+
+    .tg-table tr.muted {
+        color: #aaa;
+    }
+
+        .tg-table tr.muted td {
+            opacity: 0.7;
+        }
+
+.tg-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

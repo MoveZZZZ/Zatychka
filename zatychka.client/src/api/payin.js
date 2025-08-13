@@ -54,3 +54,21 @@ export async function lookupDevices(login, take = 20) {
     if (!res.ok) throw new Error('Не удалось получить устройства');
     return res.json();
 }
+
+export async function backfillByMonth(body) {
+    // body = {
+    //   year, month, maxTotalCount?,
+    //   pairs: [{ deviceId, requisiteId, minAmountUsdt, maxAmountUsdt, dailyLimit, monthlyLimit }, ...]
+    // }
+    const res = await fetch(`${API}/payin/generate/backfill-month`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || 'Не удалось сгенерировать за месяц');
+    }
+    return res.json(); // { created, byPair: { "dev:req": n } }
+}

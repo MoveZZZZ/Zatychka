@@ -29,15 +29,34 @@ namespace Zatychka.Server.Data
         public DbSet<FrozenBalanceChange> FrozenBalanceChanges => Set<FrozenBalanceChange>();
         public DbSet<PublicDispute> PublicDisputes { get; set; } = null!;
         public DbSet<Zatychka.Server.Models.IntakeDateConfig> IntakeDateConfigs { get; set; }
-        protected override void OnModelCreating(ModelBuilder b)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           b.Entity<IntakeDateConfig>().HasData(new IntakeDateConfig
-            {
-                Id = 1,
-                Mode = IntakeDateMode.Actual,
-                CustomDate = null,
-                UpdatedAt = DateTime.UtcNow
-            });
+            base.OnModelCreating(modelBuilder);
+
+           
+            modelBuilder.Entity<PublicDispute>()
+                .HasOne(d => d.Requisite)
+                .WithMany()
+                .HasForeignKey(d => d.RequisiteId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<PublicDispute>()
+                .HasOne(d => d.Device)
+                .WithMany()
+                .HasForeignKey(d => d.DeviceId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<PayinTransactionPublic>()
+                .HasOne(t => t.Requisite)
+                .WithMany()
+                .HasForeignKey(t => t.RequisiteId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<PayinTransactionPublic>()
+                .HasOne(t => t.Device)
+                .WithMany()
+                .HasForeignKey(t => t.DeviceId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

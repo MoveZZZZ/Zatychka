@@ -33,9 +33,9 @@ namespace Zatychka.Server.Controllers
             }
         }
 
-        // Список с фильтрами
+
         [HttpGet]
-        [Authorize] // смотреть могут все авторизованные
+        [Authorize]
         public async Task<IActionResult> List([FromQuery] int? id, [FromQuery] string? status,
                                               [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
         {
@@ -47,6 +47,8 @@ namespace Zatychka.Server.Controllers
 
             if (id.HasValue) q = q.Where(x => x.Id == id.Value);
             if (!string.IsNullOrWhiteSpace(status)) q = q.Where(x => x.Status == status);
+
+            var total = await q.CountAsync();
 
             var data = await q
                 .OrderByDescending(x => x.Date)
@@ -67,10 +69,10 @@ namespace Zatychka.Server.Controllers
                 deviceName = x.Device?.Name
             });
 
-            return Ok(items);
+            return Ok(new { items, total });
         }
 
-        // Создание — только админ
+
         [HttpPost]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create([FromBody] PayinTransactionUpsertDto dto)
@@ -103,7 +105,6 @@ namespace Zatychka.Server.Controllers
             });
         }
 
-        // Удаление — только админ
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)

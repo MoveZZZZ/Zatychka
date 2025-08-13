@@ -216,5 +216,44 @@ namespace Zatychka.Server.Controllers
             await _repo.DeleteAsync(link);
             return Ok(new { message = "Удалено" });
         }
+
+        [HttpGet("search")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Search([FromQuery] string? login = null, [FromQuery] bool? activeOnly = null, [FromQuery] int take = 200)
+        {
+            var q = _db.Links
+                .Include(l => l.User)
+                .Include(l => l.Device)
+                .Include(l => l.Requisite).ThenInclude(r => r.Owner).ThenInclude(o => o.User)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(login))
+                q = q.Where(l => l.User.Login.Contains(login));
+
+            if (activeOnly == true)
+                q = q.Where(l => l.IsActive);
+
+            var list = await q
+                .OrderByDescending(l => l.IsActive).ThenBy(l => l.Id)
+                .Take(take)
+                .Select(l => new LinkListItemDtoTRANS
+                {
+                    Id = l.Id,
+                    UserLogin = l.User.Login,
+                    DeviceName = l.Device.Name,
+                    RequisiteDisplay = MaskRequisite(l.Requisite),
+                    IsActive = l.IsActive,
+                    MinAmountUsdt = l.MinAmountUsdt,
+                    MaxAmountUsdt = l.MaxAmountUsdt,
+                    DailyTxCountLimit = l.DailyTxCountLimit,
+                    MonthlyTxCountLimit = l.MonthlyTxCountLimit,
+                    TotalTxCountLimit = l.TotalTxCountLimit,
+                    MaxConcurrentTransactions = l.MaxConcurrentTransactions,
+                    MinMinutesBetweenTransactions = l.MinMinutesBetweenTransactions
+                })
+                .ToListAsync();
+
+            return Ok(list);
+        }
     }
 }
