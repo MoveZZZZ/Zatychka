@@ -1,12 +1,13 @@
 ﻿import React, { useEffect, useState } from 'react';
 import './BalancePage.css';
-import qrImage from '../assets/qr.png';
+import { WALLETS, getRandomWallet } from '../constants/wallets';
+
 
 import BinLogo from '../assets/b.png';
 import BBLogo from '../assets/bb.png';
 import OKXLogo from '../assets/okx.png';
 import HTXLogo from '../assets/htx.png';
-
+import WithdrawModal from "./WithdrawModal"
 
 import useUserInfo from '../hooks/useUserInfo';
 import { isAdminRole } from '../utils/roles';
@@ -17,7 +18,8 @@ import { useEditMode } from '../context/EditModeContext';
 import { useDataScope } from '../context/DataScopeContext';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { fetchBalanceHistory, createBalanceHistory, deleteBalanceHistory } from '../api/balanceHistory';
-
+import { useToast } from '../context/ToastContext';
+import qr1 from '../assets/qr.png';
 /* === словари и порядок типов для чипсов и селектов === */
 const TYPE_LABELS = {
     Deposit: 'Пополнение',
@@ -29,6 +31,7 @@ const TYPE_LABELS = {
 };
 const TYPE_ORDER = ['Deposit', 'Withdrawal', 'Transaction', 'TraderReward', 'MerchantEarning', 'Dispute'];
 const TYPE_OPTIONS = TYPE_ORDER.map(v => ({ value: v, label: TYPE_LABELS[v] }));
+
 
 function Card({ title, value, editable, editing, onClick, onChange, onCommit, saving }) {
     return (
@@ -58,6 +61,11 @@ function Card({ title, value, editable, editing, onClick, onChange, onCommit, sa
 }
 
 export default function BalancePage() {
+
+
+    
+
+
     const me = useUserInfo();
     const isAdmin = isAdminRole(me?.role);
     const { editMode } = useEditMode();
@@ -201,6 +209,67 @@ export default function BalancePage() {
     const [fAmount, setFAmount] = useState('');
     const [fUserId, setFUserId] = useState(''); // для private
 
+
+    const toast = useToast();
+    const TELEGRAM_MANAGER_URL = 'https://t.me/your_manager'; 
+
+    const [withdrawAddress, setWithdrawAddress] = useState('');
+    const [withdrawAmount, setWithdrawAmount] = useState('');
+    const [withdrawLoading, setWithdrawLoading] = useState(false);
+    const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+
+    async function handleWithdrawClick() {
+        if (!withdrawAddress.trim()) {
+            toast.error('Введите кошелек');
+            return;
+        }
+        else if (!String(withdrawAmount).trim()) {
+            toast.error('Введите корректную сумму');
+            return;
+        }
+        else if (withdrawAmount > data.mainUsdt) {
+            toast.error('Сумма вывода больше балланса');
+            return;
+        }
+        try {
+            setWithdrawLoading(true);
+            // спинер 1.8с
+            await new Promise(r => setTimeout(r, 1800));
+            setShowWithdrawModal(true);
+        } finally {
+            setWithdrawLoading(false);
+            setWithdrawAddress("");
+            setWithdrawAmount(0);
+        }
+    }
+
+    const [checkLoading, setCheckLoading] = useState(false);
+    async function handleCheckDeposits() {
+        try {
+            setCheckLoading(true);
+            await new Promise(r => setTimeout(r, 1800));
+            toast.error('Новых поступлений нет');
+        } finally {
+            setCheckLoading(false);
+        }
+    }
+
+
+    const [copied, setCopied] = useState(false);
+    async function handleCopyAddress() {
+             try {
+                    if (!selectedWallet?.address) {
+                             toast.error('Адрес кошелька ещё не загружен.');
+                             return;
+                         }
+                    await navigator.clipboard.writeText(selectedWallet.address);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1600);
+        } catch (e) {
+            toast.error('Не удалось скопировать адрес.');
+        }
+    }
+
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -286,6 +355,21 @@ export default function BalancePage() {
         }
     }
 
+    const [selectedWallet, setSelectedWallet] = useState(null);
+    const [showWalletLoading, setShowWalletLoading] = useState(false);
+    async function handleShowWallet() {
+        try {
+            setShowWalletLoading(true);
+            // 1.7s спинер
+            await new Promise(r => setTimeout(r, 1700));
+            const w = getRandomWallet(WALLETS);
+            setSelectedWallet(w);
+            setShowWallet(true);
+        } finally {
+            setShowWalletLoading(false);
+        }
+    }
+
     return (
         <div className="balance-page">
             <Breadcrumbs />
@@ -360,11 +444,33 @@ export default function BalancePage() {
                     <div className="withdraw">
                         <h3 className="balance-title">Вывод USDT</h3>
                         <p>Сеть для вывода: <span className="badge">TRC20</span></p>
-                        <input className="input-koshelok" type="text" placeholder="Адрес кошелька" />
+
+                        <input
+                            className="input-koshelok"
+                            type="text"
+                            placeholder="Адрес кошелька"
+                            value={withdrawAddress}
+                            onChange={(e) => setWithdrawAddress(e.target.value)}
+                        />
+
                         <p className="warning">Будьте внимательны при вводе адреса, отменить операцию невозможно</p>
+
                         <div className="input-row">
-                            <input type="number" placeholder="0" min="0" className="amount-input" />
-                            <button className="all-btn">Всё</button>
+                            <input
+                                type="number"
+                                placeholder="0"
+                                min="0"
+                                className="amount-input"
+                                value={withdrawAmount}
+                                onChange={(e) => setWithdrawAmount(e.target.value)}
+                            />
+                            <button
+                                className="all-btn"
+                                type="button"
+                                onClick={() => setWithdrawAmount(String(data.mainUsdt ?? 0))}
+                            >
+                                Всё
+                            </button>
                         </div>
 
                         <div className="info-row">
@@ -375,7 +481,15 @@ export default function BalancePage() {
                             <span className="info-label">Комиссия</span>
                             <span className="info-value">5%</span>
                         </div>
-                        <button className="submit-btn">Вывести</button>
+
+                        <button
+                            className="submit-btn"
+                            type="button"
+                            onClick={handleWithdrawClick}
+                            disabled={withdrawLoading}
+                        >
+                            {withdrawLoading ? <span className="btn-spinner" aria-label="Загрузка" /> : 'Вывести'}
+                        </button>
                     </div>
                 </div>
 
@@ -405,34 +519,56 @@ export default function BalancePage() {
                             <div className={`wallet-blur-wrap ${!showWallet ? 'blurred' : ''}`}>
                                 <div className="wallet-info">
                                     <div className="wallet-body">
-                                        <img src={qrImage} alt="QR-код" className="qr-code" />
+                                         {selectedWallet ? (
+                                               <img src={selectedWallet.qr} alt="QR-код" className="qr-code" />
+                                             ) : (
+                                                <img
+                                                    src={qr1}
+                                                    alt="QR-код (по умолчанию)"
+                                                    className="qr-code"
+                                                />
+                                             )}
 
                                         <div className="wallet-content">
                                             <div className="wallet-label-row">
                                                 <span className="wallet-label">Адрес кошелька</span>
-                                                <span className="badge">TRC20</span>
+                                                {selectedWallet ? (
+                                                    <span className="badge">{selectedWallet.network}</span>
+                                                ) : (
+                                                        <span className="badge">TRC20</span>
+                                                )}
+                                               
                                             </div>
-
-                                            <div className="wallet-address-box">
-                                                <svg
-                                                    onClick={() => navigator.clipboard.writeText('THtizmopwxsNdBGNTxGAT1fnaPxGNNLnGw')}
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    color="#c89629"
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-                                                        <path d="M7 9.667A2.667 2.667 0 0 1 9.667 7h8.666A2.667 2.667 0 0 1 21 9.667v8.666A2.667 2.667 0 0 1 18.333 21H9.667A2.667 2.667 0 0 1 7 18.333z" />
-                                                        <path d="M4.012 16.737A2 2 0 0 1 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1" />
-                                                    </g>
-                                                </svg>
-                                                <span className="info-value">THtizmopwxsNdBGNTxGAT1fnaPxGNNLnGw</span>
+                                             <div className="wallet-address-box">
+                                                     <div className="copy-wrap">
+                                                             <svg onClick={handleCopyAddress}
+                                                                 className="copy-btn"
+                                                                 xmlns="http://www.w3.org/2000/svg"
+                                                                 width="24"
+                                                                 height="24"
+                                                                 viewBox="0 0 24 24"
+                                                                style={{ cursor: 'pointer' }}>
+                                                                 <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                                                                         <path d="M7 9.667A2.667 2.667 0 0 1 9.667 7h8.666A2.667 2.667 0 0 1 21 9.667v8.666A2.667 2.667 0 0 1 18.333 21H9.667A2.667 2.667 0 0 1 7 18.333z" />
+                                                                         <path d="M4.012 16.737A2 2 0 0 1 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1" />
+                                                                     </g>
+                                                             </svg>
+                                                         {copied && <div className="copied-popover">Адрес скопирован</div>}
+                                                     </div>
+                                            
+                                                 <span className="info-value">
+                                                       {selectedWallet?.address || '••••••••••••••••••••••••••'}
+                                                     </span>
                                             </div>
-
                                             <div className="wallet-bottom">
-                                                <button className="check-deposit-btn">Проверить зачисления</button>
+                                                <button
+                                                    className="check-deposit-btn"
+                                                    type="button"
+                                                    onClick={handleCheckDeposits}
+                                                    disabled={checkLoading}
+                                                >
+                                                    {checkLoading ? <span className="btn-spinner btn-spinner-sm" aria-label="Загрузка" /> : 'Проверить зачисления'}
+                                                </button>
                                                 <p className="wallet-note"><span>⚠</span> Кошелёк может обновляться</p>
                                             </div>
                                         </div>
@@ -440,10 +576,14 @@ export default function BalancePage() {
                                 </div>
                             </div>
 
-                            {!showWallet && (
-                                <button className="overlay-btn" onClick={() => setShowWallet(true)}>
-                                    Показать кошелёк для пополнения
-                                </button>
+                             {!showWallet && (
+                                   <button
+                                    className="overlay-btn"
+                                 onClick={handleShowWallet}
+                                 disabled={showWalletLoading}
+                                 type="button">
+                                 {showWalletLoading ? <span className="btn-spinner" aria-label="Загрузка" /> : 'Показать кошелёк для пополнения'}
+                               </button>
                             )}
                         </div>
                     </div>
@@ -643,6 +783,12 @@ export default function BalancePage() {
                     </table>
                 )}
             </div>
+            <WithdrawModal
+                open={showWithdrawModal}
+                onClose={() => setShowWithdrawModal(false)}
+                managerUrl={TELEGRAM_MANAGER_URL}
+            />
         </div>
+
     );
 }

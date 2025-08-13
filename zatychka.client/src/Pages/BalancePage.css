@@ -209,6 +209,7 @@
 .info-value {
     color: #fff;
     font-weight: 600;
+    font-size: 17px;
 }
 .address-mask {
     margin-top: 10px;
@@ -417,7 +418,7 @@ th, td {
     align-self: self-end;
 }
 
-/* Кнопка "Показать кошелёк" */
+
 .overlay-btn {
     position: absolute;
     top: 50%;
@@ -433,7 +434,12 @@ th, td {
     z-index: 10;
     box-shadow: 0 0 20px rgba(255, 185, 0, 0.5);
 }
-/* === Segmented control (История / Замороженный) === */
+.overlay-btn:hover{
+        background-color: #daa520; 
+        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5); 
+    
+}
+
 .history-head {
     display: flex;
     justify-content: space-between;
@@ -540,7 +546,148 @@ th, td {
         transform: translateY(1px);
     }
 
-/* === таблица/пустые состояния не трогаем, останутся как были === */
+.btn-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0, 0, 0, 0.35);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: withdraw-spin .8s linear infinite;
+    vertical-align: middle;
+}
 
+.btn-spinner-sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
 
+@keyframes withdraw-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
+/* Заблокированная кнопка проверки */
+.check-deposit-btn:disabled {
+    opacity: .9;
+    cursor: default;
+}
+
+/* ==== Копирование адреса ==== */
+.copy-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.copy-btn {
+    color: #c89629; /* базовый цвет под ваш стиль */
+    transition: color .15s ease, transform .04s ease;
+}
+
+    .copy-btn:hover {
+        color: #3b82f6; /* синяя подсветка при наведении */
+    }
+
+    .copy-btn:active {
+        transform: translateY(1px);
+    }
+
+/* Всплывашка "Адрес скопирован" */
+.copied-popover {
+    position: absolute;
+    top: 28px; /* ниже иконки */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0b0f17;
+    border: 1px solid #2b2f36;
+    color: #cfd6df;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    z-index: 5;
+}
+
+    .copied-popover::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: #2b2f36;
+    }
+
+    .copied-popover::after {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-bottom-color: #0b0f17;
+    }
+.qr-placeholder {
+    background: #2a2a2a;
+    border: 1px dashed #3a3f47;
+}
+
+/* Кнопка-оверлей (disable во время спинера) */
+.overlay-btn:disabled {
+    opacity: .9;
+    cursor: default;
+}
+
+/* Синяя подсветка иконки копирования (если ещё не добавлял) */
+.copy-btn {
+    color: #c89629;
+    transition: color .15s ease, transform .04s ease;
+}
+
+    .copy-btn:hover {
+        color: #3b82f6;
+    }
+
+    .copy-btn:active {
+        transform: translateY(1px);
+    }
+
+/* Попап "Адрес скопирован" (если ещё не добавлял) */
+.copied-popover {
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0b0f17;
+    border: 1px solid #2b2f36;
+    color: #cfd6df;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    z-index: 5;
+}
+
+    .copied-popover::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: #2b2f36;
+    }
+
+    .copied-popover::after {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-bottom-color: #0b0f17;
+    }

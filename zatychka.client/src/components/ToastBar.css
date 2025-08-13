@@ -6,7 +6,7 @@
     z-index: 10000;
     min-width: 320px;
     max-width: 520px;
-    padding: 14px 44px 14px 16px;
+    padding: 14px 40px 14px 16px;
     border-radius: 14px;
     background: #3f3f3f;
     color: #fff;
@@ -62,7 +62,7 @@
 /* Прогресс с отступами от краёв */
 .toastbar-progress-outer {
     height: 6px;
-    margin: 10px 12px 0px; /* ← отступы слева/справа/снизу */
+    margin: 5px 5px 0px; /* ← отступы слева/справа/снизу */
     border-radius: 999px;
     background: rgba(255,255,255,.08); /* лёгкий трек (можно убрать) */
     overflow: hidden;
