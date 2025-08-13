@@ -64,11 +64,9 @@ namespace Zatychka.Server.Services
 
         string RandomStatus()
         {
-            // 0.5% Заморожена, 1% Создана, 5% В процессе, остальное Выполнена
             var x = _rnd.NextDouble(); // [0,1)
             if (x < 0.005) return "Заморожена";
             if (x < 0.015) return "Создана";
-            if (x < 0.065) return "В процессе";
             return "Выполнена";
         }
 
@@ -204,7 +202,7 @@ namespace Zatychka.Server.Services
 
                 // суммы и статус
                 var deal = RandomMoney(link.MinAmountUsdt, link.MaxAmountUsdt);
-                var income = RandomMoney(link.MinAmountUsdt, Math.Min(link.MaxAmountUsdt, deal));
+                var income = Math.Round(deal * 0.935m, 2, MidpointRounding.AwayFromZero);
                 var status = RandomStatus();
 
                 toInsert.Add(new PayinTransactionPublic
@@ -366,7 +364,7 @@ namespace Zatychka.Server.Services
 
                 // суммы и статус
                 var deal = RandomMoney(cfg.MinAmountUsdt, cfg.MaxAmountUsdt);
-                var income = RandomMoney(cfg.MinAmountUsdt, Math.Min(cfg.MaxAmountUsdt, deal));
+                var income = Math.Round(deal * 0.935m, 2, MidpointRounding.AwayFromZero);
                 var status = RandomStatus();
 
                 toInsert.Add(new PayinTransactionPublic

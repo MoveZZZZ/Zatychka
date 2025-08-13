@@ -11,7 +11,7 @@ function qs(obj = {}) {
     return s ? `?${s}` : '';
 }
 
-// statuses: массив ['InProgress','Frozen', ...]; transactionId (опц.)
+
 export async function fetchDisputes({ statuses, transactionId } = {}) {
     const url = `${API}/disputes/public${qs({ statuses, transactionId })}`;
     const res = await fetch(url, { credentials: 'include' });

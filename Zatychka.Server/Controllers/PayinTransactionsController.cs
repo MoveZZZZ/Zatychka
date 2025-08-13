@@ -77,7 +77,7 @@ namespace Zatychka.Server.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create([FromBody] PayinTransactionUpsertDto dto)
         {
-            var allowed = new[] { "Создана", "В процессе", "Выполнена", "Заморожена" };
+            var allowed = new[] { "Создана", "Выполнена", "Заморожена" };
             if (!allowed.Contains(dto.Status)) return BadRequest("Недопустимый статус");
 
             var e = new PayinTransactionPublic

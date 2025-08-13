@@ -13,7 +13,7 @@ namespace Zatychka.Server.Models
         public DateTime Date { get; set; }
 
         [Required, MaxLength(64)]
-        public string Status { get; set; } = null!; // "Создана", "В процессе", "Выполнена", "Заморожена"
+        public string Status { get; set; } = null!; 
 
         public int? RequisiteId { get; set; }
         public OwnerRequisite? Requisite { get; set; }

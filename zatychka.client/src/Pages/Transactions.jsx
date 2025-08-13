@@ -14,7 +14,7 @@ import {
 import Spinner from '../components/Spinner';
 import GenerateByLinksModal from './TransactionsGenerateModal';
 import TransactionsBackfillModal from './TransactionsBackfillModal';
-const STATUS_OPTIONS = ['Создана', 'В процессе', 'Выполнена', 'Заморожена'];
+const STATUS_OPTIONS = ['Создана', 'Выполнена', 'Заморожена'];
 
 export default function Transactions() {
     const me = useUserInfo();
