@@ -192,7 +192,6 @@ export default function Disputes() {
                 </div>
             )}
 
-            {err && <div className="error">{err}</div>}
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
             {/* Форма добавления */}

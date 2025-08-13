@@ -149,8 +149,8 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
 
         try {
             setSubmitting(true);
-            const saved = await onSave?.(payload); // ← ждём родителя
-            if (saved) onClose?.();                // ← закрываемся после обновления родителя
+            const saved = await onSave?.(payload); 
+            if (saved) onClose?.();                
         } catch (e) {
             setErr(e?.message || 'Не удалось сохранить изменения');
         } finally {
@@ -266,7 +266,6 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
                             />
                         </div>
 
-                        {err && <div className="error-text" style={{ marginTop: 8 }}>{err}</div>}
 
                             <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
                                 {submitting ? 'Сохраняем…' : 'Сохранить'}

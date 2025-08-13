@@ -266,7 +266,6 @@ export default function StatisticsPage() {
                 )}
             </div>
 
-            {err && <div className="error">{err}</div>}
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
             {/* Приём */}

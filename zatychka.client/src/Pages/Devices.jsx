@@ -44,7 +44,6 @@ export default function Devices() {
                 </button>
             </div>
 
-            {error && <div className="devices-error">{error}</div>}
 
             <div className="devices-table">
                 <div className="devices-row devices-header-row">

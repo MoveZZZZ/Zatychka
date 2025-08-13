@@ -250,7 +250,6 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                             />
                         </div>
 
-                        {err && <div className="error-text" style={{ marginTop: 8 }}>{err}</div>}
 
                         <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
                             {submitting ? 'Добавляем…' : 'Добавить'}

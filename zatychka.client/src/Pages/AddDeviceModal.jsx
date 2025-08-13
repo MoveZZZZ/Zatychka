@@ -46,7 +46,6 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
                     disabled={loading}
                 />
 
-                {err && <div className="modal-error">{err}</div>}
 
                 <button className="modal-add-btn" onClick={handleAdd} disabled={loading}>
                     {loading ? 'Добавляем…' : 'Добавить'}

@@ -102,7 +102,6 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         onChange={setSelectedBankName}
                     />
 
-                    {err && <div className="form-error">{err}</div>}
 
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? 'Добавляем…' : 'Добавить'}

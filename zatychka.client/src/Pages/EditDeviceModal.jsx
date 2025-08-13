@@ -64,7 +64,6 @@ const EditDeviceModal = ({ device, onClose, onUpdate, onDelete }) => {
                     disabled={loading}
                 />
 
-                {err && <div className="modal-error">{err}</div>}
 
                 <button className="modal-action" onClick={handleUpdate} disabled={loading}>
                     {loading ? 'Сохраняем…' : 'Изменить устройство'}

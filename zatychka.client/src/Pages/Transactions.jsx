@@ -316,39 +316,61 @@ export default function Transactions() {
                     </div>
                 </div>
             )}
+            <div className="disputes-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID и дата</th>
+                            <th>Статус</th>
+                            <th>Реквизиты</th>
+                            <th>Устройство</th>
+                            <th>Сумма сделки</th>
+                            <th>Сумма поступления</th>
+                            {canEdit && <th></th>}
+                        </tr>
+                    </thead>
 
-            <div className="transactions-table">
-                <div className={`table-header ${canEdit ? 'with-actions' : ''}`}>
-                    <span>ID и дата</span>
-                    <span>Статус</span>
-                    <span>Реквизиты</span>
-                    <span>Устройство</span>
-                    <span>Сумма сделки</span>
-                    <span>Сумма поступления</span>
-                    {canEdit && <span>Действия</span>}
-                </div>
-
-                {loading ? (
-                    <div className="no-transactions"><Spinner center label="Загрузка…" size={30} /></div>
-                ) : items.length === 0 ? (
-                    <div className="no-transactions"><div className="text">Транзакций пока нет</div></div>
-                ) : (
-                    items.map((tx, index) => (
-                        <div key={tx.id} className={`table-row ${index % 2 === 0 ? 'even' : 'odd'} ${canEdit ? 'with-actions' : ''}`}>
-                            <span>{tx.id}<br /><small>{new Date(tx.date).toLocaleDateString('ru-RU')}</small></span>
-                            <span>{tx.status}</span>
-                            <span>{tx.requisiteDisplay ?? (tx.requisiteId ? `ID ${tx.requisiteId}` : '—')}</span>
-                            <span>{tx.deviceName ?? (tx.deviceId ? `ID ${tx.deviceId}` : '—')}</span>
-                            <span>{tx.dealAmount} USDT</span>
-                            <span>{tx.incomeAmount} USDT</span>
-                            {canEdit && (
-                                <span>
-                                    <button className="danger small" onClick={() => removeTx(tx.id)} title="Удалить">✕</button>
-                                </span>
-                            )}
-                        </div>
-                    ))
-                )}
+                    <tbody>
+                        {loading ? (
+                            <tr>
+                                <td colSpan={canEdit ? 7 : 6} className="no-disputes">
+                                    <Spinner center label="Загрузка…" size={30} />
+                                </td>
+                            </tr>
+                        ) : items.length === 0 ? (
+                            <tr>
+                                <td colSpan={canEdit ? 7 : 6} className="no-disputes">
+                                    <div className="empty-message-table">Транзакций пока нет</div>
+                                </td>
+                            </tr>
+                        ) : (
+                            items.map((tx) => (
+                                <tr key={tx.id}>
+                                    <td>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                            <span>{tx.id}</span>
+                                            <small style={{ opacity: .7 }}>
+                                                {tx.date ? new Date(tx.date).toLocaleDateString('ru-RU') : '—'}
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>{tx.status ?? '—'}</td>
+                                    <td>{tx.requisiteDisplay ?? (tx.requisiteId ? `ID ${tx.requisiteId}` : '—')}</td>
+                                    <td>{tx.deviceName ?? (tx.deviceId ? `ID ${tx.deviceId}` : '—')}</td>
+                                    <td>{tx.dealAmount != null ? Number(tx.dealAmount).toFixed(2) : '0.00'} USDT</td>
+                                    <td>{tx.incomeAmount != null ? Number(tx.incomeAmount).toFixed(2) : '0.00'} USDT</td>
+                                    {canEdit && (
+                                        <td>
+                                            <button className="delete-btn" onClick={() => removeTx(tx.id)}>
+                                                Удалить
+                                            </button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
 
             {total > 0 && (

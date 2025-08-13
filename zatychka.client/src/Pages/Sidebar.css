@@ -251,7 +251,7 @@
 
 .menu-list {
     list-style: none;
-    padding-left: 30px;
+    padding-left: 33px;
     display: flex;
     flex-direction: column;
     gap: 5px;

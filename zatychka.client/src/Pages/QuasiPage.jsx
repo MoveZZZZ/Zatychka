@@ -6,7 +6,7 @@ const tabs = ['Все', 'В работе', 'Свободные'];
 
 const sampleTransactions = [
     {
-        id: 'TX-001',
+        id: '1',
         date: '08.08.2025 13:45',
         status: 'Создана',
         requisites: 'Карта VISA •••• 1234',
@@ -16,7 +16,7 @@ const sampleTransactions = [
         type: 'В работе'
     },
     {
-        id: 'TX-002',
+        id: '2',
         date: '08.08.2025 11:20',
         status: 'Ожидает оплаты',
         requisites: 'BTC Wallet',
@@ -26,7 +26,7 @@ const sampleTransactions = [
         type: 'Все'
     },
     {
-        id: 'TX-003',
+        id: '3',
         date: '07.08.2025 19:05',
         status: 'Ожидает спор админа',
         requisites: 'USDT TRC-20',
@@ -78,17 +78,6 @@ const QuasiPage = () => {
             <Breadcrumbs/>
             <h2 className="page-title">Quasi-приём</h2>
 
-            <div className="tabs">
-                {tabs.map(tab => (
-                    <button
-                        key={tab}
-                        className={`tab-btn ${selectedTab === tab ? 'active' : ''}`}
-                        onClick={() => setSelectedTab(tab)}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
             <div className="transactions-filters">
                 <div className="search-box">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m19.485 20.154l-6.262-6.262q-.75.639-1.725.989t-1.96.35q-2.402 0-4.066-1.663T3.808 9.503T5.47 5.436t4.064-1.667t4.068 1.664T15.268 9.5q0 1.042-.369 2.017t-.97 1.668l6.262 6.261zM9.539 14.23q1.99 0 3.36-1.37t1.37-3.361t-1.37-3.36t-3.36-1.37t-3.361 1.37t-1.37 3.36t1.37 3.36t3.36 1.37" /></svg>
@@ -137,30 +126,54 @@ const QuasiPage = () => {
                 </div>
             </div>
 
-            <div className="transactions-table">
-                <div className="table-header">
-                    <span>ID и дата</span>
-                    <span>Статус</span>
-                    <span>Реквизиты</span>
-                    <span>Запросите</span>
-                    <span>Информация</span>
-                </div>
-                {filteredTransactions.length === 0 ? (
-                    <div className="no-transactions">
-                        <div className="icon">🍽️</div>
-                        <div>Транзакций пока нет</div>
-                    </div>
-                ) : (
-                    filteredTransactions.map(tx => (
-                        <div key={tx.id} className="transaction-row">
-                            <span>{tx.id}<br /><small>{tx.date}</small></span>
-                            <span>{tx.status}</span>
-                            <span>{tx.requisites}</span>
-                            <span>{tx.requester}</span>
-                            <span>{tx.info}<br /><b>{tx.sum}</b></span>
-                        </div>
-                    ))
-                )}
+            <div className="disputes-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID и дата</th>
+                            <th>Статус</th>
+                            <th>Реквизиты</th>
+                            <th>Запросите</th>
+                            <th>Информация</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredTransactions.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} className="no-disputes">
+                                    <div className="empty-message-table">Транзакций пока нет</div>
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredTransactions.map((tx) => (
+                                <tr key={tx.id}>
+                                    <td>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                            <span>{tx.id}</span>
+                                            <small style={{ opacity: 0.7 }}>
+                                                {tx.date
+                                                    ? (() => {
+                                                        const d = new Date(tx.date);
+                                                        return isNaN(d) ? tx.date : d.toLocaleDateString('ru-RU');
+                                                    })()
+                                                    : '—'}
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>{tx.status ?? '—'}</td>
+                                    <td>{tx.requisites ?? '—'}</td>
+                                    <td>{tx.requester ?? '—'}</td>
+                                    <td>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                            <span>{tx.info ?? '—'}</span>
+                                            {tx.sum != null && <b>{tx.sum}</b>}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

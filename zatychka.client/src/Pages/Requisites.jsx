@@ -16,17 +16,16 @@ import {
 } from '../api/owners';
 import Breadcrumbs from '../components/Breadcrumbs';
 
+/* ===== helpers ===== */
 function getBankLogo(bankName) {
     const bank = banks.find(b => b.name === bankName);
     return bank?.logo || null;
 }
-
 function shortFio({ lastName, firstName, middleName }) {
     const i = firstName ? `${firstName[0]}.` : '';
     const o = middleName ? ` ${middleName[0]}.` : '';
     return `${lastName} ${i}${o}`.trim();
 }
-
 function humanType(t) {
     const s = String(t || '').toLowerCase();
     if (s === 'card') return 'Карта';
@@ -35,6 +34,130 @@ function humanType(t) {
     return s;
 }
 
+/* ===== icons ===== */
+function RqTypeIcon({ type }) {
+    const t = String(type || '').toLowerCase();
+    if (t === 'email') {
+        return (
+            <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2m8 6l10-6H2z" />
+            </svg>
+        );
+    }
+    if (t === 'phone') {
+        return (
+            <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M20 15.5c-1.25 0-2.45-.2-3.57-.58a1 1 0 0 0-.97.19l-2.2 1.65a15.05 15.05 0 0 1-6.62-6.62l1.65-2.2a1 1 0 0 0 .19-.97A11.4 11.4 0 0 1 8.5 4H5a1 1 0 0 0-1 1A15 15 0 0 0 19 20a1 1 0 0 0 1-1v-3.5z" />
+            </svg>
+        );
+    }
+    // card / default
+    return (
+        <svg width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M20 18H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2M4 8v2h16V8z" />
+        </svg>
+    );
+}
+
+/* ===== small UI bits ===== */
+function Tag({ children }) {
+    return <span className="rq-tag">{children}</span>;
+}
+
+function ReqChip({ ownerId, req, onCopy, onDelete }) {
+    const [copied, setCopied] = useState(false);
+
+    async function handleCopy() {
+        try {
+            await navigator.clipboard?.writeText(req.value);
+            setCopied(true);
+            onCopy?.();
+            setTimeout(() => setCopied(false), 1200);
+        } catch {
+            // no-op, используйте ваш toast вне при необходимости
+        }
+    }
+
+    return (
+        <div className="rq-chip">
+            <div className="rq-chip-ico">
+                <RqTypeIcon type={req.type} />
+            </div>
+            <div className="rq-chip-main">
+                <span className="rq-chip-label">{humanType(req.type)}</span>
+                <span className="rq-chip-value">
+                    {req.type === 'phone' ? `+${req.value}` : req.value}
+                </span>
+            </div>
+            <div className="rq-chip-actions">
+                <button className="rq-icon-btn" onClick={handleCopy} title="Копировать" type="button">
+                    ⧉
+                </button>
+                <button className="rq-icon-btn danger" onClick={() => onDelete(ownerId, req.id)} title="Удалить" type="button">
+                    ✕
+                </button>
+                {copied && <div className="rq-copied-pop">Скопировано</div>}
+            </div>
+        </div>
+    );
+}
+
+function OwnerCard({
+    owner,
+    onAddReq,
+    onEditOwner,
+    onDeleteReq,
+    onCopyReq,
+}) {
+    const logo = getBankLogo(owner.bankName);
+    return (
+        <div className="rq-card">
+            <div className="rq-topbar" />
+            <div className="rq-card-head">
+                <div className="rq-owner">
+                    {logo ? (
+                        <img src={logo} alt={owner.bankName} className="rq-bank-logo" />
+                    ) : (
+                        <div className="rq-bank-logo placeholder" aria-hidden>₿</div>
+                    )}
+                    <div className="rq-owner-meta">
+                        <div className="rq-owner-title">{shortFio(owner)}</div>
+                        <div className="rq-owner-sub">
+                            <Tag>Банк: {owner.bankName || '—'}</Tag>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="rq-actions">
+                    <button className="rq-btn ghost" onClick={() => onAddReq(owner)} type="button">
+                        + Реквизит
+                    </button>
+                    <button className="rq-btn" onClick={() => onEditOwner(owner)} type="button">
+                        Редактировать
+                    </button>
+                </div>
+            </div>
+
+            {(owner.requisites && owner.requisites.length > 0) ? (
+                <div className="rq-chip-grid">
+                    {owner.requisites.map(r => (
+                        <ReqChip
+                            key={r.id}
+                            ownerId={owner.id}
+                            req={r}
+                            onDelete={onDeleteReq}
+                            onCopy={onCopyReq}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div className="rq-empty">Реквизитов пока нет</div>
+            )}
+        </div>
+    );
+}
+
+/* ===== page ===== */
 export default function Requisites() {
     const [owners, setOwners] = useState([]); // [{id, firstName,lastName,middleName,bankName,requisites:[{id,type,value}]}]
     const [loading, setLoading] = useState(true);
@@ -44,12 +167,11 @@ export default function Requisites() {
     const [editOwner, setEditOwner] = useState(null);
     const [addReqOwner, setAddReqOwner] = useState(null);
 
-
     useEffect(() => {
         let cancelled = false;
         (async () => {
             try {
-                const data = await listOwners(); 
+                const data = await listOwners();
                 if (!cancelled) setOwners(Array.isArray(data) ? data : []);
             } catch (e) {
                 if (!cancelled) setErr('Не удалось загрузить владельцев');
@@ -62,13 +184,11 @@ export default function Requisites() {
 
     async function handleAddRequisite(ownerId, { type, value }) {
         const saved = await apiAddRequisite(ownerId, { type, value });
-
         const created = {
-            id: saved?.id ?? saved?.requisiteId, 
+            id: saved?.id ?? saved?.requisiteId,
             type: saved?.type ?? type,
             value: saved?.value ?? value,
         };
-
         setOwners(prev =>
             prev.map(o => {
                 if (o.id !== ownerId) return o;
@@ -77,7 +197,6 @@ export default function Requisites() {
             })
         );
     }
-
 
     async function handleUpdateRequisite(ownerId, reqId, { type, value }) {
         const updated = await apiUpdateRequisite(ownerId, reqId, { type, value });
@@ -90,12 +209,11 @@ export default function Requisites() {
         }));
     }
 
-
     async function handleDeleteRequisite(ownerId, reqId) {
         await apiDeleteRequisite(ownerId, reqId);
         setOwners(prev => prev.map(o => {
             if (o.id !== ownerId) return o;
-            toast.success("Реквизит удален")
+            toast.success('Реквизит удален');
             return {
                 ...o,
                 requisites: (o.requisites || []).filter(r => r.id !== reqId),
@@ -123,95 +241,39 @@ export default function Requisites() {
         try {
             await apiDeleteOwner(id);
             setOwners(prev => prev.filter(o => o.id !== id));
-            toast.success("Владелец удален")
+            toast.success('Владелец удален');
         } finally {
             setEditOwner(null);
         }
     }
 
     return (
-        <div className="requisites-page">
-            <Breadcrumbs/>
-            <div className="requisites-header">
-                <h2>Реквизиты</h2>
-                <button className="add-owner-button" onClick={() => setShowAddOwner(true)}>
+        <div className="requisites-page rq-page">
+            <Breadcrumbs />
+            <div className="rq-header">
+                <h2 className="rq-title">Реквизиты</h2>
+                <button className="rq-btn primary" onClick={() => setShowAddOwner(true)} type="button">
                     + Добавить владельца
                 </button>
             </div>
 
             {loading && <Spinner center label="Загрузка…" size={30} />}
-            {err && <p className="error">{err}</p>}
 
             {!loading && owners.length === 0 ? (
-                <p className="empty-message-table">Владельцев пока нет</p>
+                <p className="rq-empty-msg">Владельцев пока нет</p>
             ) : (
-                    <div className="requisites-grid">
-                        {owners.map((o) => (
-                            <div key={o.id} className="owner-card">
-                                <div className="owner-header">
-                                    <div className="owner-left">
-                                        {getBankLogo(o.bankName) && (
-                                            <img
-                                                src={getBankLogo(o.bankName)}
-                                                alt={o.bankName}
-                                                className="bank-badge"
-                                            />
-                                        )}
-                                        <div className="owner-meta">
-                                            <div className="owner-title">{shortFio(o)}</div>
-                                            <div className="owner-sub">{o.bankName}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="owner-actions">
-                                        <button
-                                            className="btn-ghost"
-                                            onClick={() => setAddReqOwner(o)}
-                                            title="Добавить реквизит"
-                                        >
-                                            + Реквизит
-                                        </button>
-                                        <button
-                                            className="btn-ghost"
-                                            onClick={() => setEditOwner(o)}
-                                            title="Редактировать владельца"
-                                        >
-                                            Редактировать
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {(o.requisites && o.requisites.length > 0) ? (
-                                    <div className="requisites-chips">
-                                        {o.requisites.map(r => (
-                                            <div key={r.id} className="chip">
-                                                <span className="chip-type">{humanType(r.type)}</span>
-                                                <span className="chip-value">{r.type === 'phone' ? "+"+r.value : r.value}</span>
-                                                <div className="chip-actions">
-                                                    <button
-                                                        className="chip-btn"
-                                                        onClick={() => navigator.clipboard?.writeText(r.value)}
-                                                        title="Копировать"
-                                                    >
-                                                        ⧉
-                                                    </button>
-                                                    <button
-                                                        className="chip-btn danger"
-                                                        onClick={() => handleDeleteRequisite(o.id, r.id)}
-                                                        title="Удалить"
-                                                    >
-                                                        ✕
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="requisites-empty">Реквизитов пока нет</div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                <div className="rq-grid">
+                    {owners.map((o) => (
+                        <OwnerCard
+                            key={o.id}
+                            owner={o}
+                            onAddReq={setAddReqOwner}
+                            onEditOwner={setEditOwner}
+                            onDeleteReq={handleDeleteRequisite}
+                            
+                        />
+                    ))}
+                </div>
             )}
 
             {showAddOwner && (

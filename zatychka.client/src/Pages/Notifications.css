@@ -71,7 +71,7 @@
 }
 
 .dropdown-search {
-    width: 90%;
+    max-width: 90%;
     padding: 8px 10px;
     border-radius: 8px;
     border: none;

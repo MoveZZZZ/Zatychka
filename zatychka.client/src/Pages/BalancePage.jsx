@@ -403,7 +403,6 @@ export default function BalancePage() {
                 )}
             </div>
 
-            {err && <div className="error">{err}</div>}
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
             <div className="balance-cards">

@@ -9,7 +9,6 @@ const Disputes = () => {
         <div className="disputes-page">
             <Breadcrumbs/>
             <h2>Споры</h2>
-
             <div className="disputes-table">
                 <table>
                     <thead>
@@ -25,24 +24,24 @@ const Disputes = () => {
                     </thead>
                     <tbody>
                         {disputes.length === 0 ? (
-                            <tr className="empty-row">
-                                <td colSpan={7}>
-                                    <div className="empty-message-table">Данных пока нет</div>
+                            <tr>
+                                <td colSpan={7} className="no-disputes">
+                                    <div className="empty-message-table">Споров пока нет</div>
                                 </td>
                             </tr>
-                        ) : (
-                            disputes.map((item) => (
-                                <tr key={item.id}>
-                                    <td>{item.transactionId}</td>
-                                    <td>{item.status}</td>
-                                    <td>{item.requisite}</td>
-                                    <td>{item.device}</td>
-                                    <td>{item.amount}</td>
-                                    <td>{item.files}</td>
-                                    <td>{item.timer}</td>
-                                </tr>
-                            ))
-                        )}
+                        ) : disputes.map(item => (
+                            <tr key={item.id}>
+                                <td>{item.transactionId}</td>
+                                <td>{item.status}</td>
+                                <td>{item.requisite}</td>
+                                <td>{item.device}</td>
+                                <td>{item.amount}</td>
+                                <td>{item.files}</td>
+                                <td>{item.timer}</td>
+
+                                )
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

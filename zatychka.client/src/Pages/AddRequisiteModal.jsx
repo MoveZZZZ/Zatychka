@@ -141,7 +141,6 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
                     />
                 )}
 
-                {err && <div className="form-error">{err}</div>}
 
                 <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
                     {submitting ? 'Добавляем…' : 'Добавить'}

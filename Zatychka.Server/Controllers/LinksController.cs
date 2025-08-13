@@ -40,12 +40,30 @@ namespace Zatychka.Server.Controllers
             else if (r.Type == RequisiteType.Phone)
             {
                 var v = r.Value ?? "";
-                // простая маска
-                label = $"Телефон {v}";
+                if (v.Length >= 5)
+                {
+                    var first3 = v[..3]; // Первые 3 символа
+                    var last2 = v[^2..]; // Последние 2 символа
+                    label = $"Телефон +{first3}••{last2}";
+                }
+                else
+                {
+                    label = $"Телефон +{v}";
+                }
             }
             else if (r.Type == RequisiteType.Email)
             {
-                label = $"Email {r.Value}";
+                var val = r.Value;
+                if (val.Length >= 8)
+                {
+                    var first3 = val[..3]; 
+                    var last2 = val[^5..]; 
+                    label = $"Email {first3}••••{last2}";
+                }
+                else
+                {
+                    label = $"Email {val}";
+                }
             }
             return label;
         }
