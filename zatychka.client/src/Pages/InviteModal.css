@@ -111,10 +111,53 @@
     padding-right: 10px;
 }
 
-.copy-icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+.copy-btn-referal {
+    margin-left: 10px;
+    color: #c89629;
+    transition: color .15s ease, transform .04s ease;
 }
+
+    .copy-btn-referal:hover {
+        color: #3b82f6;
+    }
+
+    .copy-btn-referal:active {
+        transform: translateY(1px);
+    }
+
+/* Попап "Адрес скопирован" (если ещё не добавлял) */
+.copied-popover-referal {
+    position: absolute;
+    top: 50px;
+    left: 95%;
+    transform: translateX(-50%);
+    background: #0b0f17;
+    border: 1px solid #2b2f36;
+    color: #cfd6df;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    z-index: 5;
+}
+
+    .copied-popover-referal::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: #2b2f36;
+    }
+
+    .copied-popover-referal::after {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-bottom-color: #0b0f17;
+    }

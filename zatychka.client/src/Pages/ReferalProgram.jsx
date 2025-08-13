@@ -4,14 +4,31 @@ import InviteModal from './InviteModal';
 
 const ReferralProgram = () => {
     const [showInvite, setShowInvite] = useState(false);
-    const referralLink = "https://sharq.pro/auth/register/trader?referrer=...";
+    const [referralLink, setreferralLink] = useState("");
+
+    const [referalLoading, setReferalLoading] = useState(false);
+
+
+    async function handleAddReferralClick() {
+        try {
+            const RNG_Link = Math.floor(Math.random() * (89797897899 - 63397897899 + 1)) + 63397897899;
+            const RNG_Link_string = String(RNG_Link);
+            const ref_link = "https://sharq.space/auth/register/trader?referrer=" + RNG_Link_string;
+            setreferralLink(ref_link);
+            setReferalLoading(true);
+            await new Promise(r => setTimeout(r, 1800));
+            setShowInvite(true);
+        } finally {
+            setReferalLoading(false);
+        }
+    }
 
     return (
         <div className="referral-container">
             <div className="referral-header">
                 <h2 className="page-title">Реферальная система</h2>
-                <button onClick={() => setShowInvite(true)} className="invite-btn">
-                    + Пригласить реферала
+                <button onClick={() => handleAddReferralClick()} className="invite-btn">
+                    {referalLoading ? <span className="btn-spinner" aria-label="Загрузка" /> : '+ Пригласить реферала'}
                 </button>
                 {showInvite && (
                     <InviteModal
