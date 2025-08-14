@@ -1,4 +1,4 @@
-.modal-overlay {
+﻿.modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
@@ -6,6 +6,8 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    padding: 20px; /* чтобы не прилипало к краю на узких */
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal-content {
@@ -13,10 +15,11 @@
     padding: 32px;
     border-radius: 16px;
     width: 600px;
-    max-height: 90vh;
+    max-height: min(80vh, 80svh);
     overflow-y: auto;
     color: white;
     font-family: 'Mulish', sans-serif;
+    overscroll-behavior: contain;
 }
 
 .modal-title {
@@ -31,39 +34,84 @@
     font-weight: 600;
 }
 
-
 .form-group {
     margin-bottom: 20px;
 }
 
+/* === поля (оставляем ваш стиль, добавил box-sizing и высоту) === */
 .form-select {
     width: 100%;
-    background-color: #2c2c2c;
+    height: 44px;
+    padding: 10px 38px 10px 12px;
     border: 1px solid #444;
     border-radius: 10px;
-    padding: 12px;
-    font-size: 16px;
-    color: white;
-}
-.form-group input {
-    width: 96%;
     background-color: #2c2c2c;
-    border: 1px solid #444;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 16px;
-    color: white;
+    color: #fff;
+    font: 14px 'Mulish', sans-serif;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+      <path fill='%23cfcfcf' d='M7 10l5 5 5-5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
 }
 
-        .form-select.error-border {
-            border-color: red;
-        }
+    .form-select:hover {
+        border-color: #555;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255,193,7,.15);
+    }
+
+    .form-select.error-border {
+        border-color: #ff5858;
+    }
+
+.form-select-option {
+    /* поддержка зависит от браузера, но обычно работает */
+    background: #1f1f1f;
+    color: #e5e5e5;
+    font-size: 14px;
+}
+
+/* выбранный пункт (в закрытом селекте) */
+.form-select option:checked {
+    color: #fff;
+}
+
+/* IE/старый Edge */
+.form-select::-ms-expand {
+    display: none;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 16px;
+    color: white;
+    min-height: 44px;
+}
+
+.form-select.error-border {
+    border-color: red;
+}
 
 .error-text {
     color: red;
     font-size: 12px;
     margin-top: 4px;
 }
+
+/* — две колонки — */
 .form-row-second {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -71,35 +119,38 @@
     margin-top: 12px;
     align-items: center;
 }
-.form-row-second input {
-    gap: 6px;
-    background-color: #2c2c2c;
-    width: 92%;
-    border: 1px solid #444;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 16px;
-    color: white;
-    margin-bottom: 15px;
-}
 
+    .form-row-second input {
+        background-color: #2c2c2c;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #444;
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 16px;
+        color: white;
+        margin-bottom: 15px;
+    }
+
+/* — три колонки — */
 .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 25px;
     margin-top: 12px;
 }
-.form-row input {
-    gap: 6px;
-    background-color: #2c2c2c;
-    max-width: 160px;
-    border: 1px solid #444;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 16px;
-    color: white;
-    margin-bottom: 15px;
-}
+
+    .form-row input {
+        background-color: #2c2c2c;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #444;
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 16px;
+        color: white;
+        margin-bottom: 15px;
+    }
 
 .submit-btn {
     background-color: #ffc107;
@@ -112,4 +163,58 @@
     width: 100%;
     cursor: pointer;
     margin-top: 32px;
+}
+
+/* ============ адаптив ============ */
+
+/* планшеты */
+@media (max-width: 1024px) {
+    .modal-content {
+        max-width: min(640px, 80vw);
+        padding: 28px;
+        margin-right:22px;
+        border-radius: 14px;
+    }
+}
+
+/* телефоны */
+@media (max-width: 640px) {
+    .modal-overlay {
+        padding: 12px;
+    }
+
+    .modal-content {
+        width: 100%;
+        padding: 22px;
+        border-radius: 12px;
+        max-height: min(88vh, 88svh);
+    }
+
+    .modal-title {
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        margin-top: 22px;
+    }
+
+    .form-row,
+    .form-row-second {
+        grid-template-columns: 1fr; /* одна колонка */
+        gap: 14px;
+    }
+}
+
+/* очень узкие */
+@media (max-width: 380px) {
+    .modal-content {
+        padding: 18px;
+    }
+
+    .submit-btn {
+        padding: 12px 16px;
+        font-size: 15px;
+    }
 }

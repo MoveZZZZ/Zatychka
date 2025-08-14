@@ -1,12 +1,16 @@
+/* ===== Ѕј«ј ===== */
 .edit-owner-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(10px);
+    /* единый скролл только у overlay */
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .edit-owner-modal {
@@ -14,82 +18,237 @@
     border-radius: 12px;
     padding: 32px 24px;
     width: 500px;
-    max-width: 90%;
-    text-align: center;
+    max-width: 92vw;
     color: #E5E5E5;
+    text-align: center;
     box-shadow: 0 0 20px rgba(255, 193, 7, 0.1);
-    align-items:center;
+    /* Ќ≈ режем выпадашки */
+    overflow: visible !important;
+    max-height: none !important;
 }
 
-.edit-owner-modal h2 {
-    font-size: 20px;
+.modal-title {
+    font-size: 24px;
     font-weight: bold;
     margin-bottom: 24px;
 }
 
-    .edit-owner-modal input {
-        max-width: 95%;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        border-radius: 8px;
-        border: 1px solid #444;
-        background-color: #2a2a2a;
-        color: #f1f1f1;
-        font-size: 14px;
-        outline: none;
-        transition: border 0.2s;
-    }
-    .edit-owner-modal select {
-        width: 100%;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        border-radius: 8px;
-        border: 1px solid #444;
-        background-color: #2a2a2a;
-        color: #f1f1f1;
-        font-size: 14px;
-        outline: none;
-        transition: border 0.2s;
+.owner-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.edit-owner-modal input,
+.edit-owner-modal select {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #f1f1f1;
+    outline: none;
+    transition: border .2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+    .edit-owner-modal input:focus,
+    .edit-owner-modal select:focus {
+        border-color: #ffc107;
     }
 
-        .edit-owner-modal input:focus,
-        .edit-owner-modal select:focus {
-            border-color: #ffc107;
-        }
+/*  нопки */
+.modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
 
-    .edit-owner-modal .modal-buttons {
+.submit-button {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: bold;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background .2s ease;
+}
+
+    .submit-button:hover {
+        background-color: #e6ac00;
+    }
+
+.cancel-button {
+    background: #2a2a2a;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.danger-button {
+    background: transparent;
+    border: none;
+    color: #e06666;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .danger-button:hover {
+        color: #ff4444;
+    }
+
+/* ===== ‘» —џ ƒЋя BankDropdown “ќЋ№ ќ ¬ Ё“ќ… ћќƒјЋ ≈ ===== */
+
+/* €корь дл€ абсолютного меню */
+.edit-owner-bank-dropdown-wrap {
+    position: relative;
+}
+
+/* сам компонент и триггер Ч на всю ширину модалки */
+.edit-owner-modal .bank-dropdown {
+    position: relative;
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.edit-owner-modal .bank-dropdown-selected {
+    width: 100% !important;
+    height: 48px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.edit-owner-modal .bank-dropdown-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    width: 100% !important;
+    box-sizing: border-box;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.45);
+    z-index: 10020;
+    /* контейнер меню Ч без скролла,
+     скролл только у списка .bank-list */
+    overflow: visible !important;
+}
+
+.edit-owner-modal .bank-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 1px solid #444;
+    background: #222;
+    color: #fff;
+    font-size: 14px;
+}
+
+.edit-owner-modal .bank-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    max-height: min(320px, 60vh);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    text-align: left;
+    max-width: none !important; /* убираем любые глобальные ограничени€ */
+}
+
+    .edit-owner-modal .bank-list li {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
-        max-width: 100%;
-    }
-
-    .edit-owner-modal .edit-button {
-        background-color: #ffc107;
-        color: #000;
-        font-weight: bold;
+        align-items: center;
+        gap: 8px;
         padding: 12px 16px;
-        border-radius: 8px;
-        border: none;
+        margin: 0;
         cursor: pointer;
-        font-size: 15px;
-        transition: background 0.2s ease;
+        transition: background .2s ease;
     }
 
-        .edit-owner-modal .edit-button:hover {
-            background-color: #e6ac00;
+        .edit-owner-modal .bank-list li:hover {
+            background: #333;
         }
 
-    .edit-owner-modal .delete-button {
-        background: none;
-        border: none;
-        color: #e06666;
+        .edit-owner-modal .bank-list li.selected {
+            background: #444;
+        }
+
+.edit-owner-modal .bank-logo {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.edit-owner-modal .arrow {
+    margin-left: auto;
+    font-size: 16px;
+    padding-left: 8px;
+}
+
+/* ===== јƒјѕ“ј÷»я ===== */
+
+/* ѕланшеты */
+@media (max-width: 1024px) {
+    .edit-owner-modal-overlay {
+        align-items: flex-start;
+        padding: 24px 16px;
+    }
+
+    .edit-owner-modal {
+        width: min(520px, 92vw);
+        padding: 24px 20px;
+    }
+}
+
+/* “елефоны Ч центрируем как в других модалках */
+@media (max-width: 640px) {
+    .edit-owner-modal-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 12px max(12px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right)) !important;
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
+    .edit-owner-modal {
+        max-width: 92vw;
+        padding: 20px 16px;
+        border-radius: 12px;
+        margin: 0 auto !important;
+    }
+
+        .edit-owner-modal .bank-dropdown-menu {
+            max-height: none;
+        }
+
+        .edit-owner-modal .bank-list {
+            max-height: min(260px, 65vh);
+        }
+}
+
+/* ќчень узкие телефоны */
+@media (max-width: 380px) {
+    .modal-title {
+        font-size: 20px;
+    }
+
+    .edit-owner-modal input, .edit-owner-modal select {
         font-size: 14px;
-        cursor: pointer;
-        margin-top: 8px;
-        transition: color 0.2s ease;
     }
-
-        .edit-owner-modal .delete-button:hover {
-            color: #ff4444;
-        }
+}

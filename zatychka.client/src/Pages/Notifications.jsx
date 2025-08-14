@@ -1,16 +1,9 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import './Notifications.css';
 import { banks } from '../constants/banks';
-
-import BR from '../assets/icons/ros.png';
-import ABS from '../assets/icons/abs.png';
-import Alfa from '../assets/icons/alfa.png';
-import Alif from '../assets/icons/alif.png';
 import Breadcrumbs from '../components/Breadcrumbs';
 
 const notificationTypes = ['Все', 'Важные', 'Приём', 'Неизвестные'];
-
-
 
 const Notifications = () => {
     const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
@@ -24,7 +17,7 @@ const Notifications = () => {
     const typeRef = useRef(null);
     const bankRef = useRef(null);
 
-    // Закрытие по клику вне
+    // Закрытие по клику вне и по Esc
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -37,9 +30,19 @@ const Notifications = () => {
                 setBankDropdownOpen(false);
             }
         };
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                setTypeDropdownOpen(false);
+                setBankDropdownOpen(false);
+            }
+        };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEsc);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEsc);
+        };
     }, []);
 
     const filteredTypes = notificationTypes.filter(type =>
@@ -64,16 +67,23 @@ const Notifications = () => {
 
     return (
         <div className="notifications-page">
-            <Breadcrumbs/>
-            <h2 className="notifications-title">Уведомлений пока нет</h2>
+            <Breadcrumbs />
+
+            <div className="notifications-header">
+                <h2 className="notifications-title">Уведомлений пока нет</h2>
+            </div>
 
             <div className="notification-filters">
+                {/* Тип */}
                 <div className="filter-dropdown" ref={typeRef}>
                     <button
                         className="filter-button"
+                        type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded={typeDropdownOpen}
                         onClick={() => {
                             setTypeDropdownOpen(prev => !prev);
-                            setBankDropdownOpen(false); // закрыть банк
+                            setBankDropdownOpen(false);
                         }}
                     >
                         {selectedType} ▾
@@ -83,14 +93,14 @@ const Notifications = () => {
                         <div className="dropdown-menu">
                             <input
                                 type="text"
-                                placeholder="Search..."
-                                className="dropdown-search"
+                                placeholder="Поиск…"
+                                className="dropdown-search-type-not"
                                 value={typeSearch}
                                 onChange={(e) => setTypeSearch(e.target.value)}
                             />
-                            <ul className="dropdown-list">
+                            <ul className="dropdown-list" role="listbox">
                                 {filteredTypes.map((type, index) => (
-                                    <li key={index} onClick={() => handleSelectType(type)}>
+                                    <li key={index} onClick={() => handleSelectType(type)} role="option">
                                         {type}
                                     </li>
                                 ))}
@@ -103,9 +113,12 @@ const Notifications = () => {
                 <div className="filter-dropdown" ref={bankRef}>
                     <button
                         className="filter-button"
+                        type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded={bankDropdownOpen}
                         onClick={() => {
                             setBankDropdownOpen(prev => !prev);
-                            setTypeDropdownOpen(false); // закрыть тип
+                            setTypeDropdownOpen(false);
                         }}
                     >
                         {selectedBank} ▾
@@ -115,14 +128,14 @@ const Notifications = () => {
                         <div className="dropdown-menu">
                             <input
                                 type="text"
-                                placeholder="Поиск..."
-                                className="dropdown-search"
+                                placeholder="Поиск банка…"
+                                className="dropdown-search-bank-not"
                                 value={bankSearch}
                                 onChange={(e) => setBankSearch(e.target.value)}
                             />
-                            <ul className="dropdown-list">
-                                {filteredBanks.map((bank, index) => (
-                                    <li key={index} onClick={() => handleSelectBank(bank.name)}>
+                            <ul className="dropdown-list" role="listbox">
+                                {filteredBanks.map((bank) => (
+                                    <li key={bank.name} onClick={() => handleSelectBank(bank.name)} role="option">
                                         {bank.logo && (
                                             <img src={bank.logo} alt={bank.name} className="bank-logo" />
                                         )}

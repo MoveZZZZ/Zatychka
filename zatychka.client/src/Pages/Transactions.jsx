@@ -14,6 +14,7 @@ import {
 import Spinner from '../components/Spinner';
 import GenerateByLinksModal from './TransactionsGenerateModal';
 import TransactionsBackfillModal from './TransactionsBackfillModal';
+
 const STATUS_OPTIONS = ['Создана', 'Выполнена', 'Заморожена'];
 
 export default function Transactions() {
@@ -54,8 +55,16 @@ export default function Transactions() {
     const [dealAmount, setDealAmount] = useState('');
     const [incomeAmount, setIncomeAmount] = useState('');
 
-
     const [backfillOpen, setBackfillOpen] = useState(false);
+    const [generateOpen, setGenerateOpen] = useState(false);
+
+    // закрытие выпадашки при клике вне её
+    useEffect(() => {
+        if (!dropdownOpen) return;
+        const onDocClick = () => setDropdownOpen(false);
+        document.addEventListener('click', onDocClick);
+        return () => document.removeEventListener('click', onDocClick);
+    }, [dropdownOpen]);
 
     // статусы в выпадашке
     const filteredStatuses = useMemo(
@@ -76,14 +85,8 @@ export default function Transactions() {
             const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
                 ? Number(transactionSearch.trim())
                 : undefined;
-            const params = {
-                id,
-                page: currentPage,
-                pageSize
-            };
-            if (selectedStatuses.length > 0) {
-                params.status = selectedStatuses;
-            }
+            const params = { id, page: currentPage, pageSize };
+            if (selectedStatuses.length > 0) params.status = selectedStatuses;
             const response = await fetchPayinTransactions(params);
             setItems(response?.items || []);
             setTotal(response?.total || 0);
@@ -103,14 +106,8 @@ export default function Transactions() {
                 const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
                     ? Number(transactionSearch.trim())
                     : undefined;
-                const params = {
-                    id,
-                    page: currentPage,
-                    pageSize
-                };
-                if (selectedStatuses.length > 0) {
-                    params.status = selectedStatuses;
-                }
+                const params = { id, page: currentPage, pageSize };
+                if (selectedStatuses.length > 0) params.status = selectedStatuses;
                 const response = await fetchPayinTransactions(params);
                 if (!cancelled) {
                     setItems(response?.items || []);
@@ -186,14 +183,10 @@ export default function Transactions() {
             setErr(e?.message || 'Не удалось удалить транзакцию');
         }
     }
-    const [generateOpen, setGenerateOpen] = useState(false);
 
     const totalPages = Math.ceil(total / pageSize);
-
     const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-            setCurrentPage(newPage);
-        }
+        if (newPage >= 1 && newPage <= totalPages) setCurrentPage(newPage);
     };
 
     return (
@@ -201,11 +194,12 @@ export default function Transactions() {
             <Breadcrumbs />
             <h2 className="page-title">Приём</h2>
 
-            {err && <div className="error">{err}</div>}
 
             <div className="transactions-filters">
-                <div className="search-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m19.485 20.154l-6.262-6.262q-.75.639-1.725.989t-1.96.35q-2.402 0-4.066-1.663T3.808 9.503T5.47 5.436t4.064-1.667t4.068 1.664T15.268 9.5q0 1.042-.369 2.017t-.97 1.668l6.262 6.261zM9.539 14.23q1.99 0 3.36-1.37t1.37-3.361t-1.37-3.36t-3.36-1.37t-3.361 1.37t-1.37 3.36t1.37 3.36t3.36 1.37" /></svg>
+                <div className="search-box-trans">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+                        <path fill="currentColor" d="m19.485 20.154l-6.262-6.262q-.75.639-1.725.989t-1.96.35q-2.402 0-4.066-1.663T3.808 9.503T5.47 5.436t4.064-1.667t4.068 1.664T15.268 9.5q0 1.042-.369 2.017t-.97 1.668l6.262 6.261zM9.539 14.23q1.99 0 3.36-1.37t1.37-3.361t-1.37-3.36t-3.36-1.37t-3.361 1.37t-1.37 3.36t1.37 3.36t3.36 1.37" />
+                    </svg>
                     <input
                         type="text"
                         placeholder="ID транзакции"
@@ -214,14 +208,14 @@ export default function Transactions() {
                     />
                 </div>
 
-                <div className="status-dropdown-wrapper">
-                    <div className="status-dropdown" onClick={() => setDropdownOpen(prev => !prev)}>
+                <div className="status-dropdown-wrapper-trans" onClick={(e) => e.stopPropagation()}>
+                    <div className="status-dropdown-trans" onClick={() => setDropdownOpen(prev => !prev)}>
                         {selectedStatuses.length > 0 ? `Выбрано ${selectedStatuses.length} статуса` : 'Статус'}
                         <span className="arrow">▼</span>
                     </div>
 
                     {dropdownOpen && (
-                        <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                        <div className="dropdown-menu-trans" onClick={(e) => e.stopPropagation()}>
                             <input
                                 type="text"
                                 placeholder="Поиск статуса…"
@@ -230,7 +224,7 @@ export default function Transactions() {
                                 onChange={(e) => setStatusSearch(e.target.value)}
                             />
                             {filteredStatuses.map((status) => (
-                                <div key={status} className="dropdown-item" onClick={() => toggleStatus(status)}>
+                                <div key={status} className="dropdown-search-priem-item" onClick={() => toggleStatus(status)}>
                                     <span>{status}</span>
                                     {selectedStatuses.includes(status) && <span className="checkmark">✔</span>}
                                 </div>
@@ -238,6 +232,7 @@ export default function Transactions() {
                         </div>
                     )}
                 </div>
+
                 {canEdit && (
                     <div className="actions-row">
                         <button className="add-btn" onClick={() => setAdding(v => !v)}>
@@ -316,7 +311,9 @@ export default function Transactions() {
                     </div>
                 </div>
             )}
-            <div className="disputes-table">
+
+            {/* таблица в общем стилевом контейнере */}
+            <div className="disputes-table tx-table-scroll">
                 <table>
                     <thead>
                         <tr>
@@ -394,7 +391,6 @@ export default function Transactions() {
                     onDone={() => { setBackfillOpen(false); reload(); }}
                 />
             )}
-
         </div>
     );
 }

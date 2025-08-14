@@ -59,7 +59,7 @@
     padding-left: 20px; /* Убираем лишние отступы */
     max-width: 300px; /* Минимальная ширина для текста */
     text-align:center;
-    max-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
     box-sizing: border-box;
 }

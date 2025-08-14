@@ -1,3 +1,9 @@
+:root {
+    /* фиксированна€ высота шапки/нужный отступ дл€ титула */
+    --top-bar: 75px;
+}
+
+/* ===== контейнер/титул ===== */
 .quasi-container {
     color: #fff;
     flex: 1;
@@ -6,198 +12,151 @@
     font-family: 'Mulish', sans-serif;
 }
 
-.page-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 20px;
+.page-title-quasi {
+    font-size: 30px;
+    font-weight: 550;
+    color: #e5e5e5;
+    margin: 10px 0 16px;
+    letter-spacing: .5px;
 }
 
+/* на планшетах/телефонах отталкиваемс€ от шапки ровно на 75px */
+@media (max-width: 1024px) {
+    .page-title-quasi {
+        margin-top: var(--top-bar);
+    }
+}
+
+/* ===== вкладки ===== */
 .tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .tab-btn {
     background: #2a2a2a;
-    color: #ccc;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: 500;
+    color: #cfcfcf;
+    border: 1px solid #3a3a3a;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
-    transition: background 0.2s;
+    white-space: nowrap;
+    transition: background .2s, border-color .2s, color .2s;
 }
+
+    .tab-btn:hover {
+        background: #343434;
+    }
 
     .tab-btn.active {
-        background: #3a3a3a;
-        color: white;
+        background: #2b2416;
+        color: #ffcc66;
+        border-color: #c89629;
+        box-shadow: 0 0 0 1px rgba(200,150,41,.25) inset;
     }
 
-.filters {
+/* ===== фильтры ===== */
+.transactions-filters-quazi {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
 }
 
-    .filters input,
-    .filters select {
-        background: #2a2a2a;
-        border: 1px solid #444;
-        border-radius: 12px;
-        padding: 10px 15px;
-        color: white;
-        font-size: 14px;
-        outline: none;
-        width: 250px;
-    }
-
-.transactions-table {
-    border: 1px solid #333;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.table-header,
-.transaction-row {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1.5fr;
-    padding: 15px 20px;
-    border-bottom: 1px solid #333;
-    font-size: 14px;
-}
-
-.table-header {
-    background: #1a1a1a;
-    font-weight: 600;
-    color: #ccc;
-}
-
-.transaction-row {
-    background: #1c1c1c;
-    color: #eee;
-}
-
-    .transaction-row:hover {
-        background: #262626;
-    }
-
-.no-transactions {
-    text-align: center;
-    padding: 40px;
-    color: #777;
-}
-
-    .no-transactions .icon {
-        font-size: 32px;
-        margin-bottom: 10px;
-    }
+/* поиск по ID */
 .search-box {
     background: #2b2b2b;
     border-radius: 24px;
     display: flex;
     align-items: center;
-    padding: 8px 16px;
+    padding: 8px 12px;
+    height: 38px;
+    min-width: 220px;
 }
+
+    .search-box svg {
+        opacity: .8;
+        margin-right: 6px;
+    }
 
     .search-box input {
         background: transparent;
         border: none;
         outline: none;
-        color: white;
+        color: #fff;
         font-size: 14px;
+        min-width: 0;
     }
 
-.search-icon {
-    margin-right: 8px;
-    font-size: 16px;
-}
+/* статус-дропдаун */
 .status-dropdown-wrapper {
     position: relative;
-}
-
-.status-dropdown {
-    background: #2b2b2b;
-    border-radius: 24px;
-    padding: 10px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-    .status-dropdown .arrow {
-        font-size: 12px;
-        margin-left: 6px;
-    }
-
-.dropdown-menu {
-    position: absolute;
-    top: 50px;
-    background-color: #2b2b2b;
-    border-radius: 12px;
-    padding: 8px 0;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    width: 250px;
-}
-
-
-.dropdown-item {
-    padding: 10px 16px;
-    cursor: pointer;
-    color: white;
-    font-size: 14px;
-}
-
-    .dropdown-item:hover {
-        background: #3a3a3a;
-    }
-.status-dropdown-wrapper {
-    position: relative;
-}
-
-.status-dropdown {
-    background: #2b2b2b;
-    border-radius: 24px;
-    padding: 10px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    color: white;
+    width: 220px;
     min-width: 180px;
+}
+
+.status-dropdown {
+    width: 100%;
+    background: #2b2b2b;
+    border-radius: 24px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    color: white;
     gap: 6px;
+    height: 38px;
+    border: 1px solid #3a3a3a;
 }
 
     .status-dropdown .arrow {
         font-size: 12px;
         margin-left: auto;
-        opacity: 0.6;
+        opacity: 0.65;
     }
 
+/* меню строго по ширине родител€ */
 .dropdown-menu {
     position: absolute;
-    top: 50px;
+    inset: calc(100% + 6px) 0 auto 0; /* top/right/bottom/left */
+    width: 100%;
     background-color: #2b2b2b;
     border-radius: 12px;
     padding: 8px 0;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 20px rgba(0,0,0,.45);
     z-index: 1000;
-    width: 250px;
+    box-sizing: border-box;
 }
 
+.dropdown-search {
+    display: block;
+    width: calc(100% - 16px);
+    margin: 0 8px 8px 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background-color: #1f1f1f;
+    color: white;
+    font-size: 14px;
+}
 
 .dropdown-item {
-    padding: 10px 16px;
+    padding: 10px 14px;
     cursor: pointer;
     color: white;
     font-size: 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background 0.2s ease;
+    transition: background .2s ease;
 }
 
     .dropdown-item:hover {
@@ -205,7 +164,97 @@
     }
 
 .checkmark {
-    color: white;
     font-size: 16px;
     margin-left: 8px;
+}
+
+/* 2 колонки фильтров на мобилках */
+/* 2 колонки фильтров на мобилках, но поиск ID Ч на всю строку */
+@media (max-width: 640px) {
+    .transactions-filters-quazi {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    /* делаем поиск по ID шириной на 2 колонки */
+    .search-box {
+        grid-column: 1 / -1; /* << ключева€ строка */
+        max-width: 60%;
+        min-width: 0;
+        height: 20px; /* чуть выше дл€ удобства тапа */
+        padding: 10px 14px;
+    }
+
+        .search-box input {
+            font-size: 15px;
+        }
+
+    /* статус остаЄтс€ в правой колонке следующей строки */
+    .status-dropdown-wrapper {
+        max-width: 150%;
+        min-width: 0;
+    }
+
+    .status-dropdown {
+        height: 44px;
+    }
+}
+
+
+/* ===== таблица ===== */
+.disputes-table {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 12px;
+    overflow-x: auto; /* горизонт-скролл на узких */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+    .disputes-table table {
+        width: 100%;
+        min-width: 760px; /* чтобы на телефонах по€вилс€ скролл */
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .disputes-table thead {
+        background-color: #2a2a2a;
+        color: #ccc;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .disputes-table th,
+    .disputes-table td {
+        padding: 12px 14px;
+        text-align: center;
+        border-bottom: 1px solid #333;
+        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .disputes-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+.no-disputes {
+    text-align: center;
+    padding: 36px;
+    color: #aaa;
+    font-size: 15px;
+}
+
+/* чуть компактнее на очень узких */
+@media (max-width: 390px) {
+    .search-box {
+        min-width: 0;
+    }
+
+    .disputes-table table {
+        min-width: 700px;
+    }
 }

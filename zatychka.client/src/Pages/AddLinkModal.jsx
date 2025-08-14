@@ -7,6 +7,7 @@ import { listOwners } from '../api/owners';
 import { createLink } from '../api/links';
 import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
+
 const humanType = (t) => {
     switch (t) {
         case 'Card': return 'Карта';
@@ -18,9 +19,10 @@ const humanType = (t) => {
 
 export default function AddLinkModal({ isOpen, onClose, onCreated }) {
     if (!isOpen) return null;
+
     const toast = useToast();
     const [devices, setDevices] = useState([]);
-    const [owners, setOwners] = useState([]); // [{id, lastName, firstName, middleName, bankName, requisites:[{id,type,value}]}]
+    const [owners, setOwners] = useState([]); // [{id,..., requisites:[{id,type,value}]}]
 
     const [deviceId, setDeviceId] = useState('');
     const [requisiteId, setRequisiteId] = useState('');
@@ -38,23 +40,26 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
         minutesBetween: '',
     });
 
-    const [hasChanged, setHasChanged] = useState({
-        minAmount: false,
-        maxAmount: false,
-        perDay: false,
-        perMonth: false,
-        allTime: false,
-        receiveDay: false,
-        receiveMonth: false,
-        receiveAll: false,
-        maxSimultaneous: false,
-        minutesBetween: false,
-    });
-
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [err, setErr] = useState('');
     const [fieldErrs, setFieldErrs] = useState({});
+
+    // запрет скролла body, пока открыта модалка + ESC для закрытия
+    useEffect(() => {
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        const onKey = (e) => {
+            if (e.key === 'Escape') onClose?.();
+        };
+        window.addEventListener('keydown', onKey);
+
+        return () => {
+            document.body.style.overflow = prev;
+            window.removeEventListener('keydown', onKey);
+        };
+    }, [onClose]);
 
     useEffect(() => {
         let cancelled = false;
@@ -130,10 +135,10 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
 
         try {
             setSubmitting(true);
-            const created = await createLink(payload); 
+            const created = await createLink(payload);
             onCreated?.(created);
             toast.success('Связка создана');
-            onClose();
+            onClose?.();
         } catch (e) {
             const msg = e?.message || 'Не удалось создать связку';
             setErr(msg);
@@ -143,32 +148,64 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
         }
     }
 
+    const middleTruncate = (s = "", max = 26) => {
+        if (s.length <= max) return s;
+        const head = Math.ceil((max - 1) / 2);
+        const tail = Math.floor((max - 1) / 2);
+        return s.slice(0, head) + "…" + s.slice(-tail);
+    };
+
+    const shortRequisiteLabel = (r) => {
+        const type = r.type;                      // "phone" | "card" | "email"
+        const value = middleTruncate(String(r.value), 14);
+        const owner = middleTruncate(r.ownerLabel || "", 18);
+        return `${type} • ${value} — ${owner}`;
+    };
+
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div
+            className="modal-overlay"
+            onClick={onClose}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="addlink-title"
+        >
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-title">Добавить новую связку</h2>
+                <h2 id="addlink-title" className="modal-title">Добавить новую связку</h2>
+
+                {err && (
+                    <div style={{ color: '#ff9d9d', marginBottom: 12 }}>{err}</div>
+                )}
 
                 {loading ? (
                     <Spinner center label="Загрузка…" size={30} />
                 ) : (
                     <>
                         <div className={`form-group ${fieldErrs.deviceId ? 'error' : ''}`}>
-                            <select
-                                className={`form-select ${fieldErrs.deviceId ? 'error-border' : ''}`}
-                                value={deviceId}
-                                onChange={(e) => setDeviceId(e.target.value)}
-                            >
-                                <option value="" disabled>Выберите устройство</option>
-                                {devices.map(d => (
-                                    <option key={d.id} value={d.id}>
-                                        {d.name || `Устройство #${d.id}`}
-                                    </option>
-                                ))}
-                            </select>
+                                <select
+                                    className={`form-select ${fieldErrs.requisiteId ? 'error-border' : ''}`}
+                                    value={requisiteId}
+                                    onChange={(e) => setRequisiteId(e.target.value)}
+                                >
+                                    <option value="" disabled>Выберите реквизит</option>
+
+                                    {allRequisites.map(r => {
+                                        const full = `${r.type} • ${r.value} — ${r.ownerLabel}`;
+                                        return (
+                                            <option
+                                                key={r.id}
+                                                value={r.id}
+                                                className="form-select-option"
+                                                title={full}                 // полный текст по ховеру
+                                            >
+                                                {shortRequisiteLabel(r)}     {/* короткий текст в списке */}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
                             {fieldErrs.deviceId && <p className="error-text">{fieldErrs.deviceId}</p>}
                         </div>
 
-                        {/* Реквизит */}
                         <div className={`form-group ${fieldErrs.requisiteId ? 'error' : ''}`}>
                             <select
                                 className={`form-select ${fieldErrs.requisiteId ? 'error-border' : ''}`}
@@ -190,11 +227,21 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                         <div className="form-row-second">
                             <div className="input-group">
                                 <label>Мин. сумма (USDT)</label>
-                                <input type="number" min="0" value={formValues.minAmount} onChange={handleNumberChange('minAmount')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.minAmount}
+                                    onChange={handleNumberChange('minAmount')}
+                                />
                             </div>
                             <div className="input-group">
                                 <label>Макс. сумма (USDT)</label>
-                                <input type="number" min="0" value={formValues.maxAmount} onChange={handleNumberChange('maxAmount')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.maxAmount}
+                                    onChange={handleNumberChange('maxAmount')}
+                                />
                             </div>
                         </div>
 
@@ -202,15 +249,30 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                         <div className="form-row">
                             <div className="input-group">
                                 <label>В день</label>
-                                <input type="number" min="0" value={formValues.perDay} onChange={handleNumberChange('perDay')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.perDay}
+                                    onChange={handleNumberChange('perDay')}
+                                />
                             </div>
                             <div className="input-group">
                                 <label>В месяц</label>
-                                <input type="number" min="0" value={formValues.perMonth} onChange={handleNumberChange('perMonth')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.perMonth}
+                                    onChange={handleNumberChange('perMonth')}
+                                />
                             </div>
                             <div className="input-group">
                                 <label>За всё время</label>
-                                <input type="number" min="0" value={formValues.allTime} onChange={handleNumberChange('allTime')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.allTime}
+                                    onChange={handleNumberChange('allTime')}
+                                />
                             </div>
                         </div>
 
@@ -218,15 +280,30 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                         <div className="form-row">
                             <div className="input-group">
                                 <label>В сутки (USDT)</label>
-                                <input type="number" min="0" value={formValues.receiveDay} onChange={handleNumberChange('receiveDay')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.receiveDay}
+                                    onChange={handleNumberChange('receiveDay')}
+                                />
                             </div>
                             <div className="input-group">
                                 <label>В месяц (USDT)</label>
-                                <input type="number" min="0" value={formValues.receiveMonth} onChange={handleNumberChange('receiveMonth')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.receiveMonth}
+                                    onChange={handleNumberChange('receiveMonth')}
+                                />
                             </div>
                             <div className="input-group">
                                 <label>За всё время (USDT)</label>
-                                <input type="number" min="0" value={formValues.receiveAll} onChange={handleNumberChange('receiveAll')} />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formValues.receiveAll}
+                                    onChange={handleNumberChange('receiveAll')}
+                                />
                             </div>
                         </div>
 
@@ -249,7 +326,6 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                                 onChange={handleNumberChange('minutesBetween')}
                             />
                         </div>
-
 
                         <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
                             {submitting ? 'Добавляем…' : 'Добавить'}

@@ -2,7 +2,6 @@
 import './BalancePage.css';
 import { WALLETS, getRandomWallet } from '../constants/wallets';
 
-
 import BinLogo from '../assets/b.png';
 import BBLogo from '../assets/bb.png';
 import OKXLogo from '../assets/okx.png';
@@ -20,6 +19,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { fetchBalanceHistory, createBalanceHistory, deleteBalanceHistory } from '../api/balanceHistory';
 import { useToast } from '../context/ToastContext';
 import qr1 from '../assets/qr.png';
+
 /* === словари и порядок типов для чипсов и селектов === */
 const TYPE_LABELS = {
     Deposit: 'Пополнение',
@@ -31,7 +31,6 @@ const TYPE_LABELS = {
 };
 const TYPE_ORDER = ['Deposit', 'Withdrawal', 'Transaction', 'TraderReward', 'MerchantEarning', 'Dispute'];
 const TYPE_OPTIONS = TYPE_ORDER.map(v => ({ value: v, label: TYPE_LABELS[v] }));
-
 
 function Card({ title, value, editable, editing, onClick, onChange, onCommit, saving }) {
     return (
@@ -61,11 +60,6 @@ function Card({ title, value, editable, editing, onClick, onChange, onCommit, sa
 }
 
 export default function BalancePage() {
-
-
-    
-
-
     const me = useUserInfo();
     const isAdmin = isAdminRole(me?.role);
     const { editMode } = useEditMode();
@@ -209,9 +203,8 @@ export default function BalancePage() {
     const [fAmount, setFAmount] = useState('');
     const [fUserId, setFUserId] = useState(''); // для private
 
-
     const toast = useToast();
-    const TELEGRAM_MANAGER_URL = 'https://t.me/your_manager'; 
+    const TELEGRAM_MANAGER_URL = 'https://t.me/your_manager';
 
     const [withdrawAddress, setWithdrawAddress] = useState('');
     const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -222,18 +215,15 @@ export default function BalancePage() {
         if (!withdrawAddress.trim()) {
             toast.error('Введите кошелек');
             return;
-        }
-        else if (!String(withdrawAmount).trim()) {
+        } else if (!String(withdrawAmount).trim()) {
             toast.error('Введите корректную сумму');
             return;
-        }
-        else if (withdrawAmount > data.mainUsdt) {
+        } else if (withdrawAmount > data.mainUsdt) {
             toast.error('Сумма вывода больше балланса');
             return;
         }
         try {
             setWithdrawLoading(true);
-            // спинер 1.8с
             await new Promise(r => setTimeout(r, 1800));
             setShowWithdrawModal(true);
         } finally {
@@ -254,15 +244,14 @@ export default function BalancePage() {
         }
     }
 
-
     const [copied, setCopied] = useState(false);
     async function handleCopyAddress() {
-             try {
-                    if (!selectedWallet?.address) {
-                             toast.error('Адрес кошелька ещё не загружен.');
-                             return;
-                         }
-                    await navigator.clipboard.writeText(selectedWallet.address);
+        try {
+            if (!selectedWallet?.address) {
+                toast.error('Адрес кошелька ещё не загружен.');
+                return;
+            }
+            await navigator.clipboard.writeText(selectedWallet.address);
             setCopied(true);
             setTimeout(() => setCopied(false), 1600);
         } catch (e) {
@@ -324,7 +313,6 @@ export default function BalancePage() {
             }
 
             setShowAdd(false);
-            // очистка форм
             setHDate(new Date().toISOString().slice(0, 10));
             setHType('Deposit');
             setHAmount(''); setHBefore(''); setHAfter(''); setHUserId('');
@@ -360,7 +348,6 @@ export default function BalancePage() {
     async function handleShowWallet() {
         try {
             setShowWalletLoading(true);
-            // 1.7s спинер
             await new Promise(r => setTimeout(r, 1700));
             const w = getRandomWallet(WALLETS);
             setSelectedWallet(w);
@@ -369,13 +356,14 @@ export default function BalancePage() {
             setShowWalletLoading(false);
         }
     }
-
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+    const selectedCount = selectedTypes.length; // 0 = все
     return (
         <div className="balance-page">
             <Breadcrumbs />
 
             <div className="balance-head">
-                <h2 className="page-title">Баланс</h2>
+                <h2 className="page-title-balance">Баланс</h2>
 
                 {editable && (
                     <div className="mode-switch">
@@ -518,15 +506,15 @@ export default function BalancePage() {
                             <div className={`wallet-blur-wrap ${!showWallet ? 'blurred' : ''}`}>
                                 <div className="wallet-info">
                                     <div className="wallet-body">
-                                         {selectedWallet ? (
-                                               <img src={selectedWallet.qr} alt="QR-код" className="qr-code" />
-                                             ) : (
-                                                <img
-                                                    src={qr1}
-                                                    alt="QR-код (по умолчанию)"
-                                                    className="qr-code"
-                                                />
-                                             )}
+                                        {selectedWallet ? (
+                                            <img src={selectedWallet.qr} alt="QR-код" className="qr-code" />
+                                        ) : (
+                                            <img
+                                                src={qr1}
+                                                alt="QR-код (по умолчанию)"
+                                                className="qr-code"
+                                            />
+                                        )}
 
                                         <div className="wallet-content">
                                             <div className="wallet-label-row">
@@ -534,31 +522,34 @@ export default function BalancePage() {
                                                 {selectedWallet ? (
                                                     <span className="badge">{selectedWallet.network}</span>
                                                 ) : (
-                                                        <span className="badge">TRC20</span>
+                                                    <span className="badge">TRC20</span>
                                                 )}
-                                               
                                             </div>
-                                             <div className="wallet-address-box">
-                                                     <div className="copy-wrap">
-                                                             <svg onClick={handleCopyAddress}
-                                                                 className="copy-btn"
-                                                                 xmlns="http://www.w3.org/2000/svg"
-                                                                 width="24"
-                                                                 height="24"
-                                                                 viewBox="0 0 24 24"
-                                                                style={{ cursor: 'pointer' }}>
-                                                                 <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-                                                                         <path d="M7 9.667A2.667 2.667 0 0 1 9.667 7h8.666A2.667 2.667 0 0 1 21 9.667v8.666A2.667 2.667 0 0 1 18.333 21H9.667A2.667 2.667 0 0 1 7 18.333z" />
-                                                                         <path d="M4.012 16.737A2 2 0 0 1 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1" />
-                                                                     </g>
-                                                             </svg>
-                                                         {copied && <div className="copied-popover">Адрес скопирован</div>}
-                                                     </div>
-                                            
-                                                 <span className="info-value">
-                                                       {selectedWallet?.address || '••••••••••••••••••••••••••'}
-                                                     </span>
+
+                                            <div className="wallet-address-box">
+                                                <div className="copy-wrap">
+                                                    <svg
+                                                        onClick={handleCopyAddress}
+                                                        className="copy-btn"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                                                            <path d="M7 9.667A2.667 2.667 0 0 1 9.667 7h8.666A2.667 2.667 0 0 1 21 9.667v8.666A2.667 2.667 0 0 1 18.333 21H9.667A2.667 2.667 0 0 1 7 18.333z" />
+                                                            <path d="M4.012 16.737A2 2 0 0 1 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1" />
+                                                        </g>
+                                                    </svg>
+                                                    {copied && <div className="copied-popover">Адрес скопирован</div>}
+                                                </div>
+
+                                                <span className="info-value">
+                                                    {selectedWallet?.address || '••••••••••••••••••••••••••'}
+                                                </span>
                                             </div>
+
                                             <div className="wallet-bottom">
                                                 <button
                                                     className="check-deposit-btn"
@@ -575,14 +566,15 @@ export default function BalancePage() {
                                 </div>
                             </div>
 
-                             {!showWallet && (
-                                   <button
+                            {!showWallet && (
+                                <button
                                     className="overlay-btn"
-                                 onClick={handleShowWallet}
-                                 disabled={showWalletLoading}
-                                 type="button">
-                                 {showWalletLoading ? <span className="btn-spinner" aria-label="Загрузка" /> : 'Показать кошелёк для пополнения'}
-                               </button>
+                                    onClick={handleShowWallet}
+                                    disabled={showWalletLoading}
+                                    type="button"
+                                >
+                                    {showWalletLoading ? <span className="btn-spinner" aria-label="Загрузка" /> : 'Показать кошелёк для пополнения'}
+                                </button>
                             )}
                         </div>
                     </div>
@@ -625,23 +617,41 @@ export default function BalancePage() {
                 )}
 
                 {/* Фильтры по типам (мультивыбор) */}
-                <div className="filters-card">
-                    <div className="filters-title">Типы</div>
-                    <div className="chips">
-                        {TYPE_ORDER.map(t => (
-                            <button
-                                key={t}
-                                type="button"
-                                className={`chip ${selectedTypes.includes(t) ? 'active' : ''}`}
-                                onClick={() => toggleType(t)}
-                            >
-                                {TYPE_LABELS[t]}
-                            </button>
-                        ))}
+                <div className={`filters-card ${mobileFiltersOpen ? 'open' : ''}`}>
+                    {/* Кнопка-тогглер — видна только на мобиле/планшете */}
+                    <button
+                        type="button"
+                        className="filters-toggle"
+                        onClick={() => setMobileFiltersOpen(v => !v)}
+                    >
+                        <span className="filters-toggle-label">Фильтры</span>
+                        <span className="filters-summary">
+                            {selectedCount ? selectedCount : 'Все'}
+                        </span>
+                        <svg className={`chev ${mobileFiltersOpen ? 'rot' : ''}`} width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+                            <path fill="currentColor" d="M7 10l5 5 5-5z" />
+                        </svg>
+                    </button>
+
+                    {/* Внутренность — на десктопе видна всегда, на мобиле — только при .open */}
+                    <div className="filters-inner">
+                        <div className="filters-title">Типы</div>
+                        <div className="chips chips-scroll">
+                            {TYPE_ORDER.map(t => (
+                                <button
+                                    key={t}
+                                    type="button"
+                                    className={`chip ${selectedTypes.includes(t) ? 'active' : ''}`}
+                                    onClick={() => toggleType(t)}
+                                >
+                                    {TYPE_LABELS[t]}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {histErr && <div className="error">{histErr}</div>}
+
                 {histLoading && <Spinner center label="Загрузка…" size={30} />}
 
                 {/* Форма добавления */}
@@ -721,73 +731,77 @@ export default function BalancePage() {
 
                 {/* Таблицы */}
                 {historyKind === 'simple' ? (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Дата</th>
-                                <th>Тип</th>
-                                <th>Сумма</th>
-                                <th>Баланс до</th>
-                                <th>Баланс после</th>
-                                {canAddHistory && <th></th>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows.length === 0 ? (
-                                <tr><td colSpan={canAddHistory ? 6 : 5} style={{ textAlign: 'center', opacity: 0.4 }}>Здесь пока пусто</td></tr>
-                            ) : rows.map(r => (
-                                <tr key={r.id}>
-                                    <td>{new Date(r.date).toLocaleDateString('ru-RU')}</td>
-                                    <td>{TYPE_LABELS[r.type] ?? r.type}</td>
-                                    <td>{Number(r.amount).toFixed(2)} USDT</td>
-                                    <td>{Number(r.before).toFixed(2)} USDT</td>
-                                    <td>{Number(r.after).toFixed(2)} USDT</td>
-                                    {canAddHistory && (
-                                        <td>
-                                            <button className="delete-btn" onClick={() => removeRow(r.id)}>Удалить</button>
-                                        </td>
-                                    )}
+                    <div className="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Тип</th>
+                                    <th>Сумма</th>
+                                    <th>Баланс до</th>
+                                    <th>Баланс после</th>
+                                    {canAddHistory && <th></th>}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {rows.length === 0 ? (
+                                    <tr><td colSpan={canAddHistory ? 6 : 5} style={{ textAlign: 'center', opacity: 0.4 }}>Здесь пока пусто</td></tr>
+                                ) : rows.map(r => (
+                                    <tr key={r.id}>
+                                        <td>{new Date(r.date).toLocaleDateString('ru-RU')}</td>
+                                        <td>{TYPE_LABELS[r.type] ?? r.type}</td>
+                                        <td>{Number(r.amount).toFixed(2)} USDT</td>
+                                        <td>{Number(r.before).toFixed(2)} USDT</td>
+                                        <td>{Number(r.after).toFixed(2)} USDT</td>
+                                        {canAddHistory && (
+                                            <td>
+                                                <button className="delete-btn" onClick={() => removeRow(r.id)}>Удалить</button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Дата заморозки</th>
-                                <th>Дата разморозки</th>
-                                <th>Тип</th>
-                                <th>Сумма</th>
-                                {canAddHistory && <th></th>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows.length === 0 ? (
-                                <tr><td colSpan={canAddHistory ? 5 : 4} style={{ textAlign: 'center', opacity: 0.4 }}>Здесь пока пусто</td></tr>
-                            ) : rows.map(r => (
-                                <tr key={r.id}>
-                                    <td>{new Date(r.freezeDate).toLocaleDateString('ru-RU')}</td>
-                                    <td>{r.unfreezeDate ? new Date(r.unfreezeDate).toLocaleDateString('ru-RU') : '—'}</td>
-                                    <td>{TYPE_LABELS[r.type] ?? r.type}</td>
-                                    <td>{Number(r.amount).toFixed(2)} USDT</td>
-                                    {canAddHistory && (
-                                        <td>
-                                            <button className="delete-btn" onClick={() => removeRow(r.id)}>Удалить</button>
-                                        </td>
-                                    )}
+                    <div className="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Дата заморозки</th>
+                                    <th>Дата разморозки</th>
+                                    <th>Тип</th>
+                                    <th>Сумма</th>
+                                    {canAddHistory && <th></th>}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {rows.length === 0 ? (
+                                    <tr><td colSpan={canAddHistory ? 5 : 4} style={{ textAlign: 'center', opacity: 0.4 }}>Здесь пока пусто</td></tr>
+                                ) : rows.map(r => (
+                                    <tr key={r.id}>
+                                        <td>{new Date(r.freezeDate).toLocaleDateString('ru-RU')}</td>
+                                        <td>{r.unfreezeDate ? new Date(r.unfreezeDate).toLocaleDateString('ru-RU') : '—'}</td>
+                                        <td>{TYPE_LABELS[r.type] ?? r.type}</td>
+                                        <td>{Number(r.amount).toFixed(2)} USDT</td>
+                                        {canAddHistory && (
+                                            <td>
+                                                <button className="delete-btn" onClick={() => removeRow(r.id)}>Удалить</button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
+
             <WithdrawModal
                 open={showWithdrawModal}
                 onClose={() => setShowWithdrawModal(false)}
                 managerUrl={TELEGRAM_MANAGER_URL}
             />
         </div>
-
     );
 }

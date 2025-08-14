@@ -16,31 +16,58 @@
     transition: opacity .2s ease, transform .2s ease;
     --accent: #22c55e;
     will-change: transform, opacity;
-    touch-action: pan-y; 
+    touch-action: pan-y; /* можно свайпать вбок, а скролл страницы остаётся вертикальным */
     cursor: grab;
+    word-break: break-word;
 }
+
     .toastbar.swiping {
-        transition: none; 
+        transition: none;
         cursor: grabbing;
     }
+
     .toastbar.show {
         opacity: 1;
         transform: translateY(0);
         pointer-events: auto;
     }
 
-.toastbar-progress-inner {
-    height: 100%;
-    background: var(--accent); /* <- цвет из JS */
-    transition: width .2s linear;
-}
-
 .toastbar-text {
     font-size: 15px;
     line-height: 1.35;
+    white-space: pre-wrap;
 }
 
-/* Кнопка закрытия */
+.toastbar-progress-outer {
+    height: 6px;
+    margin: 6px 5px 0;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+}
+
+.toastbar-progress-inner {
+    height: 100%;
+    width: 0%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width .06s linear;
+}
+
+/* варианты для акцента (добавили в className) */
+.toastbar.success {
+    --accent: #22c55e;
+}
+
+.toastbar.error {
+    --accent: #ef4444;
+}
+
+.toastbar.info {
+    --accent: #3b82f6;
+}
+
+/* кнопка закрытия — если решишь добавить */
 .toastbar-close {
     position: absolute;
     top: 10px;
@@ -59,29 +86,59 @@
         background: rgba(255,255,255,.08);
     }
 
-/* Прогресс с отступами от краёв */
-.toastbar-progress-outer {
-    height: 6px;
-    margin: 5px 5px 0px; /* ← отступы слева/справа/снизу */
-    border-radius: 999px;
-    background: rgba(255,255,255,.08); /* лёгкий трек (можно убрать) */
-    overflow: hidden;
+/* ===================== АДАПТАЦИЯ ===================== */
+
+/* планшеты */
+@media (max-width: 1024px) {
+    .toastbar {
+        max-width: 480px;
+    }
 }
 
-.toastbar-progress-inner {
-    height: 100%;
-    width: 0%;
-    border-radius: inherit;
-    transition: width .06s linear; /* сглаживание между кадрами */
-}
-.toastbar.success {
-    --accent: #22c55e;
+/* телефоны */
+@media (max-width: 640px) {
+    .toastbar {
+        top: auto; /* снизу, чтобы не перекрывать хедер */
+        bottom: max(12px, env(safe-area-inset-bottom));
+        left: max(12px, env(safe-area-inset-left));
+        right: max(12px, env(safe-area-inset-right));
+        min-width: 0;
+        max-width: none;
+        width: auto; /* на всю ширину с полями */
+        padding: 12px 14px;
+        border-radius: 12px;
+        transform: translateY(10px); /* анимация выезда снизу */
+    }
+
+        .toastbar.show {
+            transform: translateY(0);
+        }
+
+    .toastbar-text {
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    .toastbar-progress-outer {
+        height: 5px;
+        margin: 8px 2px 0;
+    }
 }
 
-.toastbar.error {
-    --accent: #ef4444;
+/* очень узкие телефоны */
+@media (max-width: 380px) {
+    .toastbar {
+        padding: 11px 12px;
+    }
+
+    .toastbar-text {
+        font-size: 13.5px;
+    }
 }
 
-.toastbar.info {
-    --accent: #3b82f6;
+/* если предпочитают уменьшенную анимацию */
+@media (prefers-reduced-motion: reduce) {
+    .toastbar, .toastbar.show {
+        transition: none;
+    }
 }

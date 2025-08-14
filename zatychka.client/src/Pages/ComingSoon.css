@@ -33,6 +33,11 @@
     gap: 8px;
 }
 
+    .brand img {
+        width: 28px;
+        height: 28px;
+    }
+
 .brand-name {
     font-weight: 800;
     letter-spacing: .3px;
@@ -61,7 +66,7 @@
 }
 
     .pill-muted:hover {
-        color: var(--white); 
+        color: var(--white);
     }
 
 /* actions */
@@ -105,3 +110,217 @@
         color: var(--white);
         text-shadow: var(--shadow);
     }
+
+/* =========================
+   јƒјѕ“ј÷»я
+   ========================= */
+
+/* ѕланшеты */
+@media (max-width: 1024px) {
+    .wip-header {
+        height: auto;
+        padding: 10px 0;
+        flex-wrap: wrap; /* позвол€ем перенос */
+        row-gap: 10px;
+    }
+
+    .wip-nav {
+        order: 3; /* навигаци€ уходит на третью строку */
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .wip-actions {
+        order: 2;
+        margin-left: auto;
+    }
+
+    .brand {
+        order: 1;
+    }
+
+    .pill {
+        padding: 8px 12px;
+    }
+
+    .wip-main {
+        padding: 8vh 0 12vh;
+    }
+}
+
+/* “елефоны */
+@media (max-width: 640px) {
+    .container {
+        width: min(600px, 92%);
+    }
+
+    .wip-header {
+        gap: 10px;
+        padding: 8px 0;
+    }
+
+    .brand img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .brand-name {
+        font-size: 16px;
+    }
+
+    /* Ќавигаци€ Ч в отдельной строке, с горизонтальным скроллом,
+     чтобы ничего не ломалось и не перенасыщало экран */
+    .wip-nav {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        gap: 8px;
+        padding-bottom: 2px; /* место под скроллбар */
+    }
+
+    .pill {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .wip-actions {
+        gap: 8px;
+    }
+
+    .wip-main {
+        padding: 8vh 0 10vh;
+    }
+}
+
+/* ќчень узкие телефоны */
+@media (max-width: 380px) {
+    .brand-name {
+        display: none;
+    }
+    /* экономим горизонталь, оставл€ем иконку */
+    .pill {
+        padding: 7px 10px;
+        font-size: 12.5px;
+    }
+
+    .wip-actions .pill-lang {
+        padding-inline: 10px;
+    }
+}
+@media (max-width: 1024px) {
+    .wip-header {
+        height: auto;
+        padding: 10px 0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "brand actions"
+            "nav   nav";
+        align-items: center;
+        row-gap: 10px;
+    }
+
+    .brand {
+        grid-area: brand;
+    }
+
+    .wip-actions {
+        grid-area: actions;
+        justify-self: end;
+    }
+
+    .wip-nav {
+        grid-area: nav;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pill {
+        padding: 8px 12px;
+    }
+
+    .wip-main {
+        padding: 8vh 0 12vh;
+    }
+}
+
+/* телефоны */
+@media (max-width: 640px) {
+    .container {
+        width: min(600px, 94%);
+    }
+
+    /* шапка в 2 строки: бренд + экшены, ниже Ч навигаци€ с горизонтальным скроллом */
+    .wip-header {
+        padding: 8px 0;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "brand actions"
+            "nav   nav";
+        row-gap: 8px;
+    }
+
+    .brand img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .brand-name {
+        font-size: 16px;
+    }
+
+    .wip-actions {
+        gap: 8px;
+    }
+
+    .wip-nav {
+        width: 100%;
+        justify-content: flex-start; /* начать от левого кра€ */
+        overflow-x: auto; /* горизонтальный скролл, если не влезает */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        gap: 8px;
+        padding: 2px 2px 6px; /* чуть места под скроллбар */
+    }
+
+    .pill {
+        padding: 7px 12px;
+        font-size: 13px;
+    }
+
+    .pill-lang {
+        padding-inline: 10px;
+    }
+
+    .wip-main {
+        padding: 6vh 0 10vh;
+        text-align: center;
+    }
+
+        .wip-main h1 {
+            font-size: clamp(26px, 7vw, 40px); /* чуть компактнее на узких */
+        }
+}
+
+/* очень узкие телефоны */
+@media (max-width: 380px) {
+    .brand-name {
+        display: none;
+    }
+    /* экономим горизонталь, оставл€ем только иконку */
+    .pill {
+        padding: 6px 10px;
+        font-size: 12.5px;
+    }
+
+    .wip-actions .pill-lang {
+        padding-inline: 8px;
+    }
+}

@@ -1,3 +1,4 @@
+/* Disputes.css */
 .disputes-page {
     color: #fff;
     flex: 1;
@@ -5,70 +6,117 @@
     font-family: 'Mulish', sans-serif;
 }
 
-.title-style {
-    font-family: 'Mulish', sans-serif;
+/* Заголовок всегда виден */
+.page-title-dis {
     font-size: 30px;
+    font-weight: 550;
+    color: #E5E5E5;
+    margin: 10px 0 16px;
+    letter-spacing: .5px;
 }
 
-.breadcrumb {
-    font-size: 14px;
-    color: #999;
-    margin-bottom: 10px;
-}
-
-    .breadcrumb .active {
-        color: #ffc107;
-    }
-
-.disputes-page h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-}
-
-.quazi-disputes-table {
+/* ===== Таблица с горизонтальным скроллом на узких ===== */
+.disputes-table {
     background-color: #1e1e1e;
     border: 1px solid #444;
     border-radius: 15px;
-    overflow: hidden;
+    overflow: hidden; /* для скруглений */
+    overflow-x: auto; /* скролл по X */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
-    /* таблица растягивается и колонки делятся поровну */
-    .quazi-disputes-table table {
+    .disputes-table table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: fixed; /* <- равная ширина колонок */
+        table-layout: fixed;
+        min-width: 820px; /* чтобы на узких появился скролл */
     }
 
-    /* хедер */
-    .quazi-disputes-table thead {
+    /* Липкий заголовок */
+    .disputes-table thead {
+        position: sticky;
+        top: 0;
+        z-index: 1;
         background-color: #2a2a2a;
         color: #ccc;
         font-size: 12px;
         font-weight: 500;
     }
 
-    /* ячейки */
-    .quazi-disputes-table th,
-    .quazi-disputes-table td {
+    .disputes-table th,
+    .disputes-table td {
         padding: 12px 16px;
         text-align: left;
         border-bottom: 1px solid #333;
         vertical-align: middle;
-        /* многоточие и запрет переноса */
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    /* последняя строка без нижней границы */
-    .quazi-disputes-table tbody tr:last-child td {
+    .disputes-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-/* пустое состояние */
-.quazi-no-disputes {
+/* Пустое состояние */
+.no-disputes {
     text-align: center;
-    padding: 40px;
+    padding: 32px 16px;
     color: #aaa;
     font-size: 16px;
+}
+
+.empty-message-table {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* ===== Планшеты ===== */
+@media (max-width: 1024px) {
+    .page-title-dis {
+        font-size: 26px;
+        margin-top: 55px; /* если сверху фикс-шапка */
+    }
+
+    .disputes-table th,
+    .disputes-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .disputes-table table {
+        min-width: 760px;
+    }
+}
+
+/* ===== Телефоны ===== */
+@media (max-width: 640px) {
+    .page-title-dis {
+        font-size: 24px;
+        margin-top: 55px;
+    }
+
+    .disputes-table th,
+    .disputes-table td {
+        padding: 10px 10px;
+        font-size: 12.5px;
+    }
+
+    .disputes-table table {
+        min-width: 700px;
+    }
+}
+
+/* Очень узкие */
+@media (max-width: 390px) {
+    .page-title-dis {
+        font-size: 22px;
+    }
+
+    .disputes-table table {
+        min-width: 660px;
+    }
 }

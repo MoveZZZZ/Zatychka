@@ -1,10 +1,10 @@
-.balance-page {
+п»ї.balance-page {
     color: #fff;
     flex: 1;
     margin-top: -20px;
 }
 
-/* ===== Карточки баланса сверху ===== */
+/* ===== РљР°СЂС‚РѕС‡РєРё Р±Р°Р»Р°РЅСЃР° СЃРІРµСЂС…Сѓ ===== */
 .balance-cards {
     display: flex;
     gap: 16px;
@@ -37,7 +37,7 @@
     color: #E5E5E5;
 }
 
-/* ===== Блоки Вывод/Пополнение ===== */
+/* ===== Р‘Р»РѕРєРё Р’С‹РІРѕРґ/РџРѕРїРѕР»РЅРµРЅРёРµ ===== */
 .balance-sections {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -61,7 +61,7 @@
     min-height: 100%;
 }
 
-/* ===== Значок TRC20 ===== */
+/* ===== Р—РЅР°С‡РѕРє TRC20 ===== */
 .badge {
     font-family: 'Mulish', sans-serif;
     display: inline-block;
@@ -75,7 +75,7 @@
     line-height: 1;
 }
 
-/* ===== Инпуты ===== */
+/* ===== РРЅРїСѓС‚С‹ ===== */
 .input-koshelok,
 .input-row input {
     width: 100%;
@@ -115,6 +115,7 @@
     box-sizing: border-box;
     appearance: auto;
 }
+
 .exchange-logos {
     display: flex;
     gap: 30px;
@@ -134,7 +135,6 @@
             filter: brightness(1.2);
         }
 
-
 .all-btn {
     background: none;
     border: none;
@@ -149,9 +149,8 @@
 }
 
     .all-btn:hover {
-        color: #ffac07; 
+        color: #ffac07;
     }
-
 
 .warning {
     font-size: 14px;
@@ -159,11 +158,10 @@
     color: #fff;
 }
 
-
 .submit-btn {
     width: 100%;
     padding: 16px 24px;
-    background-color: #c89629; 
+    background-color: #c89629;
     color: #000;
     font-size: 18px;
     font-weight: 600;
@@ -171,18 +169,17 @@
     border-radius: 14px;
     cursor: pointer;
     text-align: center;
-    box-shadow: 0 0 30px rgba(200, 150, 41, 0.3); 
+    box-shadow: 0 0 30px rgba(200, 150, 41, 0.3);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     margin-bottom: 20px;
 }
 
     .submit-btn:hover {
-        background-color: #daa520; 
-        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5); 
+        background-color: #daa520;
+        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5);
     }
 
-
-/* ===== QR-код ===== */
+/* ===== QR-РєРѕРґ ===== */
 .qr-block {
     position: relative;
     margin-top: 20px;
@@ -194,6 +191,7 @@
     border-radius: 8px;
     display: block;
 }
+
 .info-row {
     display: flex;
     justify-content: space-between;
@@ -202,7 +200,7 @@
 }
 
 .info-label {
-    color: #a0a0a0; /* светло-серый */
+    color: #a0a0a0;
     font-weight: 400;
 }
 
@@ -211,6 +209,7 @@
     font-weight: 600;
     font-size: 17px;
 }
+
 .address-mask {
     margin-top: 10px;
     font-size: 18px;
@@ -218,7 +217,7 @@
     color: #aaa;
 }
 
-/* ===== История баланса ===== */
+/* ===== РСЃС‚РѕСЂРёСЏ Р±Р°Р»Р°РЅСЃР° ===== */
 .history-section {
     margin-top: 40px;
 }
@@ -252,6 +251,16 @@
         cursor: default;
     }
 
+/* С‚Р°Р±Р»РёС†С‹ */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+    .table-wrap table {
+        min-width: 640px; /* РЅР° РјРѕР±РёР»РєРµ СѓР№РґС‘С‚ РІ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ СЃРєСЂРѕР»Р» */
+    }
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -266,12 +275,13 @@ thead {
 th, td {
     padding: 10px;
     border-bottom: 1px solid #444;
-    text-align: left;
+    text-align: center;
     font-family: 'Mulish', sans-serif;
     font-size: 12px;
     color: #a0a0a0;
 }
 
+/* ===== РљРѕС€РµР»С‘Рє ===== */
 .wallet-container {
     position: relative;
     border: 1px solid #444;
@@ -293,44 +303,6 @@ th, td {
 
 .wallet-info {
     background-color: #1f1f1f;
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.wallet-body {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-}
-
-/* Левая часть — QR */
-.qr-code {
-    width: 120px;
-    height: 120px;
-    border-radius: 8px;
-    background: #fff;
-    flex-shrink: 0;
-}
-
-/* Правая часть */
-.wallet-container {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.wallet-blur-wrap {
-    transition: filter 0.3s ease;
-}
-
-.blurred {
-    filter: blur(6px);
-    pointer-events: none;
-    user-select: none;
-}
-
-.wallet-info {
-    background-color: #1f1f1f;
     border: 1px solid #444;
     border-radius: 12px;
     padding: 20px;
@@ -342,7 +314,6 @@ th, td {
     gap: 24px;
 }
 
-/* QR слева */
 .qr-code {
     width: 150px;
     height: 150px;
@@ -351,7 +322,7 @@ th, td {
     flex-shrink: 0;
 }
 
-/* Контейнер справа */
+/* РџСЂР°РІР°СЏ С‡Р°СЃС‚СЊ */
 .wallet-content {
     flex: 1;
     display: flex;
@@ -359,7 +330,7 @@ th, td {
     gap: 16px;
 }
 
-/* Верхняя строка */
+/* Р’РµСЂС…РЅСЏСЏ СЃС‚СЂРѕРєР° */
 .wallet-label-row {
     display: flex;
     align-items: center;
@@ -369,7 +340,7 @@ th, td {
     color: #fff;
 }
 
-/* Адрес */
+/* РђРґСЂРµСЃ */
 .wallet-address-box {
     display: flex;
     align-items: center;
@@ -382,7 +353,7 @@ th, td {
     word-break: break-all;
 }
 
-/* Кнопка + уведомление */
+/* РљРЅРѕРїРєР° + СѓРІРµРґРѕРјР»РµРЅРёРµ */
 .wallet-bottom {
     display: flex;
     justify-content: space-between;
@@ -418,7 +389,6 @@ th, td {
     align-self: self-end;
 }
 
-
 .overlay-btn {
     position: absolute;
     top: 50%;
@@ -434,12 +404,13 @@ th, td {
     z-index: 10;
     box-shadow: 0 0 20px rgba(255, 185, 0, 0.5);
 }
-.overlay-btn:hover{
-        background-color: #daa520; 
-        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5); 
-    
-}
 
+    .overlay-btn:hover {
+        background-color: #daa520;
+        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5);
+    }
+
+/* РСЃС‚РѕСЂРёСЏ вЂ” С€Р°РїРєР° Рё СЃРµРіРјРµРЅС‚С‹ */
 .history-head {
     display: flex;
     justify-content: space-between;
@@ -472,7 +443,8 @@ th, td {
         display: inline-flex;
         align-items: center;
         text-align: center;
-        justify-content: center; gap: 8px;
+        justify-content: center;
+        gap: 8px;
         cursor: pointer;
         transition: background .18s ease, color .18s ease, transform .04s ease;
     }
@@ -496,7 +468,7 @@ th, td {
             display: inline-flex;
         }
 
-/* === Карточка фильтров (Типы) === */
+/* === РљР°СЂС‚РѕС‡РєР° С„РёР»СЊС‚СЂРѕРІ (РўРёРїС‹) === */
 .filters-card {
     background: #1F1F1F;
     border: 1px solid #2b2f36;
@@ -511,7 +483,7 @@ th, td {
     margin-bottom: 10px;
 }
 
-/* === Чипсы типов === */
+/* === Р§РёРїСЃС‹ С‚РёРїРѕРІ === */
 .chips {
     display: flex;
     flex-wrap: wrap;
@@ -546,6 +518,7 @@ th, td {
         transform: translateY(1px);
     }
 
+/* ===== РЎРїРёРЅРЅРµСЂС‹ ===== */
 .btn-spinner {
     display: inline-block;
     width: 18px;
@@ -569,79 +542,17 @@ th, td {
     }
 }
 
-/* Заблокированная кнопка проверки */
 .check-deposit-btn:disabled {
     opacity: .9;
     cursor: default;
 }
 
-/* ==== Копирование адреса ==== */
+/* ==== РљРѕРїРёСЂРѕРІР°РЅРёРµ Р°РґСЂРµСЃР° ==== */
 .copy-wrap {
     position: relative;
     display: inline-block;
 }
 
-.copy-btn {
-    color: #c89629; /* базовый цвет под ваш стиль */
-    transition: color .15s ease, transform .04s ease;
-}
-
-    .copy-btn:hover {
-        color: #3b82f6; /* синяя подсветка при наведении */
-    }
-
-    .copy-btn:active {
-        transform: translateY(1px);
-    }
-
-/* Всплывашка "Адрес скопирован" */
-.copied-popover {
-    position: absolute;
-    top: 28px; /* ниже иконки */
-    left: 50%;
-    transform: translateX(-50%);
-    background: #0b0f17;
-    border: 1px solid #2b2f36;
-    color: #cfd6df;
-    font-size: 12px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    white-space: nowrap;
-    box-shadow: 0 6px 20px rgba(0,0,0,.35);
-    z-index: 5;
-}
-
-    .copied-popover::before {
-        content: "";
-        position: absolute;
-        top: -6px;
-        left: 50%;
-        transform: translateX(-50%);
-        border: 6px solid transparent;
-        border-bottom-color: #2b2f36;
-    }
-
-    .copied-popover::after {
-        content: "";
-        position: absolute;
-        top: -5px;
-        left: 50%;
-        transform: translateX(-50%);
-        border: 5px solid transparent;
-        border-bottom-color: #0b0f17;
-    }
-.qr-placeholder {
-    background: #2a2a2a;
-    border: 1px dashed #3a3f47;
-}
-
-/* Кнопка-оверлей (disable во время спинера) */
-.overlay-btn:disabled {
-    opacity: .9;
-    cursor: default;
-}
-
-/* Синяя подсветка иконки копирования (если ещё не добавлял) */
 .copy-btn {
     color: #c89629;
     transition: color .15s ease, transform .04s ease;
@@ -655,7 +566,6 @@ th, td {
         transform: translateY(1px);
     }
 
-/* Попап "Адрес скопирован" (если ещё не добавлял) */
 .copied-popover {
     position: absolute;
     top: 28px;
@@ -691,3 +601,313 @@ th, td {
         border: 5px solid transparent;
         border-bottom-color: #0b0f17;
     }
+
+.qr-placeholder {
+    background: #2a2a2a;
+    border: 1px dashed #3a3f47;
+}
+
+.overlay-btn:disabled {
+    opacity: .9;
+    cursor: default;
+}
+
+/* ========================= */
+/* ===  РђР”РђРџРўРР’/RESPONSIVE === */
+/* ========================= */
+
+/* РїР»Р°РЅС€РµС‚С‹ в‰¤ 1024px */
+@media (max-width: 1024px) {
+    .balance-cards {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .deposit-section {
+        grid-column: 2 / 3;
+        margin-top: 20px;
+    }
+    .balance-title {
+        font-size: 18px;
+    }
+
+    .balance-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .withdraw-section, .deposit-section {
+        grid-column: auto;
+    }
+
+    .wallet-body {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .qr-code {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto; /* С†РµРЅС‚СЂРёСЂСѓРµРј QR РЅР° РјРѕР±РёР»СЊРЅС‹С… */
+    }
+
+    .wallet-address-box {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .wallet-bottom {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .check-deposit-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .wallet-note {
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* С‚Р°Р±Р»РёС†С‹ вЂ” С‡СѓС‚СЊ РєСЂСѓРїРЅРµРµ, СЃ РїСЂРѕРєСЂСѓС‚РєРѕР№ РёР· .table-wrap */
+    thead {
+        font-size: 12px;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .segmented {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px;
+    }
+
+        .segmented .seg {
+            flex: 1 1 48%;
+            font-size: 14px;
+            padding: 10px 12px;
+        }
+}
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+    .copy-wrap {
+        display: none !important;
+    }
+}
+/* С‚РµР»РµС„РѕРЅС‹ в‰¤ 640px */
+@media (max-width: 640px) {
+    .page-title {
+        font-size: 22px;
+        margin-top: 10px;
+        gap: 20px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    .casa-style {
+        font-size: 18px;
+    }
+
+    .exchange-logos {
+        gap: 16px;
+    }
+
+        .exchange-logos img {
+            height: 28px;
+        }
+
+    .badge {
+        font-size: 11px;
+        padding: 3px 8px;
+    }
+
+    .submit-btn {
+        padding: 14px 18px;
+        font-size: 16px;
+    }
+
+    .wallet-info {
+        padding: 14px;
+    }
+
+    .qr-code {
+        width: 120px;
+        height: 120px;
+    }
+
+    .wallet-label-row {
+        font-size: 15px;
+        gap: 8px;
+    }
+
+    .wallet-address-box {
+        flex-direction: column;
+        align-items: stretch;
+        word-break: break-word;
+    }
+
+        .wallet-address-box .info-value {
+            font-size: 15px;
+        }
+
+    .overlay-btn {
+        width: calc(100% - 32px);
+        max-width: 420px;
+        padding: 12px 16px;
+        text-align: center;
+    }
+
+    .table-wrap table {
+        min-width: 560px;
+    }
+
+    th, td {
+        font-size: 11px;
+        padding: 8px;
+    }
+}
+.page-title-balance {
+    font-size: 30px;
+    font-weight: 550;
+    color: #E5E5E5;
+    margin-bottom: 24px;
+    margin-top: 40px;
+    letter-spacing: 0.5px;
+    font-family: 'Mulish', sans-serif;
+}
+
+/* РѕС‡РµРЅСЊ РјР°Р»РµРЅСЊРєРёРµ СЌРєСЂР°РЅС‹ в‰¤ 380px */
+@media (max-width: 380px) {
+    .page-title {
+        font-size: 20px;
+    }
+
+    .badge {
+        font-size: 10px;
+    }
+
+    .segmented .seg {
+        font-size: 13px;
+        padding: 9px 10px;
+    }
+
+    .qr-code {
+        width: 100px;
+        height: 100px;
+    }
+
+    .wallet-address-box .info-value {
+        font-size: 14px;
+    }
+}
+/* ====== РљРѕРјРїР°РєС‚РЅС‹Рµ С„РёР»СЊС‚СЂС‹ РЅР° РјРѕР±РёР»Рµ/РїР»Р°РЅС€РµС‚Рµ ====== */
+.filters-toggle {
+    display: none; /* РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРєСЂС‹С‚Рѕ, РїРѕРєР°Р·С‹РІР°РµРј С‚РѕР»СЊРєРѕ РЅР° РјР°Р»С‹С… СЌРєСЂР°РЅР°С… */
+}
+
+.filters-inner {
+    /* РЅР° РґРµСЃРєС‚РѕРїРµ СЂР°Р·РґРµР» РѕС‚РєСЂС‹С‚ РІСЃРµРіРґР° */
+}
+
+/* РРєРѕРЅРєР°-СЃС‚СЂРµР»РєР° РІ РєРЅРѕРїРєРµ */
+.filters-toggle .chev {
+    transition: transform .2s ease;
+}
+
+    .filters-toggle .chev.rot {
+        transform: rotate(180deg);
+    }
+
+@media (max-width: 1024px) {
+    /* СѓРјРµРЅСЊС€Р°РµРј РѕС‚СЃС‚СѓРїС‹ РєР°СЂС‚РѕС‡РєРё С„РёР»СЊС‚СЂРѕРІ */
+    .filters-card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .page-title-balance
+    {
+        margin-top:80px;
+    }
+    /* РїРѕРєР°Р·С‹РІР°РµРј РєРЅРѕРїРєСѓ-С‚СѓРјР±Р»РµСЂ */
+    .filters-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        background: #101215;
+        border: 1px solid #2b2f36;
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #e5e7eb;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .filters-toggle-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Р±РµР№РґР¶ В«Р’СЃРµВ» РёР»Рё С‡РёСЃР»Рѕ РІС‹Р±СЂР°РЅРЅС‹С… */
+    .filters-summary {
+        background: #2b2416;
+        color: #ffcc66;
+        border: 1px solid #c89629;
+        border-radius: 999px;
+        font-size: 12px;
+        padding: 2px 8px;
+    }
+
+    /* РЅР° РјРѕР±РёР»СЊРЅС‹С… СЃРѕРґРµСЂР¶РёРјРѕРµ СЃРєСЂС‹С‚Рѕ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ */
+    .filters-inner {
+        display: none;
+        margin-top: 10px;
+    }
+
+    .filters-card.open .filters-inner {
+        display: block;
+    }
+
+    /* СѓРїР»РѕС‚РЅСЏРµРј С‡РёРїСЃС‹ Рё РґРµР»Р°РµРј РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ СЃРєСЂРѕР»Р» */
+    .chips {
+        gap: 6px;
+    }
+
+        .chips.chips-scroll {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+
+            .chips.chips-scroll::-webkit-scrollbar {
+                display: none; /* Chrome/Safari */
+            }
+
+    .chip {
+        padding: 6px 10px;
+        font-size: 13px;
+        white-space: nowrap; /* С‡С‚РѕР±С‹ РєСЂР°СЃРёРІРѕ РµС…Р°Р»Рё РІ СЂСЏРґ */
+    }
+
+    .filters-title {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chip {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+}

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import './Disputes.css';
 import Breadcrumbs from '../components/Breadcrumbs';
 import useUserInfo from '../hooks/useUserInfo';
@@ -32,12 +32,16 @@ export default function Disputes() {
     const canEdit = isAdmin && editMode;
 
     // фильтры
-    const [selectedStatuses, setSelectedStatuses] = useState([]); // по умолчанию активные
+    const [selectedStatuses, setSelectedStatuses] = useState([]);
     const toggleStatus = (val) => {
         setSelectedStatuses(prev =>
             prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]
         );
     };
+
+    // Свертка/разворот чипсов (как на Балансе)
+    const [chipsCollapsed, setChipsCollapsed] = useState(true);
+    const activeCount = selectedStatuses.length;
 
     // данные
     const [rows, setRows] = useState([]);
@@ -58,7 +62,7 @@ export default function Disputes() {
         return () => clearInterval(tickRef.current);
     }, []);
 
-    // периодический рефреш, чтобы база лениво закрывала просроченные
+    // периодический рефреш
     useEffect(() => {
         const reload = async () => {
             try {
@@ -73,11 +77,11 @@ export default function Disputes() {
             }
         };
         reload();
-        const id = setInterval(reload, 30000); // каждые 30 сек
+        const id = setInterval(reload, 30000);
         return () => clearInterval(id);
     }, [selectedStatuses]);
 
-    // --- форма добавления (только админ)
+    // форма добавления
     const [showAdd, setShowAdd] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -93,7 +97,7 @@ export default function Disputes() {
     const [devId, setDevId] = useState('');
 
     const [amount, setAmount] = useState('');
-    const [filesText, setFilesText] = useState(''); // через запятую
+    const [filesText, setFilesText] = useState('');
 
     const [hh, setHh] = useState('0');
     const [mm, setMm] = useState('30');
@@ -164,28 +168,47 @@ export default function Disputes() {
     return (
         <div className="disputes-page">
             <Breadcrumbs />
-            <h2>Споры</h2>
+            <h2 className="page-title-dis">Споры</h2>
 
-            {/* Фильтр статусов (чипсы) */}
-            <div className="filters-card">
-                <div className="filters-title">Типы</div>
-            <div className="chips">
-                {STATUS_OPTIONS.map(o => (
-                    <span
-                        key={o.value}
-                        className={`chip ${selectedStatuses.includes(o.value) ? 'active' : ''}`}
-                        onClick={() => toggleStatus(o.value)}
-                    >
-                        {o.label}
+
+            {/* Фильтр статусов — чипсы со сворачиванием */}
+            <div className={`filters-card ${chipsCollapsed ? '' : 'open'}`}>
+                {/* Кнопка-тумблер (видна на планшетах/телефонах) */}
+                <button
+                    type="button"
+                    className="filters-toggle"
+                    onClick={() => setChipsCollapsed(v => !v)}
+                    aria-expanded={!chipsCollapsed}
+                >
+                    <span className="filters-toggle-label">Статусы</span>
+                    <span className="filters-summary">
+                        {selectedStatuses.length ? `Выбрано: ${selectedStatuses.length}` : 'Все'}
                     </span>
-                ))}
+                </button>
+
+                <div className="filters-title">Статусы</div>
+
+                {/* Содержимое фильтров */}
+                <div className="filters-inner">
+                    <div className="chips chips-scroll">
+                        {STATUS_OPTIONS.map(o => (
+                            <button
+                                key={o.value}
+                                type="button"
+                                className={`chip ${selectedStatuses.includes(o.value) ? 'active' : ''}`}
+                                onClick={() => toggleStatus(o.value)}
+                            >
+                                {o.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
 
             {/* Кнопка «добавить» для админа */}
             {canEdit && (
-                <div style={{ margin: '12px 0' }}>
+                <div className="toolbar-row">
                     <button className="add-btn" onClick={() => setShowAdd(v => !v)}>
                         {showAdd ? 'Скрыть форму' : 'Добавить спор'}
                     </button>
@@ -255,13 +278,13 @@ export default function Disputes() {
                         <label>Таймер (ч/м/с)</label>
                         <div className="inline">
                             <input type="number" min="0" value={hh} onChange={e => setHh(e.target.value)} />
-                            <span style={{ opacity: .6 }}>ч</span>
+                            <span className="unit">ч</span>
                             <input type="number" min="0" value={mm} onChange={e => setMm(e.target.value)} />
-                            <span style={{ opacity: .6 }}>м</span>
+                            <span className="unit">м</span>
                             <input type="number" min="0" value={ss} onChange={e => setSs(e.target.value)} />
-                            <span style={{ opacity: .6 }}>с</span>
+                            <span className="unit">с</span>
                         </div>
-                        <div className="hint" style={{ opacity: .7, fontSize: 12, marginTop: 4 }}>
+                        <div className="hint">
                             При статусе «Заморожено» время не уходит и показывается как задано.
                         </div>
                     </div>
@@ -275,20 +298,21 @@ export default function Disputes() {
             )}
 
             <div className="disputes-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID транзакции</th>
-                            <th>Статус</th>
-                            <th>Реквизиты</th>
-                            <th>Устройство</th>
-                            <th>Сумма сделки</th>
-                            <th>Файлы</th>
-                            <th>Таймер</th>
-                            {canEdit && <th></th>}
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div className="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID транзакции</th>
+                                <th>Статус</th>
+                                <th>Реквизиты</th>
+                                <th>Устройство</th>
+                                <th>Сумма сделки</th>
+                                <th>Файлы</th>
+                                <th>Таймер</th>
+                                {canEdit && <th></th>}
+                            </tr>
+                        </thead>
+                        <tbody>
                         {rows.length === 0 ? (
                             <tr>
                                 <td colSpan={canEdit ? 8 : 7} className="no-disputes">
@@ -319,8 +343,9 @@ export default function Disputes() {
                                 )}
                             </tr>
                         ))}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

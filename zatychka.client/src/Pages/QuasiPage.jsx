@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import './QuasiPage.css';
 import Breadcrumbs from '../components/Breadcrumbs';
 
@@ -13,7 +13,7 @@ const sampleTransactions = [
         requester: 'Trader123',
         info: 'Ожидает оплаты',
         sum: '500 USDT',
-        type: 'В работе'
+        type: 'В работе',
     },
     {
         id: '2',
@@ -23,7 +23,7 @@ const sampleTransactions = [
         requester: 'TraderX',
         info: 'Ожидает 3-DS',
         sum: '1200 USDT',
-        type: 'Все'
+        type: 'Все',
     },
     {
         id: '3',
@@ -33,8 +33,8 @@ const sampleTransactions = [
         requester: 'CryptoGuy',
         info: 'Спор открыт',
         sum: '800 USDT',
-        type: 'Свободные'
-    }
+        type: 'Свободные',
+    },
 ];
 
 const quasiStatuses = [
@@ -48,39 +48,76 @@ const quasiStatuses = [
     'Отменена',
 ];
 
-const QuasiPage = () => {
+export default function QuasiPage() {
     const [selectedTab, setSelectedTab] = useState('Все');
     const [searchId, setSearchId] = useState('');
     const [selectedStatuses, setSelectedStatuses] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [search, setSearch] = useState('');
+    const [statusSearch, setStatusSearch] = useState('');
+
+    const dropRef = useRef(null);
+
+    useEffect(() => {
+        const close = (e) => {
+            if (dropRef.current && !dropRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+    }, []);
 
     const toggleStatus = (status) => {
         setSelectedStatuses((prev) =>
-            prev.includes(status)
-                ? prev.filter((s) => s !== status)
-                : [...prev, status]
+            prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
         );
     };
 
     const filteredStatuses = quasiStatuses.filter((s) =>
-        s.toLowerCase().includes(search.toLowerCase())
+        s.toLowerCase().includes(statusSearch.toLowerCase())
     );
 
-    const filteredTransactions = sampleTransactions.filter(tx =>
-        (selectedTab === 'Все' || tx.type === selectedTab) &&
-        (searchId === '' || tx.id.toLowerCase().includes(searchId.toLowerCase())) &&
-        (selectedStatuses.length === 0 || selectedStatuses.includes(tx.status))
+    const filteredTransactions = sampleTransactions.filter(
+        (tx) =>
+            (selectedTab === 'Все' || tx.type === selectedTab) &&
+            (searchId === '' || tx.id.toLowerCase().includes(searchId.toLowerCase())) &&
+            (selectedStatuses.length === 0 || selectedStatuses.includes(tx.status))
     );
 
     return (
         <div className="quasi-container">
-            <Breadcrumbs/>
-            <h2 className="page-title">Quasi-приём</h2>
+            <Breadcrumbs />
+            <h2 className="page-title-quasi">Quasi-приём</h2>
 
+            {/* Вкладки */}
+            <div className="tabs">
+                {tabs.map((t) => (
+                    <button
+                        key={t}
+                        type="button"
+                        className={`tab-btn ${selectedTab === t ? 'active' : ''}`}
+                        onClick={() => setSelectedTab(t)}
+                    >
+                        {t}
+                    </button>
+                ))}
+            </div>
+
+            {/* Фильтры */}
             <div className="transactions-filters">
                 <div className="search-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m19.485 20.154l-6.262-6.262q-.75.639-1.725.989t-1.96.35q-2.402 0-4.066-1.663T3.808 9.503T5.47 5.436t4.064-1.667t4.068 1.664T15.268 9.5q0 1.042-.369 2.017t-.97 1.668l6.262 6.261zM9.539 14.23q1.99 0 3.36-1.37t1.37-3.361t-1.37-3.36t-3.36-1.37t-3.361 1.37t-1.37 3.36t1.37 3.36t3.36 1.37" /></svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        aria-hidden
+                    >
+                        <path
+                            fill="currentColor"
+                            d="m19.485 20.154l-6.262-6.262q-.75.639-1.725.989t-1.96.35q-2.402 0-4.066-1.663T3.808 9.503T5.47 5.436t4.064-1.667t4.068 1.664T15.268 9.5q0 1.042-.369 2.017t-.97 1.668l6.262 6.261zM9.539 14.23q1.99 0 3.36-1.37t1.37-3.361t-1.37-3.36t-3.36-1.37t-3.361 1.37t-1.37 3.36t1.37 3.36t3.36 1.37"
+                        />
+                    </svg>
                     <input
                         type="text"
                         placeholder="ID транзакции"
@@ -89,25 +126,27 @@ const QuasiPage = () => {
                     />
                 </div>
 
-                <div className="status-dropdown-wrapper">
-                    <div
+                <div className="status-dropdown-wrapper" ref={dropRef}>
+                    <button
                         className="status-dropdown"
-                        onClick={() => setDropdownOpen((prev) => !prev)}
+                        type="button"
+                        onClick={() => setDropdownOpen((p) => !p)}
+                        aria-expanded={dropdownOpen}
                     >
                         {selectedStatuses.length > 0
                             ? `Выбрано: ${selectedStatuses.length}`
                             : 'Статус'}
                         <span className="arrow">▼</span>
-                    </div>
+                    </button>
 
                     {dropdownOpen && (
                         <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
                             <input
                                 type="text"
-                                placeholder="Поиск..."
+                                placeholder="Поиск статуса…"
                                 className="dropdown-search"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                value={statusSearch}
+                                onChange={(e) => setStatusSearch(e.target.value)}
                             />
                             {filteredStatuses.map((status) => (
                                 <div
@@ -126,6 +165,7 @@ const QuasiPage = () => {
                 </div>
             </div>
 
+            {/* Таблица с горизонтальным скроллом на узких */}
             <div className="disputes-table">
                 <table>
                     <thead>
@@ -133,7 +173,7 @@ const QuasiPage = () => {
                             <th>ID и дата</th>
                             <th>Статус</th>
                             <th>Реквизиты</th>
-                            <th>Запросите</th>
+                            <th>Запроситель</th>
                             <th>Информация</th>
                         </tr>
                     </thead>
@@ -177,6 +217,4 @@ const QuasiPage = () => {
             </div>
         </div>
     );
-};
-
-export default QuasiPage;
+}

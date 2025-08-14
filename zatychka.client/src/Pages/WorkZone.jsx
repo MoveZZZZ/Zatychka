@@ -40,28 +40,28 @@ function nums(link) {
 /* ===================== UI bits for cards ===================== */
 function IconWallet() {
     return (
-        <svg width="16" height="16" viewBox="0 0 24 24">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path fill="currentColor" d="M3 6a3 3 0 0 1 3-3h10a1 1 0 1 1 0 2H6a1 1 0 0 0-1 1v1h14a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3zM20 10H6v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM16 12h3v3h-3a1.5 1.5 0 0 1 0-3Z" />
         </svg>
     );
 }
 function IconTx() {
     return (
-        <svg width="16" height="16" viewBox="0 0 24 24">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path fill="currentColor" d="m8.5 3l-3 3l3 3V7h7v3l3-3l-3-3v2h-7V3Zm7 11H8v-2l-3 3l3 3v-2h7v2l3-3l-3-3v2Z" />
         </svg>
     );
 }
 function IconClock() {
     return (
-        <svg width="16" height="16" viewBox="0 0 24 24">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path fill="currentColor" d="M11 7h2v6h-4v-2h2zm1-5a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2z" />
         </svg>
     );
 }
 function IconUsers() {
     return (
-        <svg width="16" height="16" viewBox="0 0 24 24">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path fill="currentColor" d="M16 11a4 4 0 1 0-4-4a4 4 0 0 0 4 4M8 12a3 3 0 1 0-3-3a3 3 0 0 0 3 3m8 2a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6M8 14c-3.314 0-6 2.686-6 6h4.5a7.5 7.5 0 0 1 5.142-5.742A5.97 5.97 0 0 0 8 14" />
         </svg>
     );
@@ -82,44 +82,32 @@ function Chip({ icon, label, value, suffix }) {
     );
 }
 
-function initialsFrom(text = '') {
-    const s = String(text).trim();
-    if (!s) return '∑';
-    const parts = s.split(/\s+/);
-    const a = parts[0]?.[0] || '';
-    const b = parts[1]?.[0] || '';
-    return (a + b).toUpperCase();
-}
 function avatarContent(link) {
     const label = String(link?.requisiteLabel || '').toLowerCase();
     const req = link?.requisite || link?.requisiteInfo;
     const reqType = String(req?.type || '').toLowerCase();
 
-    // сначала пытаемся распознать по requisiteLabel
     if (/(email|почта)/i.test(label)) return '✉️';
     if (/(phone|тел(ефон)?)/i.test(label)) return '📞';
     if (/(card|карта|visa|master(card)?|mc)/i.test(label)) return '💳';
 
-    // затем по типу реквизита (если label пустой)
     if (reqType === 'email') return '✉️';
     if (reqType === 'phone') return '📞';
     if (reqType === 'card') return '💳';
 
-    // дефолт
     return '⚙️';
 }
+
 function BundleCard({ link, v, onEdit, onDelete }) {
     const deviceName =
         link.device?.name ||
         link.deviceName ||
         (link.deviceId ? `Устройство #${link.deviceId}` : 'Без устройства');
 
-    const typeMap = { Card: 'Карта', Phone: 'Телефон', Email: 'Email' };
     const reqText = link.requisiteLabel ? link.requisiteLabel : 'Реквизит не указан';
 
     return (
         <div className="bundle-card bz-card">
-            {/* Верхняя акцентная полоска */}
             <div className="bz-card-topbar" />
 
             <div className="bz-card-header">
@@ -179,7 +167,6 @@ export default function WorkZone() {
             try {
                 setLoading(true);
                 const data = await listLinks();
-                console.log(data);
                 if (!cancelled) setLinks(Array.isArray(data) ? data : []);
             } catch {
                 if (!cancelled) setErr('Не удалось загрузить связки');
@@ -212,6 +199,7 @@ export default function WorkZone() {
     return (
         <div className="workzone-container">
             <Breadcrumbs />
+
             <div className="workzone-header">
                 <h2 className="page-title">Рабочая зона</h2>
                 <button className="add-bundle-btn" onClick={() => setShowAdd(true)} type="button">
@@ -220,6 +208,8 @@ export default function WorkZone() {
             </div>
 
             {loading && <Spinner center label="Загрузка…" size={30} />}
+
+            {err && !loading && <div className="no-bundles">{err}</div>}
 
             {!loading && !err && (links.length === 0 ? (
                 <div className="no-bundles">Связок пока нет</div>

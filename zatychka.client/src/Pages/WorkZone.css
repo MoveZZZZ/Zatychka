@@ -6,6 +6,7 @@
     font-family: 'Mulish', sans-serif;
 }
 
+/* хлебные крошки */
 .breadcrumbs {
     color: #A0A0A0;
     font-size: 14px;
@@ -16,6 +17,7 @@
         color: #FFC107;
     }
 
+/* заголовок */
 .page-title {
     font-size: 30px;
     font-weight: 550;
@@ -26,11 +28,13 @@
     font-family: 'Mulish', sans-serif;
 }
 
+/* шапка страницы */
 .workzone-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 32px;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
 .add-bundle-btn {
@@ -42,9 +46,10 @@
     font-weight: 600;
     border-radius: 12px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform .04s ease;
+    white-space: nowrap;
 }
 
     .add-bundle-btn .plus {
@@ -57,6 +62,10 @@
         background-color: #e5ac00;
     }
 
+    .add-bundle-btn:active {
+        transform: translateY(1px);
+    }
+
 .no-bundles {
     text-align: center;
     font-size: 18px;
@@ -64,104 +73,6 @@
     margin-top: 40px;
 }
 
-.bundles-list {
-}
-.bundles-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 20px;
-}
-
-.bundle-card {
-    background-color: #1e1e1e;
-    border: 1px solid #444;
-    border-radius: 12px;
-    padding: 16px;
-    color: white;
-    font-size: 15px;
-    line-height: 1.4;
-}
-
-.bundle-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.bundle-label {
-    color: #aaa;
-    font-weight: 500;
-}
-
-.bundle-value {
-    font-weight: 600;
-    color: #fff;
-}
-.bundle-card {
-    background-color: #2c2c2c;
-    border: 1px solid #444;
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    color: #fff;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-    .bundle-card h4 {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #E5E5E5;
-    }
-.bundles-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.bundle-card {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #333;
-}
-
-.bundle-name {
-    font-size: 20px;
-    color: #e5e5e5;
-    margin-bottom: 10px;
-}
-
-.bundle-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 30px;
-    color: #ccc;
-    font-size: 14px;
-    margin-bottom: 15px;
-}
-
-.bundle-actions {
-    display: flex;
-    gap: 10px;
-}
-
-    .bundle-actions button {
-        padding: 8px 14px;
-        border-radius: 8px;
-        background-color: #2c2c2c;
-        color: #fff;
-        border: 1px solid #444;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-        .bundle-actions button.delete {
-            background-color: #5a1e1e;
-            border-color: #702e2e;
-        }
 /* === Красивые карточки связок (bz-*) === */
 :root {
     --bz-bg: #1f1f1f;
@@ -173,6 +84,7 @@
     --bz-accent-weak: rgba(200,150,41,0.18);
 }
 
+/* список карточек */
 .bz-list {
     display: grid;
     grid-template-columns: 1fr;
@@ -185,6 +97,13 @@
     }
 }
 
+@media (min-width: 1280px) {
+    .bz-list {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+/* карточка */
 .bz-card {
     position: relative;
     background: var(--bz-bg);
@@ -201,6 +120,7 @@
         transform: translateY(-1px);
     }
 
+/* верхняя полоска */
 .bz-card-topbar {
     position: absolute;
     inset: 0 0 auto 0;
@@ -209,6 +129,7 @@
     pointer-events: none;
 }
 
+/* заголовок карточки */
 .bz-card-header {
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -217,6 +138,7 @@
     margin-bottom: 12px;
 }
 
+/* аватар/иконка */
 .bz-avatar {
     width: 42px;
     height: 42px;
@@ -230,6 +152,7 @@
     box-shadow: 0 0 0 2px rgba(200,150,41,0.25);
 }
 
+/* заголовочный текст */
 .bz-head-main {
     min-width: 0;
 }
@@ -263,6 +186,7 @@
     border-radius: 999px;
 }
 
+/* кнопки действий */
 .bz-actions {
     display: flex;
     gap: 8px;
@@ -305,6 +229,7 @@
             color: #ffecec;
         }
 
+/* метрики */
 .bz-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -334,32 +259,215 @@
     box-shadow: inset 0 0 0 1px rgba(200,150,41,0.25);
 }
 
+.bz-chip-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
 .bz-chip-label {
+    display: block;
     font-size: 12px;
     color: var(--bz-sub);
     line-height: 1.2;
 }
 
 .bz-chip-value {
+    display: block;
     font-size: 15px;
     color: var(--bz-text);
     font-weight: 700;
     line-height: 1.2;
-}
-.bz-chip-main {
-    display: flex;
-    flex-direction: column; /* новая строка для value */
-    align-items: flex-start; /* выравнивание влево */
-    gap: 2px; /* небольшой промежуток */
-}
-
-/* На всякий случай делаем их блочными */
-.bz-chip-label,
-.bz-chip-value {
-    display: block;
-}
-
-/* Длинные числа/строки пусть не вылазят */
-.bz-chip-value {
     word-break: break-word;
 }
+
+/* ===== Планшеты ===== */
+@media (max-width: 1024px) {
+    .workzone-container {
+        padding-top: 64px;
+    }
+    /* если есть фикс-хедер */
+    .breadcrumbs {
+        display: none !important;
+    }
+    .page-title {
+        font-size: 26px;
+        margin-bottom: 16px;
+    }
+
+    .workzone-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .add-bundle-btn {
+        min-width: 200px;
+        flex-shrink: 0;
+    }
+
+    .bz-card {
+        padding: 14px;
+    }
+
+    .bz-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+
+    .bz-title {
+        font-size: 16px;
+    }
+
+    .bz-actions {
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .bz-metrics {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 8px;
+    }
+
+    .bz-chip {
+        padding: 9px 10px;
+    }
+
+    .bz-chip-ico {
+        width: 26px;
+        height: 26px;
+    }
+
+    .bz-chip-label {
+        font-size: 12px;
+    }
+
+    .bz-chip-value {
+        font-size: 14px;
+    }
+}
+
+/* ===== Телефоны ===== */
+@media (max-width: 640px) {
+    .workzone-container {
+        padding: 0 16px;
+        padding-top: 72px; /* под мобильный хедер */
+    }
+
+    .workzone-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .page-title {
+        font-size: 22px;
+        margin: 0;
+    }
+
+    .add-bundle-btn {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 15px;
+    }
+
+    .bz-card {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .bz-card-header {
+        grid-template-columns: auto 1fr; /* экшены уедут вниз */
+        gap: 10px;
+    }
+
+    .bz-actions {
+        grid-column: 1 / -1; /* на всю ширину */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .bz-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .bz-metrics {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .bz-chip {
+        padding: 8px 10px;
+        border-radius: 10px;
+    }
+
+    .bz-chip-ico {
+        width: 24px;
+        height: 24px;
+    }
+
+    .bz-chip-label {
+        font-size: 11.5px;
+    }
+
+    .bz-chip-value {
+        font-size: 13.5px;
+    }
+}
+
+/* ===== Очень узкие телефоны ===== */
+@media (max-width: 390px) {
+    .page-title {
+        font-size: 20px;
+    }
+
+    .bz-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* временная модалка-заглушка */
+.wz-tmp-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: grid;
+    place-items: center;
+    z-index: 999;
+}
+
+.wz-tmp-box {
+    background: #1f1f1f;
+    border: 1px solid #2b2f36;
+    border-radius: 12px;
+    padding: 20px;
+    width: min(92vw, 460px);
+    color: #e5e5e5;
+}
+
+    .wz-tmp-box h3 {
+        margin-top: 0;
+    }
+
+    .wz-tmp-box button {
+        margin-top: 12px;
+        background: #0f1218;
+        color: #fff;
+        border: 1px solid #2b2f36;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+        .wz-tmp-box button:hover {
+            background: rgba(255,255,255,.06);
+        }

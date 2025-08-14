@@ -1,23 +1,32 @@
-.modal-overlay {
+﻿/* базовые стили — как были */
+.modal-overlay-auto {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.2); /* ������ ������������� ��� ������� */
+    background: rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px); /* ��������� Safari */
+    -webkit-backdrop-filter: blur(20px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px 16px;
 }
 
+/* модификатор: поверх всего приложения */
+.modal-overlay--top {
+    /* максимально высокий слой, отдельный класс чтобы
+     не ломать другие модалки в проекте */
+    z-index: 2147483647; /* Int max – выше сайдбара/хедера/прочего */
+}
 
-
-.modal-window {
+.modal-auto-window {
     background-color: #1e1e1e;
     border-radius: 12px;
     justify-content: center;
     padding: 32px 24px;
-    width: 500px;
+    width: min(500px, 92vw);
     text-align: center;
     color: #E5E5E5;
 }
@@ -36,9 +45,10 @@
     margin-bottom: 24px;
 }
 
-.qr-code {
-    width: 140px;
-    height: 140px;
+.qr-code-apk-auto {
+    width: clamp(160px, 36vw, 300px);
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
     margin: 0 auto 24px auto;
     display: block;
 }
@@ -47,12 +57,13 @@
     display: flex;
     gap: 12px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .apk-button,
 .tg-button {
     padding: 10px 16px;
-    width: 180px;
+    width: 93%;
     font-weight: bold;
     font-size: 14px;
     border-radius: 8px;
@@ -81,3 +92,72 @@
         border-color: #aaa;
         color: #ddd;
     }
+
+/* планшеты */
+@media (max-width: 1024px) {
+    .modal-title {
+        font-size: 30px;
+    }
+
+    .modal-text {
+        font-size: 16px;
+    }
+
+    .modal-window {
+        padding: 28px 22px;
+    }
+}
+
+/* телефоны */
+@media (max-width: 640px) {
+    :root {
+        --mobile-header-height: 56px;
+    }
+    .apk-button,
+    .tg-button {
+        width: 90%;
+    }
+    .modal-overlay {
+        align-items: flex-start;
+        padding: calc(var(--mobile-header-height) + 12px) 12px max(16px, env(safe-area-inset-bottom));
+    }
+
+    .modal-window {
+        width: min(480px, 94vw);
+        padding: 22px 16px;
+        border-radius: 12px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .modal-text {
+        font-size: 15px;
+        margin-bottom: 18px;
+    }
+
+    .qr-code-apk-auto {
+        width: clamp(150px, 60vw, 240px);
+        margin-bottom: 30px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+}
+
+/* очень узкие телефоны */
+@media (max-width: 380px) {
+    .modal-title {
+        font-size: 22px;
+    }
+
+    .qr-code {
+        width: clamp(140px, 62vw, 220px);
+    }
+}

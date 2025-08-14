@@ -1,11 +1,10 @@
 ﻿import React, { useState } from 'react';
 import './AddDeviceModal.css';
-import { addDevice } from '../api/devices'; 
+import { addDevice } from '../api/devices';
 import { useToast } from '../context/ToastContext';
 
 const AddDeviceModal = ({ onClose, onAdded }) => {
     const toast = useToast();
-    const showToast = (type, msg) => setToast({ open: true, type, msg });
     const [deviceName, setDeviceName] = useState('');
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState('');
@@ -19,7 +18,7 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
 
         try {
             const created = await addDevice(name);
-            if (onAdded) onAdded(created);
+            onAdded?.(created);
             toast.success('Устройство добавленно');
             onClose();
         } catch (e) {
@@ -33,8 +32,14 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="device-modal" onClick={(e) => e.stopPropagation()}>
-                <h2>Добавить новое устройство</h2>
+            <div
+                className="device-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-device-title"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h2 id="add-device-title">Добавить новое устройство</h2>
                 <p>Укажите название вашего устройства</p>
 
                 <input
@@ -43,9 +48,12 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
                     placeholder="Введите название устройства"
                     value={deviceName}
                     onChange={(e) => setDeviceName(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && !loading && handleAdd()}
                     disabled={loading}
+                    autoFocus
                 />
 
+                {err && <div className="modal-error">{err}</div>}
 
                 <button className="modal-add-btn" onClick={handleAdd} disabled={loading}>
                     {loading ? 'Добавляем…' : 'Добавить'}

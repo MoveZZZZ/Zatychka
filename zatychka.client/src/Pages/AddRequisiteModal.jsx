@@ -4,6 +4,7 @@ import 'react-phone-input-2/lib/style.css';
 import PhoneInput from 'react-phone-input-2';
 import { banks } from '../constants/banks';
 import { useToast } from '../context/ToastContext';
+
 const TYPE_MAP = { card: 'Card', phone: 'Phone', email: 'Email' };
 
 export default function AddRequisiteModal({ owner, onClose, onAdd }) {
@@ -11,12 +12,8 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
     const [type, setType] = useState('');
     const [value, setValue] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const [err, setErr] = useState('');
 
-    const getBankLogo = (bankName) => {
-        const bank = banks.find((b) => b.name === bankName);
-        return bank?.logo || null;
-    };
+    const getBankLogo = (bankName) => banks.find((b) => b.name === bankName)?.logo || null;
 
     const formatOwnerName = (o) => {
         const l = o?.lastName ?? '';
@@ -34,15 +31,13 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
     const [search, setSearch] = useState('');
     const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
-    const filteredTypes = requisitesTypes.filter(t =>
+    const filteredTypes = requisitesTypes.filter((t) =>
         t.label.toLowerCase().includes(search.toLowerCase())
     );
 
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (!e.target.closest('.type-dropdown-wrapper')) {
-                setShowTypeDropdown(false);
-            }
+            if (!e.target.closest('.type-dropdown-wrapper')) setShowTypeDropdown(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -50,28 +45,34 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
 
     async function handleSubmit(e) {
         e?.preventDefault?.();
-        setErr('');
-
         if (!type) { toast.error('Выберите тип реквизита'); return; }
-        if (!value.trim()) {toast.error('Укажите значение'); return; }
+        if (!String(value).trim()) { toast.error('Укажите значение'); return; }
 
-        const apiType = TYPE_MAP[type]; // приводим к формату бэка
         try {
             setSubmitting(true);
-            await onAdd({ type: apiType, value: value.trim(), ownerId: owner.id });
-            toast.success('Реквезит успешно добавлен')
-            onClose(); 
+            await onAdd({ type: TYPE_MAP[type], value: String(value).trim(), ownerId: owner.id });
+            toast.success('Реквизит успешно добавлен');
+            onClose();
         } catch (e) {
-            toast.error(e?.message||'Не удалось добавить реквизит');
+            toast.error(e?.message || 'Не удалось добавить реквизит');
         } finally {
             setSubmitting(false);
         }
     }
 
     return (
-        <div className="add-requisite-modal-overlay" onClick={() => !submitting && onClose()}>
-            <div className="add-requisite-modal" onClick={(e) => e.stopPropagation()}>
-                <h2>Добавить новый реквизит</h2>
+        <div
+            className="add-requisite-modal-overlay"
+            onClick={() => !submitting && onClose()}
+        >
+            <div
+                className="add-requisite-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-req-title"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h2 id="add-req-title">Добавить новый реквизит</h2>
 
                 <div className="owner-preview">
                     {getBankLogo(owner.bankName) && (
@@ -85,23 +86,24 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
 
                 <div className="type-dropdown-wrapper">
                     <div
-                        className="bank-dropdown-selected"
-                        onClick={() => setShowTypeDropdown(!showTypeDropdown)}
+                        className="requsite-type-dropdown-selected"
+                        onClick={() => setShowTypeDropdown((s) => !s)}
                     >
-                        {requisitesTypes.find(t => t.value === type)?.label || 'Выберите тип реквизита'}
+                        {requisitesTypes.find((t) => t.value === type)?.label || 'Выберите тип реквизита'}
                         <span className="arrow">▼</span>
                     </div>
 
                     {showTypeDropdown && (
-                        <div className="bank-dropdown-menu">
+                        <div className="type-req-dropdown-menu" role="listbox">
                             <input
                                 type="text"
                                 placeholder="Поиск..."
                                 className="add-requisite-modal-search"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
+                                autoFocus
                             />
-                            <ul className="bank-list">
+                            <ul className="req-type-list ">
                                 {filteredTypes.map((t) => (
                                     <li
                                         key={t.value}
@@ -111,6 +113,8 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
                                             setShowTypeDropdown(false);
                                             setSearch('');
                                         }}
+                                        role="option"
+                                        aria-selected={type === t.value}
                                     >
                                         {t.label}
                                     </li>
@@ -138,9 +142,9 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
                         onChange={(e) => setValue(e.target.value)}
                         className="other-input"
                         disabled={submitting}
+                        onKeyDown={(e) => e.key === 'Enter' && !submitting && handleSubmit()}
                     />
                 )}
-
 
                 <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
                     {submitting ? 'Добавляем…' : 'Добавить'}

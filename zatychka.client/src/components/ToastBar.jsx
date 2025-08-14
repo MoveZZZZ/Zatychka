@@ -169,7 +169,7 @@ export default function ToastBar({
 
     return (
         <div
-            className={`toastbar ${open ? 'show' : ''} ${swiping ? 'swiping' : ''}`}
+            className={`toastbar ${variant} ${open ? 'show' : ''} ${swiping ? 'swiping' : ''}`}
             style={{
                 '--accent': accent,
                 transform: open

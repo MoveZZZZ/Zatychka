@@ -39,21 +39,21 @@ function RqTypeIcon({ type }) {
     const t = String(type || '').toLowerCase();
     if (t === 'email') {
         return (
-            <svg width="16" height="16" viewBox="0 0 24 24">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
                 <path fill="currentColor" d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2m8 6l10-6H2z" />
             </svg>
         );
     }
     if (t === 'phone') {
         return (
-            <svg width="16" height="16" viewBox="0 0 24 24">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
                 <path fill="currentColor" d="M20 15.5c-1.25 0-2.45-.2-3.57-.58a1 1 0 0 0-.97.19l-2.2 1.65a15.05 15.05 0 0 1-6.62-6.62l1.65-2.2a1 1 0 0 0 .19-.97A11.4 11.4 0 0 1 8.5 4H5a1 1 0 0 0-1 1A15 15 0 0 0 19 20a1 1 0 0 0 1-1v-3.5z" />
             </svg>
         );
     }
     // card / default
     return (
-        <svg width="16" height="16" viewBox="0 0 24 24">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path fill="currentColor" d="M20 18H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2M4 8v2h16V8z" />
         </svg>
     );
@@ -74,7 +74,7 @@ function ReqChip({ ownerId, req, onCopy, onDelete }) {
             onCopy?.();
             setTimeout(() => setCopied(false), 1200);
         } catch {
-            // no-op, используйте ваш toast вне при необходимости
+            // no-op
         }
     }
 
@@ -159,7 +159,7 @@ function OwnerCard({
 
 /* ===== page ===== */
 export default function Requisites() {
-    const [owners, setOwners] = useState([]); // [{id, firstName,lastName,middleName,bankName,requisites:[{id,type,value}]}]
+    const [owners, setOwners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState('');
     const toast = useToast();
@@ -213,7 +213,7 @@ export default function Requisites() {
         await apiDeleteRequisite(ownerId, reqId);
         setOwners(prev => prev.map(o => {
             if (o.id !== ownerId) return o;
-            toast.success('Реквизит удален');
+            toast.success('Реквизит удалён');
             return {
                 ...o,
                 requisites: (o.requisites || []).filter(r => r.id !== reqId),
@@ -241,11 +241,12 @@ export default function Requisites() {
         try {
             await apiDeleteOwner(id);
             setOwners(prev => prev.filter(o => o.id !== id));
-            toast.success('Владелец удален');
+            toast.success('Владелец удалён');
         } finally {
             setEditOwner(null);
-        }
+        }а
     }
+
 
     return (
         <div className="requisites-page rq-page">
@@ -257,6 +258,7 @@ export default function Requisites() {
                 </button>
             </div>
 
+            {err && <div className="rq-error">{err}</div>}
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
             {!loading && owners.length === 0 ? (
@@ -270,7 +272,6 @@ export default function Requisites() {
                             onAddReq={setAddReqOwner}
                             onEditOwner={setEditOwner}
                             onDeleteReq={handleDeleteRequisite}
-                            
                         />
                     ))}
                 </div>

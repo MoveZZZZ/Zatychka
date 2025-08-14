@@ -1,27 +1,24 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { banks } from '../constants/banks';
 import './EditOwnerModal.css';
 import { useToast } from '../context/ToastContext';
 import BankDropdown from './BankDropdown';
+
 export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
     const toast = useToast();
+
     const [lastName, setLastName] = useState(owner.lastName || '');
     const [firstName, setFirstName] = useState(owner.firstName || '');
     const [middleName, setMiddleName] = useState(owner.middleName || '');
-    const [bankValue, setBankValue] = useState('');
-
-
-    const [selectedBankName, setSelectedBankName] = useState(''); 
+    const [selectedBankName, setSelectedBankName] = useState('');
 
     useEffect(() => {
-        const v = banks.find(b => b.name === owner.bankName)?.value || '';
-        setBankValue(v);
+        setSelectedBankName(owner.bankName || '');
     }, [owner.bankName]);
 
     function handleSubmit(e) {
         e.preventDefault();
 
-        const bankName = selectedBankName.trim();
+        const bankName = (selectedBankName || '').trim();
         if (!bankName || bankName === 'Не выбран') {
             toast.error('Выберите банк.');
             return;
@@ -31,17 +28,23 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
             id: owner.id,
             lastName: lastName.trim(),
             firstName: firstName.trim(),
-            middleName: middleName.trim() || null,
-            bankName, 
+            middleName: (middleName || '').trim() || null,
+            bankName,
         });
-        toast.success("Владелец изменен");
 
+        toast.success('Владелец изменён');
     }
 
     return (
         <div className="edit-owner-modal-overlay" onClick={onClose}>
-            <div className="edit-owner-modal" onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-title">Редактировать владельца</h2>
+            <div
+                className="edit-owner-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-owner-title"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h2 id="edit-owner-title" className="modal-title">Редактировать владельца</h2>
 
                 <form onSubmit={handleSubmit} className="owner-form">
                     <input
@@ -65,15 +68,19 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
                         placeholder="Отчество (если есть)"
                     />
 
-                    <BankDropdown
-                        value={selectedBankName}
-                        onChange={setSelectedBankName}
-                    />
+                    {/* Якорь для дропдауна банков (чтобы меню позиционировалось от поля) */}
+                    <div className="edit-owner-bank-dropdown-wrap">
+                        <BankDropdown value={selectedBankName} onChange={setSelectedBankName} />
+                    </div>
 
                     <div className="modal-buttons">
                         <button type="submit" className="submit-button">Сохранить</button>
                         <button type="button" className="cancel-button" onClick={onClose}>Отмена</button>
-                        <button type="button" className="danger-button" onClick={() => onDelete(owner.id)}>
+                        <button
+                            type="button"
+                            className="danger-button"
+                            onClick={() => onDelete(owner.id)}
+                        >
                             Удалить владельца
                         </button>
                     </div>

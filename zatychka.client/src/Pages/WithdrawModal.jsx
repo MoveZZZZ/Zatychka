@@ -1,8 +1,48 @@
 ﻿// WithdrawModal.jsx
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import './WithdrawModal.css';
 
 export default function WithdrawModal({ open, onClose, managerUrl }) {
+    const dialogRef = useRef(null);
+    const firstFocusableRef = useRef(null);
+
+    // Закрытие по Esc
+    useEffect(() => {
+        if (!open) return;
+        const onKey = (e) => {
+            if (e.key === 'Escape') onClose?.();
+            // Примитивный focus trap
+            if (e.key === 'Tab' && dialogRef.current) {
+                const focusables = dialogRef.current.querySelectorAll(
+                    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                );
+                if (!focusables.length) return;
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [open, onClose]);
+
+    // Начальный фокус
+    useEffect(() => {
+        if (open) {
+            setTimeout(() => {
+                firstFocusableRef.current?.focus();
+            }, 0);
+        }
+    }, [open]);
+
+    const stop = useCallback((e) => e.stopPropagation(), []);
+
     if (!open) return null;
 
     return (
@@ -13,9 +53,9 @@ export default function WithdrawModal({ open, onClose, managerUrl }) {
                 aria-modal="true"
                 aria-labelledby="withdraw-modal-title"
                 aria-describedby="withdraw-modal-text"
-                onClick={(e) => e.stopPropagation()}
+                onClick={stop}
+                ref={dialogRef}
             >
-
 
                 <div className="withdraw-modal-icon" aria-hidden>
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
@@ -29,16 +69,18 @@ export default function WithdrawModal({ open, onClose, managerUrl }) {
                 <h3 id="withdraw-modal-title" className="withdraw-modal-title">
                     Заявка на вывод отправлена
                 </h3>
+
                 <p id="withdraw-modal-text" className="withdraw-modal-text">
                     Выводы проверяются вручную. Ожидайте ответа менеджера в привязанном Telegram.
                 </p>
 
                 <div className="withdraw-modal-actions">
                     <a
-                        href={managerUrl}
+                        href={managerUrl || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="tg-btn"
+                        className="tg-btn-wid"
+                        ref={firstFocusableRef}
                     >
                         Написать менеджеру
                     </a>

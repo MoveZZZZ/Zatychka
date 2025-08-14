@@ -1,24 +1,18 @@
-﻿// src/Pages/AddOwnerModal.jsx
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import './AddOwnerModal.css';
-import { banks } from '../constants/banks';
 import { addOwner } from '../api/owners';
 import { useToast } from '../context/ToastContext';
-import BankDropdown from './BankDropdown'; 
+import BankDropdown from './BankDropdown';
+
 const AddOwnerModal = ({ onClose, onAdded }) => {
     const toast = useToast();
-    const [form, setForm] = useState({
-        lastName: '',
-        firstName: '',
-        middleName: '',
-    });
-    const [selectedBankName, setSelectedBankName] = useState(''); 
+
+    const [form, setForm] = useState({ lastName: '', firstName: '', middleName: '' });
+    const [selectedBankName, setSelectedBankName] = useState('');
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState('');
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
+    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,7 +24,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
             return;
         }
 
-        const bankName = selectedBankName.trim();
+        const bankName = (selectedBankName || '').trim();
         if (!bankName || bankName === 'Не выбран') {
             toast.error('Выберите банк.');
             return;
@@ -64,11 +58,17 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
         }
     };
 
-
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-window" onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-title">Добавить нового владельца</h2>
+            <div
+                className="modal-window"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-owner-title"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h2 id="add-owner-title" className="modal-title">Добавить нового владельца</h2>
+
                 <form onSubmit={handleSubmit} className="owner-form">
                     <input
                         type="text"
@@ -78,6 +78,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         onChange={handleChange}
                         required
                         disabled={loading}
+                        autoFocus
                     />
                     <input
                         type="text"
@@ -97,11 +98,10 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         disabled={loading}
                     />
 
-                    <BankDropdown
-                        value={selectedBankName}
-                        onChange={setSelectedBankName}
-                    />
-
+                    {/* якорь для абсолютного меню */}
+                    <div className="owner-bank-dropdown-wrap">
+                        <BankDropdown value={selectedBankName} onChange={setSelectedBankName} />
+                    </div>
 
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? 'Добавляем…' : 'Добавить'}

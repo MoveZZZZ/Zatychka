@@ -1,5 +1,4 @@
-﻿// src/Pages/StatisticsPage.jsx
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import './StatisticsPage.css';
 
 import useUserInfo from '../hooks/useUserInfo';
@@ -9,7 +8,6 @@ import {
     getStatisticsTexts,
     getStatisticsNumbers as getPublicNumbers,
     saveStatisticsNumbers as savePublicNumbers,
-    // ⬇️ новые API для даты
     getIntakeDateSettings,
     saveIntakeDateSettings,
 } from '../api/settings';
@@ -105,12 +103,10 @@ export default function StatisticsPage() {
 
     const [draft, setDraft] = useState(defaultNumbers);
 
-    // ---- новая конфигурация даты для блока "Приём"
-    const [dateCfg, setDateCfg] = useState({ mode: 'Actual', customDate: null });     // то, что пришло с сервера
-    const [dateDraft, setDateDraft] = useState({ mode: 'Actual', customDate: '' });    // что редактируем
-    const [now, setNow] = useState(new Date()); // для "актуальной" даты
+    const [dateCfg, setDateCfg] = useState({ mode: 'Actual', customDate: null });
+    const [dateDraft, setDateDraft] = useState({ mode: 'Actual', customDate: '' });
+    const [now, setNow] = useState(new Date());
 
-    // UI
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [err, setErr] = useState('');
@@ -120,13 +116,11 @@ export default function StatisticsPage() {
         if (!editMode && editing) setEditing(false);
     }, [editMode, editing]);
 
-    // актуальная дата — обновляем раз в минуту
     useEffect(() => {
         const id = setInterval(() => setNow(new Date()), 60_000);
         return () => clearInterval(id);
     }, []);
 
-    // первичная загрузка
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -143,12 +137,18 @@ export default function StatisticsPage() {
                 if (t) setTexts(mergeTexts(defaultTexts, t));
                 if (nPub) setPubNums(mergeNumbers(defaultNumbers, nPub));
                 if (nPriv) setPrivNums(mergeNumbers(defaultNumbers, nPriv));
-                setDraft(mergeNumbers(defaultNumbers, scope === 'public' ? (nPub || defaultNumbers) : (nPriv || defaultNumbers)));
+                setDraft(
+                    mergeNumbers(
+                        defaultNumbers,
+                        scope === 'public' ? (nPub || defaultNumbers) : (nPriv || defaultNumbers)
+                    )
+                );
 
-                setDateCfg(cfg || { mode: 'Actual', customDate: null });
+                const cfgSafe = cfg || { mode: 'Actual', customDate: null };
+                setDateCfg(cfgSafe);
                 setDateDraft({
-                    mode: (cfg && cfg.mode) || 'Actual',
-                    customDate: cfg?.customDate ? String(cfg.customDate).slice(0, 10) : '',
+                    mode: cfgSafe.mode || 'Actual',
+                    customDate: cfgSafe.customDate ? String(cfgSafe.customDate).slice(0, 10) : '',
                 });
             } catch (e) {
                 if (!cancelled) setErr(e?.message || 'Не удалось загрузить данные');
@@ -156,11 +156,12 @@ export default function StatisticsPage() {
                 if (!cancelled) setLoading(false);
             }
         })();
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // при смене scope — обновить драфт чисел (дата — общая, не зависит от scope)
     useEffect(() => {
         setDraft(numbers);
         setEditing(false);
@@ -191,7 +192,6 @@ export default function StatisticsPage() {
             setSaving(true);
             setErr('');
 
-            // 1) сохраняем числа
             const patch = {
                 intake: {
                     totalTxCount: draft.intake.totalTxCount,
@@ -212,9 +212,8 @@ export default function StatisticsPage() {
             setNumbers(merged);
             setDraft(merged);
 
-            // 2) сохраняем конфиг даты (глобальная настройка, не зависит от scope)
             const payload = {
-                mode: dateDraft.mode, // 'Actual' | 'Custom'
+                mode: dateDraft.mode,
                 customDate:
                     dateDraft.mode === 'Custom' && dateDraft.customDate
                         ? new Date(dateDraft.customDate).toISOString()
@@ -234,7 +233,6 @@ export default function StatisticsPage() {
     const t = texts;
     const n = editing ? draft : numbers;
 
-    // вычисляем, что показывать рядом с заголовком "Приём"
     const displayDate = useMemo(() => {
         if (dateCfg?.mode === 'Custom' && dateCfg?.customDate) {
             const d = new Date(dateCfg.customDate);
@@ -246,7 +244,7 @@ export default function StatisticsPage() {
     return (
         <div className="statistics-container">
             <div className="stats-head">
-                <h2 className="page-title">{t.pageTitle}</h2>
+                <h2 className="page-title-stats">{t.pageTitle}</h2>
 
                 {isAdmin && editMode && (
                     <div className="edit-controls">
@@ -256,7 +254,9 @@ export default function StatisticsPage() {
                             </button>
                         ) : (
                             <>
-                                <button onClick={cancelEdit} disabled={saving}>Отмена</button>
+                                <button onClick={cancelEdit} disabled={saving}>
+                                    Отмена
+                                </button>
                                 <button onClick={save} disabled={saving}>
                                     {saving ? 'Сохраняем…' : 'Сохранить'}
                                 </button>
@@ -281,7 +281,6 @@ export default function StatisticsPage() {
                     <span className="section-title-date"> — {displayDate}</span>
                 </h3>
 
-                {/* Панель управления датой — только для админа в режиме редактирования */}
                 {isAdmin && editMode && editing && (
                     <div className="inline-settings" style={{ margin: '8px 0 16px' }}>
                         <label style={{ marginRight: 12 }}>
@@ -290,7 +289,7 @@ export default function StatisticsPage() {
                                 name="intake-date-mode"
                                 value="Actual"
                                 checked={dateDraft.mode === 'Actual'}
-                                onChange={() => setDateDraft(d => ({ ...d, mode: 'Actual' }))}
+                                onChange={() => setDateDraft((d) => ({ ...d, mode: 'Actual' }))}
                             />{' '}
                             Актуальная дата
                         </label>
@@ -300,7 +299,7 @@ export default function StatisticsPage() {
                                 name="intake-date-mode"
                                 value="Custom"
                                 checked={dateDraft.mode === 'Custom'}
-                                onChange={() => setDateDraft(d => ({ ...d, mode: 'Custom' }))}
+                                onChange={() => setDateDraft((d) => ({ ...d, mode: 'Custom' }))}
                             />{' '}
                             Своя дата
                         </label>
@@ -308,7 +307,7 @@ export default function StatisticsPage() {
                             <input
                                 type="date"
                                 value={dateDraft.customDate || ''}
-                                onChange={(e) => setDateDraft(d => ({ ...d, customDate: e.target.value }))}
+                                onChange={(e) => setDateDraft((d) => ({ ...d, customDate: e.target.value }))}
                             />
                         )}
                     </div>
@@ -374,7 +373,9 @@ export default function StatisticsPage() {
                             <EditableText
                                 editing={editing && isAdmin && editMode}
                                 value={n.intake.successRateSuffix}
-                                onChange={(v) => setDraft({ ...draft, intake: { ...draft.intake, successRateSuffix: v } })}
+                                onChange={(v) =>
+                                    setDraft({ ...draft, intake: { ...draft.intake, successRateSuffix: v } })
+                                }
                                 className="suffix"
                             />
                         </p>

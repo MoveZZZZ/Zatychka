@@ -1,3 +1,4 @@
+/* ==== исходные стили (оставлены) ==== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -8,7 +9,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 10000; /* перекрывает сайдбар/хедер */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 }
 
 .device-modal {
@@ -37,7 +40,7 @@
     }
 
 .device-modal-input {
-    max-width:95%;
+    max-width: 95%;
     padding: 10px 12px;
     border: 2px solid #f8b400;
     background-color: #111;
@@ -55,4 +58,83 @@
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+}
+
+/* небольшая подсказка об ошибке */
+.modal-error {
+    color: #ffb3b3;
+    font-size: 13px;
+    margin: -8px 0 12px;
+}
+
+/* ==== адаптация ==== */
+
+/* Планшеты и уже: если модалка выше экрана – даём скролл и ужимаем ширину */
+@media (max-width: 1024px) {
+    .modal-overlay {
+        align-items: flex-start;
+        padding: 24px 16px;
+        overflow-y: auto;
+    }
+
+    .device-modal {
+        width: min(520px, 92vw);
+        padding: 22px 20px;
+        max-height: 88vh;
+        overflow-y: auto;
+    }
+}
+
+/* Телефоны */
+@media (max-width: 640px) {
+    :root {
+        --mobile-header-height: 56px;
+    }
+
+    .modal-overlay {
+        padding: calc(var(--mobile-header-height) + 12px) 12px max(16px, env(safe-area-inset-bottom));
+    }
+
+    .device-modal {
+        max-width: 90%;
+        padding: 18px 14px;
+        border-radius: 12px;
+        max-height: calc(100vh - var(--mobile-header-height) - 28px);
+        max-height: calc(100svh - var(--mobile-header-height) - 28px);
+        overflow-y: auto;
+        margin-right: 25px;
+    }
+
+        .device-modal h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .device-modal p {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+    .device-modal-input {
+        width: 100%;
+        max-width: 100%;
+        font-size: 15px;
+        padding: 12px 12px;
+    }
+
+    .modal-add-btn {
+        padding: 12px;
+        font-size: 15px;
+    }
+}
+
+/* Очень узкие телефоны */
+@media (max-width: 380px) {
+    .device-modal h2 {
+        font-size: 19px;
+    }
+
+    .device-modal p {
+        font-size: 13.5px;
+    }
 }

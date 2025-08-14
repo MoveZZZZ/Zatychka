@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import './ComingSoon.css';
 import logo from '../../public/favicon-32x32.png';
+
 function SharqLogo({ size = 22 }) {
     return (
         <svg

@@ -1,6 +1,16 @@
-﻿.sidebar {
+﻿/* предотвращаем горизонтальный скролл всего сайта из-за сайдбара */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* ===== базовые ===== */
+.sidebar {
     width: 300px;
-    height: 96vh;
+    height: 96.8dvh; /* всегда по высоте окна */
+    max-height: 100dvh;
+    position: sticky; /* закрепляем, чтобы скроллился он, а не страница */
+    top: 0;
     background-color: #262626;
     color: #D5D5D5;
     display: flex;
@@ -11,21 +21,125 @@
     font-family: 'Mulish', sans-serif;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
+    will-change: transform;
+    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: none;
+    z-index: 1050;
+    /* ключевые строки, чтобы «не вылазил» */
+    overflow-y: auto; /* ВНУТРЕННИЙ вертикальный скролл */
+    overflow-x: hidden; /* рубим горизонтальный */
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable; /* ширина не прыгает при появлении скролла */
 }
 
+/* ===== мобильный хедер ===== */
+.mobile-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 56px;
+    background: #262626;
+    border-bottom: 1px solid #2b2f36;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 1100;
+}
+
+.mobile-header__left {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.mobile-logo {
+    height: 26px;
+    width: auto;
+    display: block;
+}
+
+.mobile-brand {
+    color: #E5E5E5;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+/* Бургер */
+.burger-btn {
+    width: 40px;
+    height: 36px;
+    border: 1px solid #3a3f47;
+    border-radius: 10px;
+    background: #262626;
+    text-align:center;
+    justify-content:center;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+    .burger-btn:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: #0f1218;
+    }
+
+    .burger-btn span {
+        display: block;
+        width: 18px;
+        height: 2px;
+        background: #e5e5e5;
+        border-radius: 2px;
+        transition: transform .2s ease, opacity .2s ease;
+    }
+
+        .burger-btn span + span {
+            margin-top: 4px;
+        }
+
+    .burger-btn.open span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+    }
+
+    .burger-btn.open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .burger-btn.open span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+
+/* Оверлей для мобильного меню */
+.sidebar-overlay {
+    position: fixed;
+    inset: 56px 0 0 0;
+    background: rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+    z-index: 1000;
+    border: 0;
+}
+
+    .sidebar-overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+/* ===== детали ===== */
 .sidebar-header h1 {
     font-size: 20px;
 }
 
 .sidebar-section {
-    padding-bottom: 20px;
-    padding-block: 3px;
-    margin-block: -8px -5px;
-    max-height: 200px;
+    padding-bottom: 14px;
+    margin-block: 2px 0;
+    /* убираем жесткое ограничение высоты, чтобы работал общий скролл */
 }
 
-
 .sidebar-footer {
+    margin-bottom: 10px;
     padding-top: 10px;
     font-size: 13px;
     margin-top: auto;
@@ -37,9 +151,13 @@
     white-space: nowrap;
     margin-bottom: 10px;
     padding-bottom: 4px;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+
+    .footer-scroll-wrapper::-webkit-scrollbar {
+        display: none;
+    }
 
 .footer-links {
     display: inline-flex;
@@ -58,7 +176,7 @@
     padding: 4px 10px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color .2s ease;
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -67,8 +185,7 @@
         background-color: #4a4a4a;
     }
 
-    .footer-btn img,
-    .footer-btn svg {
+    .footer-btn img, .footer-btn svg {
         width: 16px;
         height: 16px;
     }
@@ -88,7 +205,6 @@
     margin-bottom: 8px;
 }
 
-
 .logout-btn {
     display: flex;
     align-items: center;
@@ -104,22 +220,16 @@
         color: #fff;
     }
 
-.logout-icon {
-    width: 16px;
-    height: 16px;
-}
-
 .sidebar-rate {
     display: inline-flex;
     align-items: center;
-    background-color: #3a3a3a;
+    background: #3a3a3a;
     color: #fff;
     padding: 3px 6px;
     border-radius: 12px;
     font-size: 12px;
     gap: 5px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin: 10px 0 20px;
 }
 
 .rate-icon {
@@ -129,26 +239,28 @@
 }
 
 .rate-text {
-    font-family: 'Mulish', sans-serif;
+    font-family: 'Mulish',sans-serif;
     color: #fff;
     font-size: 13px;
     font-weight: 600;
 }
 
 .rate-time {
-    font-family: 'Mulish', sans-serif;
-    background-color: #737373;
+    font-family: 'Mulish',sans-serif;
+    background: #737373;
     border-radius: 8px;
     padding: 1px 4px;
-    font-size: 11px; 
+    font-size: 11px;
     color: #E0E0E0;
     font-weight: 300;
 }
+
 .sidebar-balance {
     display: flex;
     gap: 12px;
     margin-bottom: 20px;
 }
+
 .logo {
     width: 100px;
     height: auto;
@@ -158,7 +270,7 @@
 
 .balance-box {
     flex: 1;
-    background-color: #404040;
+    background: #404040;
     border-radius: 12px;
     padding: 9px;
     display: flex;
@@ -181,8 +293,13 @@
     margin-bottom: 6px;
 }
 
+    .balance-amount.clickable {
+        cursor: pointer;
+        border-bottom: 1px dashed #777;
+    }
+
 .balance-select {
-    background-color: #525252;
+    background: #525252;
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -192,36 +309,33 @@
     font-size: 12px;
     cursor: pointer;
     font-weight: 400;
-    vertical-align: central;
 }
-.balance-select-option{
+
+.balance-select-option {
     text-align: center;
 }
+
+/* Заголовки и элементы меню */
 .section-header {
     line-height: 1.2;
-    max-height: 20px;
-    max-width: 300px;
     display: flex;
     align-items: center;
     gap: 5px;
     cursor: pointer;
-    margin-top: 15px;
-    margin-bottom: 15px; 
+    margin: 15px 0;
     padding: 4px 0;
     font-weight: bold;
     font-size: 10px;
     color: #f0f0f0;
 }
 
-
 .section-title {
-    font-family: 'Mulish', sans-serif;
-    font-size: 13px; 
+    font-family: 'Mulish',sans-serif;
+    font-size: 13px;
     font-weight: 600;
     color: #F5F5F5;
-    margin-bottom: 0; 
+    margin-bottom: 0;
 }
-
 
 .section-icon {
     width: 20px;
@@ -229,7 +343,7 @@
     margin-right: 8px;
     margin-top: 20px;
     color: #888;
-    transition: color 0.3s;
+    transition: color .3s;
     display: flex;
     align-items: center;
 }
@@ -242,7 +356,7 @@
     width: 10px;
     height: 10px;
     margin-top: 25px;
-    transition: transform 0.3s ease;
+    transition: transform .3s ease;
 }
 
     .section-toggle.rotated {
@@ -255,68 +369,76 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin: 5px 0;
+    min-width: 0; /* чтобы текст не «раздвигал» контейнер */
 }
 
+    .menu-list a,
     .menu-list li {
         font-size: 14px;
         color: #c9c9c9;
-        cursor: pointer;
-        transition: color 0.2s ease;
+        text-decoration: none;
+        transition: color .2s ease;
     }
 
-        .menu-list li:hover {
-            color: #ffffff;
+        .menu-list a:hover, .menu-list li:hover {
+            color: #fff;
         }
 
-        .menu-list li.active {
-            color: #ffffff;
-            font-weight: 600; 
+        .menu-list a.active, .menu-list li.active {
+            color: #fff;
+            font-weight: 600;
         }
 
+    /* не даем длинным пунктам расширять сайдбар */
+    .menu-list a {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        display: block;
+    }
+
+/* ===== модалки ===== */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0,0,0,0.75);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 1200;
 }
 
 .modal {
-    background-color: #262626;
+    background: #262626;
     padding: 30px 40px;
     border-radius: 12px;
     color: #f0f0f0;
     text-align: center;
     max-width: 400px;
     width: 100%;
-    font-family: 'Mulish', sans-serif;
+    font-family: 'Mulish',sans-serif;
 }
 
     .modal h2 {
-        font-family: 'Mulish', sans-serif;
         font-size: 20px;
         margin-bottom: 15px;
     }
 
     .modal p {
-        font-family: 'Mulish', sans-serif;
         font-size: 14px;
         margin-bottom: 20px;
     }
 
     .modal .highlight {
-        font-family: 'Mulish', sans-serif;
         color: #ffc107;
         font-weight: bold;
     }
 
 .confirm-btn {
-    background-color: #E0A60F;
-    color: black;
+    background: #E0A60F;
+    color: #000;
     border: none;
     border-radius: 8px;
     padding: 10px 20px;
@@ -326,9 +448,10 @@
     width: 100%;
     margin-bottom: 12px;
 }
+
     .confirm-btn:hover {
-        background-color: #daa520; 
-        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5); 
+        background: #daa520;
+        box-shadow: 0 0 40px rgba(200,150,41,.5);
     }
 
 .cancel-btn {
@@ -338,65 +461,246 @@
     font-size: 14px;
     cursor: pointer;
 }
+
     .cancel-btn:hover {
-        background-color: #525252;
+        background: #525252;
     }
 
+/* ====== адаптив ====== */
+@media (max-width: 1024px) {
+    .mobile-header {
+        display: flex;
+    }
 
-.balance-line {
+    .sidebar {
+        position: fixed;
+        top: var(--mobile-header-height, 56px);
+        left: 0;
+        height: calc(100dvh - var(--mobile-header-height, 56px));
+        width: min(86vw, 360px);
+        transform: translateX(-110%);
+        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+    .sidebar-balance {
+        gap: 10px;
+    }
+
+    .balance-box {
+        padding: 8px;
+    }
+
+    .logo {
+        width: 90px;
+    }
+
+    .menu-list {
+        padding-left: 28px;
+    }
+
+    .sidebar-overlay {
+        inset: var(--mobile-header-height, 56px) 0 0 0;
+    }
+
+    .sidebar-footer {
+        padding-bottom: 45px;
+    }
+}
+
+@media (max-width: 640px) {
+    .footer-btn {
+        font-size: 14px;
+    }
+
+    .user-email {
+        font-size: 14px;
+    }
+
+    .rate-text {
+        font-size: 12px;
+    }
+
+    .menu-list a {
+        font-size: 13px;
+    }
+
+    .section-title {
+        font-size: 12.5px;
+    }
+}
+/* === Уплотняем заголовки и отступы между секциями === */
+.sidebar {
+    padding: 16px; /* было 20px */
+    gap: 14px; /* было 20px */
+}
+
+.sidebar-rate {
+    margin: 8px 0 14px;
+}
+/* было 10px 0 20px */
+.sidebar-balance {
+    gap: 10px;
+    margin-bottom: 14px;
+}
+/* было 12px/20px */
+
+.sidebar-section {
+    padding-bottom: 8px; /* было 14px */
+    margin-block: 4px 0; /* было 2px 0 */
+}
+
+.section-header {
+    gap: 4px; /* было 5px */
+    margin: 2px 0 4px; /* было 15px 0 15px */
+    padding: 2px 0; /* было 4px 0 */
+}
+
+.section-icon {
+    margin-top: 12px;
+}
+/* было 20px */
+.section-toggle {
+    margin-top: 16px;
+}
+/* было 25px */
+
+.menu-list {
+    gap: 4px; /* было 5px */
+    margin: 2px 0 6px; /* было 5px 0 */
+    padding-left: 28px; /* было 33px */
+}
+
+/* Чуть компактнее на мобилке */
+@media (max-width: 1024px) {
+    .sidebar {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .section-header {
+        margin: 8px 0 6px;
+    }
+
+    .menu-list {
+        padding-left: 24px;
+        gap: 3px;
+    }
+}
+/* === 1) «Настройки» больше не синеют при hover/focus === */
+.sidebar .section-header .section-title,
+.sidebar .section-header .section-title:link,
+.sidebar .section-header .section-title:visited {
+    color: #c9c9c9 !important;
+    text-decoration: none;
+}
+
+    .sidebar .section-header .section-title:hover,
+    .sidebar .section-header .section-title:focus,
+    .sidebar .section-header .section-title:active {
+        color: #c9c9c9 !important; /* оставить как в обычном состоянии */
+        text-decoration: none;
+        outline: none;
+    }
+    /* активный пункт — белый, без синего */
+    .sidebar .section-header .section-title.active {
+        color: #ffffff !important;
+    }
+
+/* === 2) Выровнять иконки и текст в header секций === */
+.section-header {
+    display: flex;
+    align-items: center; /* вертикальный центр для всего */
+    gap: 6px;
+    line-height: 1.2;
+}
+
+.section-icon {
+    margin: 0 8px 0 0 !important; /* убрать прежние смещения сверху */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-top: 50px;
+}
+
+.section-toggle {
+    margin: 0 0 0 auto !important; /* прижать вправо и центр по вертикали */
+    align-self: center;
+    width: 14px;
+    height: 14px;
+}
+/* чтобы SVG не «висели» на базовой линии текста */
+.section-header svg {
+    display: block;
+}
+/* --- не подсвечивать «Настройки» синим --- */
+.sidebar .section-header .section-title,
+.sidebar .section-header .section-title:link,
+.sidebar .section-header .section-title:visited,
+.sidebar .section-header .section-title:hover,
+.sidebar .section-header .section-title:focus,
+.sidebar .section-header .section-title:active {
+    color: #c9c9c9 !important;
+    text-decoration: none;
+    outline: none;
+}
+
+    .sidebar .section-header .section-title.active {
+        color: #fff !important;
+    }
+
+/* --- идеальное выравнивание: иконка — текст — стрелка --- */
+.section-header {
+    display: grid !important;
+    grid-template-columns: 24px 1fr 16px; /* иконка | текст | стрелка */
+    align-items: center;
+    column-gap: 12px;
+    padding: 8px 0;
+    margin: 10px 0;
+    min-height: 40px;
+    max-height: none !important; /* перекрываем старое правило */
+    line-height: 1.1;
+}
+
+.section-icon {
+    grid-column: 1;
+    width: 24px;
+    height: 24px;
+    margin: 0 !important; /* убираем прежние смещения */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-header .section-title {
+    grid-column: 2;
     display: flex;
     align-items: center;
-    gap: 8px;
+    margin: 0; /* на всякий случай */
 }
 
-.balance-edit-btn,
-.balance-save-btn,
-.balance-cancel-btn {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    border: 1px solid #444;
-    background: #2b2b2b;
-    color: #fff;
-    cursor: pointer;
+.section-toggle {
+    grid-column: 3;
+    width: 16px;
+    height: 16px;
+    margin: 0 !important; /* убираем margin-top */
+    align-self: center;
+    justify-self: end; /* прижать вправо */
 }
 
-.balance-save-btn {
-    border-color: #3d7a3d;
-}
-
-.balance-cancel-btn {
-    border-color: #7a3d3d;
-}
-
-.balance-amount.clickable {
-    cursor: pointer;
-    border-bottom: 1px dashed #777;
-}
-.menu-list a {
-    font-size: 14px;
-    color: #c9c9c9;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.menu-list a:hover {
-    color: #ffffff;
-}
-
-.menu-list a.active {
-    color: #ffffff;
-    font-weight: 600;
-}
-.section-title {
+/* чтобы инлайновые SVG не «висели» на базовой линии текста */
+.section-header svg {
     display: block;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 14px;
-    color: #c9c9c9;
-    cursor: pointer;
-    transition: color 0.2s ease;
 }
-    .section-title:hover {
-        color: #ffffff;
-    }

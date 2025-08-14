@@ -1,27 +1,33 @@
+/* ===== Ѕј«ј ===== */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0,0,0,.2);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .modal-window {
-    background-color: #1e1e1e;
+    background: #1e1e1e;
     border-radius: 12px;
     padding: 32px 24px;
     width: 450px;
+    max-width: 92vw; /* чтобы всегда влезало в вьюпорт */
     color: #fff;
     text-align: center;
+    overflow: visible !important;
+    max-height: none !important;
 }
 
 .modal-title {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 24px;
 }
 
@@ -32,17 +38,18 @@
 }
 
     .owner-form input {
-        background-color: #2a2a2a;
+        background: #2a2a2a;
         border: 1px solid #444;
         padding: 12px 14px;
         border-radius: 8px;
         font-size: 14px;
         color: #fff;
         outline: none;
-        max-width: 95%;
+        max-width: 100%;
     }
+
     .owner-form select {
-        background-color: #2a2a2a;
+        background: #2a2a2a;
         border: 1px solid #444;
         padding: 12px 14px;
         border-radius: 8px;
@@ -51,27 +58,178 @@
         outline: none;
     }
 
-        .owner-form input::placeholder {
-            color: #888;
-        }
-
-    .owner-form select {
-        color: #ccc;
+    .owner-form input::placeholder {
+        color: #888;
     }
 
 .submit-button {
-    background-color: #ffc107;
+    background: #ffc107;
     color: #000;
     border: none;
     padding: 12px;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 15px;
     border-radius: 8px;
     cursor: pointer;
     margin-top: 8px;
-    transition: background 0.2s ease;
+    transition: background .2s ease;
 }
 
     .submit-button:hover {
-        background-color: #e6ac00;
+        background: #e6ac00;
     }
+
+/* ===== ‘» —џ именно дл€ BankDropdown внутри модалки ===== */
+
+/* €корь */
+.owner-bank-dropdown-wrap {
+    position: relative;
+}
+
+/* сбиваем глобальные 102/110/130% и учитываем бордеры */
+.modal-window .bank-dropdown {
+    width: 100% !important;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.modal-window .bank-dropdown-selected {
+    width: 100% !important;
+    height: 48px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+/* контейнер меню Ч ровно ширина пол€, не шире вьюпорта и с учЄтом бордеров */
+.modal-window .bank-dropdown-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    width: 100% !important; /* ровно как поле */
+    transform: none !important; /* без смещений */
+    box-sizing: border-box;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.45);
+    z-index: 10020;
+    overflow: visible !important; /* скролл Ч только у списка */
+}
+
+/* поле поиска в меню */
+.modal-window .bank-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 1px solid #444;
+    background: #222;
+    color: #fff;
+    font-size: 14px;
+}
+
+/* скроллим только список */
+.modal-window .bank-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    max-height: min(320px, 60vh);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    text-align: left;
+    max-width: none !important;
+}
+
+    .modal-window .bank-list li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        margin: 0;
+        cursor: pointer;
+        transition: background .2s ease;
+    }
+
+        .modal-window .bank-list li:hover {
+            background: #333;
+        }
+
+        .modal-window .bank-list li.selected {
+            background: #444;
+        }
+
+.modal-window .bank-logo {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.modal-window .arrow {
+    margin-left: auto;
+    font-size: 16px;
+    padding-left: 8px;
+}
+
+/* ===== јƒјѕ“ј÷»я ===== */
+
+/* планшеты */
+@media (max-width:1024px) {
+    .modal-overlay {
+        align-items: flex-start;
+        padding: 24px 16px;
+    }
+
+    .modal-window {
+        width: min(520px, 92vw);
+        padding: 24px 20px;
+    }
+}
+
+/* телефоны */
+@media (max-width:640px) {
+    :root {
+        --mobile-header-height: 56px;
+    }
+
+    .modal-overlay {
+        padding: calc(var(--mobile-header-height) + 12px) 12px max(16px, env(safe-area-inset-bottom));
+    }
+
+    .modal-window {
+        max-width: 94vw; /* ещЄ чуточку уже, чтобы точно влезало */
+        padding: 20px 16px;
+        border-radius: 12px;
+        margin-right: 25px;
+    }
+
+        /* меню Ч жЄстко в границах модалки/экрана */
+        .modal-window .bank-dropdown-menu {
+            left: 0;
+            right: 0;
+            transform: none !important;
+            max-width: 90vw; /* на вс€кий случай ограничение по экрану */
+        }
+
+        .modal-window .bank-list {
+            max-height: min(180px, 50vh);
+        }
+}
+
+/* очень узкие телефоны */
+@media (max-width:380px) {
+    .modal-title {
+        font-size: 19px;
+    }
+
+    .owner-form input, .owner-form select {
+        font-size: 14px;
+    }
+}

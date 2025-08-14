@@ -1,87 +1,130 @@
-/* ReferralProgram.css */
-.referral-title {
-    display: flex;
-    margin-top: 10px;
-    align-items: center;
-    gap: 5px;
-    font-size: 20px;
-    font-weight: 500;
-    color: #E5E5E5;
-}
-.page-title {
-    font-size: 30px;
-    font-weight: 550;
-    color: #E5E5E5;
-    margin-bottom: 24px;
-    margin-top: 10px;
-    letter-spacing: 0.5px;
-    font-family: 'Mulish', sans-serif;
-}
+/* ===== Базовая верстка ===== */
 .referral-container {
     color: #fff;
     flex: 1;
     margin-top: -20px;
+    font-family: 'Mulish', sans-serif;
 }
-.referral-subtitle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #d3d3d3;
-    margin-bottom: 14px;
-}
+
+/* Верхняя панель */
 .referral-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.page-title-referral {
+    font-size: 30px;
+    font-weight: 550;
+    color: #e5e5e5;
+    margin: 10px 0 24px;
+    letter-spacing: 0.5px;
+    /* чтобы на планшете заголовок не пропадал */
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* при необходимости уберите, если хотите перенос строки */
 }
 
 .invite-btn {
     background-color: #ffb900;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     color: #000;
-    font-weight: 600;
-    padding: 10px 16px;
+    font-weight: 700;
+    padding: 12px 16px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease, transform 0.04s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 220px;
+    /* не даём кнопке «схлопываться» на планшете */
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
     .invite-btn:hover {
         background-color: #e0a800;
     }
 
+    .invite-btn:active {
+        transform: translateY(1px);
+    }
+
+
+/* Лоадер в кнопке */
+.btn-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0, 0, 0, 0.35);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: referral-spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes referral-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Сабтайтл */
+.referral-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #d3d3d3;
+    margin-bottom: 12px;
+}
+
+/* ===== Таблица и скролл-обёртка ===== */
 .referral-table-wrapper {
     background-color: #1f1f1f;
     border: 1px solid #444;
     border-radius: 12px;
-    overflow: hidden;
-}
-.empty-row td {
-    height: 1px; /* подгони под дизайн */
-    padding: 0; /* чтобы не тянулось за счёт паддингов */
-    vertical-align: middle; /* на всякий случай */
-}
-.referral-table {
-    width: 100%;
-    border-collapse: collapse; /* Обязательно для корректного colSpan */
-    table-layout: fixed; /* Фиксирует ширину столбцов */
+    overflow: hidden; /* для скруглений */
+    /* скролл включим ниже под медиазапросом */
 }
 
-    .referral-table thead,
-    .referral-table tbody,
-    .referral-table tr,
+.referral-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 560px; /* чтобы на узких экранах был горизонтальный скролл */
+}
+
+    .referral-table thead {
+        background-color: #2a2a2a;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
     .referral-table th,
     .referral-table td {
-        justify-content: center;
-        align-content:center;
-        display: revert; /* снимет block/grid/flex, если где-то повесил(а) */
+        padding: 12px 14px;
+        border-bottom: 1px solid #3a3a3a;
+        text-align: center;
+        font-size: 14px;
+        color: #cfcfcf;
+    }
+
+    .referral-table th {
+        font-weight: 700;
+        color: #e8e8e8;
     }
 
 .empty-row td {
-    height: 1px; /* подгони под дизайн */
+    height: 1px;
     padding: 0;
     vertical-align: middle;
 }
@@ -90,9 +133,118 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100px;
-    max-height: 100px;
-    min-width: 100px;
+    min-height: 110px;
     color: #888;
     text-align: center;
+}
+
+/* ===== Планшеты ===== */
+@media (max-width: 1024px) {
+    .referral-container {
+        padding-top: 64px;
+    }
+
+    .referral-header {
+        gap: 10px;
+        flex-wrap: wrap; /* позволяем кнопке переноситься на новую строку */
+    }
+
+    .page-title-referral {
+        font-size: 26px;
+        margin: 6px 0 10px;
+        white-space: normal; /* разрешим переносы заголовка при нехватке ширины */
+    }
+
+    .invite-btn {
+        min-width: 180px;
+        padding: 10px 14px;
+    }
+
+    .referral-table th,
+    .referral-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    /* Горизонтальный скролл таблицы */
+    .referral-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+        /* Небольшие тени-подсказки по краям при скролле можно имитировать градиентом */
+        .referral-table-wrapper::after {
+            content: '';
+            pointer-events: none;
+            display: block;
+            height: 0; /* декоративный псевдоэлемент, при желании можно убрать */
+        }
+}
+
+/* ===== Телефоны ===== */
+@media (max-width: 640px) {
+    .referral-container {
+        padding-top: 72px;
+    }
+
+    .referral-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .page-title-referral {
+        font-size: 22px;
+        margin: 0 0 10px;
+        white-space: normal;
+    }
+
+    .invite-btn {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 16px;
+        font-size: 15px;
+        border-radius: 12px;
+    }
+
+    .referral-subtitle {
+        font-size: 16px;
+        gap: 6px;
+    }
+
+    .referral-table th,
+    .referral-table td {
+        text-align:center;
+        padding: 10px;
+        font-size: 12.5px;
+    }
+
+    .referral-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        border-color: #333;
+    }
+
+    .referral-table thead {
+        font-size: 12px;
+    }
+}
+}
+
+/* ===== Очень узкие телефоны (например, 360-390px) ===== */
+@media (max-width: 390px) {
+    .page-title-referral {
+        font-size: 20px;
+    }
+
+    .referral-subtitle {
+        font-size: 15px;
+    }
+
+    .referral-table th,
+    .referral-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
 }

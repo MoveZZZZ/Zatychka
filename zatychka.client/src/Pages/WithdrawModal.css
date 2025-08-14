@@ -6,19 +6,24 @@
     place-items: center;
     z-index: 1000;
     backdrop-filter: blur(2px);
+    padding: 16px; /* чтобы модалка могла Ђдышатьї по кра€м на узких экранах */
 }
 
+/*  онтейнер модалки */
 .withdraw-modal {
+    position: relative;
     background: #1f1f1f;
     border: 1px solid #525252;
     border-radius: 14px;
-    width: min(520px, 92vw);
+    max-width: min(520px, 85vw);
+    max-height: calc(100svh - 32px); /* гарантированный вертикальный скролл внутри */
+    overflow: auto;
     padding: 22px 22px 18px;
     color: #E5E5E5;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    position: relative;
 }
 
+/*  нопка ЂXї */
 .withdraw-modal-close {
     position: absolute;
     top: 8px;
@@ -26,15 +31,19 @@
     background: transparent;
     border: 0;
     color: #cfcfcf;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1;
     cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
 }
 
     .withdraw-modal-close:hover {
         color: #fff;
+        background: rgba(255,255,255,0.06);
     }
 
+/* »конка-статус */
 .withdraw-modal-icon {
     width: 48px;
     height: 48px;
@@ -60,13 +69,14 @@
     margin: 0 0 16px;
 }
 
+/*  нопки */
 .withdraw-modal-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
 }
 
-.tg-btn {
+.tg-btn-wid {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -76,18 +86,19 @@
     font-weight: 700;
     background: #c89629;
     color: #000;
+    max-width: 100%;
     border: 1px solid #c89629;
     transition: transform .04s ease, box-shadow .2s ease, background .2s ease;
     box-shadow: 0 0 30px rgba(200,150,41,0.25);
 }
 
-    .tg-btn:hover {
+    .tg-btn-wid:hover {
         color: #000;
         background: #daa520;
         box-shadow: 0 0 40px rgba(200,150,41,0.45);
     }
 
-    .tg-btn:active {
+    .tg-btn-wid:active {
         transform: translateY(1px);
     }
 
@@ -103,7 +114,6 @@
 }
 
     .secondary-btn:hover {
-
         background: rgba(255,255,255,0.06);
         border-color: #505763;
     }
@@ -111,3 +121,96 @@
     .secondary-btn:active {
         transform: translateY(1px);
     }
+
+/* ===== адаптив ===== */
+@media (max-width: 560px) {
+    .withdraw-modal {
+        width: min(520px, 96vw);
+        padding: 18px 16px 14px;
+    }
+
+    .withdraw-modal-title {
+        font-size: 18px;
+    }
+
+    .withdraw-modal-text {
+        font-size: 13px;
+    }
+
+    /*  нопки в колонку и на всю ширину */
+    .withdraw-modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .tg-btn,
+    .secondary-btn {
+        width: 100%;
+        text-align: center;
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .withdraw-modal {
+        border-radius: 12px;
+        padding: 16px 12px 12px;
+    }
+
+    .withdraw-modal-icon {
+        width: 42px;
+        height: 42px;
+        margin-bottom: 8px;
+    }
+}
+
+/* ”важение к prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .tg-btn,
+    .secondary-btn,
+    .withdraw-modal,
+    .withdraw-modal-close {
+        transition: none !important;
+    }
+}
+/* поверх любых элементов (header 1100, sidebar 1050 и т.д.) */
+.withdraw-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: grid;
+    place-items: center;
+    padding: 12px; /* небольшой внутренний отступ по кра€м */
+    z-index: 2000; /* было 1000 Ч из-за этого не перекрывалось */
+    backdrop-filter: blur(2px);
+}
+
+/* компактнее по ширине по умолчанию */
+.withdraw-modal {
+    position: relative;
+    background: #1f1f1f;
+    border: 1px solid #525252;
+    border-radius: 14px;
+    width: clamp(280px, 88vw, 440px); /* было min(520px, 92vw) Ч слишком широко */
+    max-height: calc(100svh - 24px);
+    overflow: auto;
+    padding: 22px 20px 16px;
+    color: #E5E5E5;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+/* телефон/планшет */
+@media (max-width: 560px) {
+    .withdraw-modal {
+        width: min(90vw, 380px);
+        padding: 18px 14px 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .withdraw-modal {
+        width: 94vw; /* ещЄ чуть уже на очень узких */
+        padding: 16px 12px 12px;
+    }
+}
