@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import './ReferalProgram.css';
 import InviteModal from './InviteModal';
-
+import Breadcrumbs from '../components/Breadcrumbs';
 const ReferralProgram = () => {
     const [showInvite, setShowInvite] = useState(false);
     const [referralLink, setreferralLink] = useState('');
@@ -22,9 +22,10 @@ const ReferralProgram = () => {
 
     return (
         <div className="referral-container">
+            <Breadcrumbs></Breadcrumbs>
             {/* Верхняя панель — адаптивная */}
-            <div className="referral-header">
-                <h2 className="page-title-referral">Реферальная система</h2>
+           <div className="rq-header">
+<h2 className="page-title">Реферальная система</h2>
                 <button onClick={handleAddReferralClick} className="invite-btn" type="button">
                     {referalLoading ? <span className="btn-spinner" aria-label="Загрузка" /> : '+ Пригласить реферала'}
                 </button>
@@ -32,6 +33,7 @@ const ReferralProgram = () => {
                     <InviteModal onClose={() => setShowInvite(false)} referralLink={referralLink} />
                 )}
             </div>
+                
 
             <div className="referral-subtitle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden>

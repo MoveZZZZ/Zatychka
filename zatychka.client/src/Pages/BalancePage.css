@@ -2,6 +2,8 @@
     color: #fff;
     flex: 1;
     margin-top: -20px;
+    font-family: 'Mulish', sans-serif;
+    padding: 0 24px;
 }
 
 /* ===== Карточки баланса сверху ===== */
@@ -18,7 +20,14 @@
     border: 1px solid #525252;
     flex: 1;
 }
-
+.balance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0 16px;
+    max-height: 79px;
+}
 .balance-title {
     display: flex;
     margin-top: 10px;

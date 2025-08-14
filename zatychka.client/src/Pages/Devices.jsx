@@ -35,8 +35,8 @@ export default function Devices() {
     return (
         <div className="devices-page">
             <Breadcrumbs />
-            <div className="devices-header">
-                <h2 className="page-title-devices">Устройства</h2>
+            <div className="rq-header">
+                <h2 className="page-title">Устройства</h2>
                 <button className="add-device-btn" onClick={() => setShowModal(true)} type="button">
                     + Добавить устройство
                 </button>

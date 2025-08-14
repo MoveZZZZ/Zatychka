@@ -1,9 +1,10 @@
 /* Disputes.css */
-.disputes-page {
+.quazi-page-dis {
     color: #fff;
     flex: 1;
     margin-top: -20px;
     font-family: 'Mulish', sans-serif;
+    padding: 0 24px;
 }
 
 /* Заголовок всегда виден */

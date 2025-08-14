@@ -4,6 +4,7 @@
     flex: 1;
     margin-top: -20px;
     font-family: 'Mulish', sans-serif;
+    padding: 0 24px;
 }
 
 /* (если у вас есть компонент Breadcrumbs и вы хотите скрывать его на планшетах/телефонах) */

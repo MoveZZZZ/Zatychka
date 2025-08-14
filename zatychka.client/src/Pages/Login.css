@@ -133,6 +133,7 @@
 
 .login-input.phone {
     padding-left: 38px;
+    min-width:89%;
 }
 
 /* ===== АДАПТАЦИЯ ===== */

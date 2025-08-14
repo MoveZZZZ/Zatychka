@@ -192,8 +192,9 @@ export default function Transactions() {
     return (
         <div className="transactions-container">
             <Breadcrumbs />
+            <div className="rq-header">
             <h2 className="page-title">Приём</h2>
-
+            </div>
 
             <div className="transactions-filters">
                 <div className="search-box-trans">
@@ -337,7 +338,7 @@ export default function Transactions() {
                         ) : items.length === 0 ? (
                             <tr>
                                 <td colSpan={canEdit ? 7 : 6} className="no-disputes">
-                                    <div className="empty-message-table">Транзакций пока нет</div>
+                                        <div className="empty-message-table">Транзакций пока нет (Транзакции хранятся 30 дней)</div>
                                 </td>
                             </tr>
                         ) : (

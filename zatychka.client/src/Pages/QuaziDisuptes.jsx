@@ -8,9 +8,12 @@ export default function Disputes() {
     const disputes = []; // заглушка
 
     return (
-        <div className="disputes-page">
+        <div className="workzone-container">
             <Breadcrumbs />
-            <h2 className="page-title-dis">Споры</h2>
+            <div className="rq-header">
+                <h2 className="page-title">Споры</h2>
+            </div>
+
 
             <div className="disputes-table">
                 <table>

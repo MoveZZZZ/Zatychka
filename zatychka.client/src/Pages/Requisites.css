@@ -24,13 +24,37 @@
         display: none !important;
     }
 }
+.rq-btn-add {
+    max-width: 20%;
+    padding: 13px 24px;
+    background-color: #ffb900;
+    color: #000;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    margin-top: 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(200, 150, 41, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+}
+    .rq-btn-add:hover {
+        background-color: #daa520;
+        box-shadow: 0 0 40px rgba(200, 150, 41, 0.5);
+    }
 
+    .rq-btn-add:active {
+        transform: translateY(1px);
+    }
 .rq-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
     margin: 18px 0 16px;
+    vertical-align: central;
 }
 
 .rq-title {

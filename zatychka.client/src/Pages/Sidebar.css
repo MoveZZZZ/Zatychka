@@ -235,16 +235,21 @@ html, body {
     }
 
 .sidebar-rate {
-    display: inline-flex;
+    display: flex; /* вместо inline-flex */
     align-items: center;
+    justify-content: center;
+    gap: 6px;
     background: #3a3a3a;
     color: #fff;
-    padding: 3px 6px;
+    padding: 4px 8px;
+    margin-bottom: 2px;
     border-radius: 12px;
     font-size: 12px;
-    gap: 5px;
-    margin: 10px 0 20px;
-    max-width: 42%;
+    width: fit-content; /* сжимается по содержимому */
+    margin: 10px auto 20px; /* горизонтальный центр */
+    /* если нужен предел ширины — раскомментируй
+  max-width: 42%;
+  */
 }
 
 .rate-icon {
@@ -560,13 +565,11 @@ html, body {
     gap: 14px; /* было 20px */
 }
 
-.sidebar-rate {
-    margin: 8px 0 14px;
-}
+
 /* было 10px 0 20px */
 .sidebar-balance {
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: -25px;
 }
 /* было 12px/20px */
 
@@ -735,4 +738,74 @@ html, body {
 /* чтобы инлайновые SVG не «висели» на базовой линии текста */
 .section-header svg {
     display: block;
+}
+
+/* === Футер: карточка пользователя + центрирование === */
+.footer-user {
+    /* карточка */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* центр по горизонтали */
+    text-align: center; /* центр текста */
+    gap: 10px; /* расстояние между почтой и кнопкой */
+    padding: 12px 14px;
+    background: linear-gradient(180deg, #3a3a3a 0%, #323232 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+    align-self: stretch; /* на всю ширину сайдбара */
+}
+
+    /* строка с почтой — по центру, аккуратные размеры иконки */
+    .footer-user .user-email {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #fff;
+        font-size: 16px;
+        margin: 0; /* убираем внешние отступы */
+    }
+
+        .footer-user .user-email svg {
+            width: 20px;
+            height: 20px;
+            color: #E0A60F; /* акцентная иконка */
+            opacity: .9;
+        }
+
+    /* === Кнопка "Выйти" — акцент и красное свечение при hover === */
+    .footer-user .logout-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 12px;
+        background: #4a1f1f; /* легкий красный тон */
+        color: #ffdcdc;
+        border: 1px solid rgba(255, 77, 79, 0.35);
+        cursor: pointer;
+        transition: background .2s ease, box-shadow .2s ease, transform .05s ease, border-color .2s ease, color .2s ease;
+    }
+
+        .footer-user .logout-btn:hover,
+        .footer-user .logout-btn:focus-visible {
+            background: rgba(255, 71, 76, 0.18);
+            border-color: rgba(255, 71, 76, 0.55);
+            box-shadow: 0 0 0 3px rgba(255, 71, 76, 0.15), 0 0 22px rgba(255, 71, 76, 0.45); /* красное свечение */
+            color: #fff;
+        }
+
+        .footer-user .logout-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .footer-user .logout-btn:active {
+            transform: translateY(1px);
+        }
+.sidebar-header .sidebar-rate {
+    margin-top: 15px;
+    justify-self: center;
 }

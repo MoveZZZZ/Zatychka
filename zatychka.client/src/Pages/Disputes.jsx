@@ -166,10 +166,11 @@ export default function Disputes() {
     }
 
     return (
-        <div className="disputes-page">
+        <div className="transactions-container">
             <Breadcrumbs />
-            <h2 className="page-title-dis">Споры</h2>
-
+            <div className="rq-header">
+            <h2 className="page-title">Споры</h2>
+            </div>
 
             {/* Фильтр статусов — чипсы со сворачиванием */}
             <div className={`filters-card ${chipsCollapsed ? '' : 'open'}`}>

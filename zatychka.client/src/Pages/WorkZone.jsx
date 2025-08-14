@@ -218,7 +218,7 @@ export default function WorkZone() {
         <div className="workzone-container">
             <Breadcrumbs />
 
-            <div className="workzone-header">
+            <div className="rq-header">
                 <h2 className="page-title">Рабочая зона</h2>
                 <button className="add-bundle-btn" onClick={() => setShowAdd(true)} type="button">
                     <span className="plus">+</span> Добавить связку

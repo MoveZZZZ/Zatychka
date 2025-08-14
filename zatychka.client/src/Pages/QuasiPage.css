@@ -12,13 +12,7 @@
     font-family: 'Mulish', sans-serif;
 }
 
-.page-title-quasi {
-    font-size: 30px;
-    font-weight: 550;
-    color: #e5e5e5;
-    margin: 10px 0 16px;
-    letter-spacing: .5px;
-}
+
 
 /* на планшетах/телефонах отталкиваемся от шапки ровно на 75px */
 @media (max-width: 1024px) {

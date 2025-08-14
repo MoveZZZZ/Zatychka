@@ -362,8 +362,8 @@ export default function BalancePage() {
         <div className="balance-page">
             <Breadcrumbs />
 
-            <div className="balance-head">
-                <h2 className="page-title-balance">Баланс</h2>
+            <div className="balance-header">
+                <h2 className="page-title">Баланс</h2>
 
                 {editable && (
                     <div className="mode-switch">

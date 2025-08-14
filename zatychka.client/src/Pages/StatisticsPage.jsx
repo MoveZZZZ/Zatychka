@@ -11,7 +11,7 @@ import {
     getIntakeDateSettings,
     saveIntakeDateSettings,
 } from '../api/settings';
-
+import Breadcrumbs from '../components/Breadcrumbs';
 import {
     getMyStatisticsNumbers as getPrivateNumbers,
     saveMyStatisticsNumbers as savePrivateNumbers,
@@ -243,8 +243,9 @@ export default function StatisticsPage() {
 
     return (
         <div className="statistics-container">
-            <div className="stats-head">
-                <h2 className="page-title-stats">{t.pageTitle}</h2>
+        <Breadcrumbs/>
+            <div className="rq-header">
+                <h2 className="page-title">{t.pageTitle}</h2>
 
                 {isAdmin && editMode && (
                     <div className="edit-controls">

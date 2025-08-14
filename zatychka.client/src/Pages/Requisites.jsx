@@ -253,7 +253,7 @@ export default function Requisites() {
             <Breadcrumbs />
             <div className="rq-header">
                 <h2 className="rq-title">Реквизиты</h2>
-                <button className="rq-btn primary" onClick={() => setShowAddOwner(true)} type="button">
+                <button className="rq-btn-add" onClick={() => setShowAddOwner(true)} type="button">
                     + Добавить владельца
                 </button>
             </div>

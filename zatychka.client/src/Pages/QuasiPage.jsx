@@ -85,9 +85,11 @@ export default function QuasiPage() {
     );
 
     return (
-        <div className="quasi-container">
+        <div className="workzone-container">
             <Breadcrumbs />
-            <h2 className="page-title-quasi">Quasi-приём</h2>
+            <div className="rq-header">
+                <h2 className="page-title">Quasi-приём</h2>
+            </div>
 
 
             <div className="tabs">

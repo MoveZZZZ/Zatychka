@@ -69,7 +69,7 @@ const Notifications = () => {
         <div className="notifications-page">
             <Breadcrumbs />
 
-            <div className="notifications-header">
+            <div className="rq-header">
                 <h2 className="notifications-title">Уведомлений пока нет</h2>
             </div>
 
