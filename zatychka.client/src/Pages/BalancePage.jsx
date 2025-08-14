@@ -584,7 +584,8 @@ export default function BalancePage() {
             {/* ===== История / Замороженный + фильтры ===== */}
             <div className="history-section">
                 <div className="history-head">
-                    <div className="segmented">
+                    <div className="segmented" data-active={historyKind}>
+                        <span className="segmented-thumb" aria-hidden />
                         <button
                             className={`seg ${historyKind === 'simple' ? 'active' : ''}`}
                             onClick={() => setHistoryKind('simple')}

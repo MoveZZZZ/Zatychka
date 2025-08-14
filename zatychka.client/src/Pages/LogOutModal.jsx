@@ -1,10 +1,11 @@
-﻿import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './AutomationModal.css';
-
+import { useToast } from '../context/ToastContext';
 const AutomationModal = ({ onClose, email }) => {
     const portalElRef = useRef(null);
-
+    const [loadingLogout, setLoadingLogout] = useState(false);
+    const toast = useToast();
     if (!portalElRef.current) {
         portalElRef.current = document.createElement('div');
         portalElRef.current.setAttribute('data-portal', 'automation-modal');
@@ -26,8 +27,9 @@ const AutomationModal = ({ onClose, email }) => {
                 method: 'POST',
                 credentials: 'include',
             });
+            setLoadingLogout(true); await new Promise(r => setTimeout(r, 1800)); setLoadingLogout(false);
         } catch (err) {
-            console.error('Ошибка при выходе:', err);
+            toast.error("Ошибка при выходе");
         } finally {
             localStorage.clear();
             window.location.href = '/login';
@@ -42,7 +44,15 @@ const AutomationModal = ({ onClose, email }) => {
                     Вы действительно хотите выйти из аккаунта{' '}
                     <span className="highlight">{email || 'Гость'}</span>?
                 </p>
-                <button className="confirm-btn" onClick={handleLogout}>Подтвердить</button>
+                <button className="confirm-btn" onClick={handleLogout}>
+                    {loadingLogout ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <span className="btn-spinner" aria-label="Загрузка" />
+                            Выхожу…
+                        </span>
+                    ) : 'Подтвердить'}
+
+                    </button>
                 <button className="cancel-btn" onClick={onClose}>Отмена</button>
             </div>
         </div>,

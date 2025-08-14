@@ -10,12 +10,12 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
     const [firstName, setFirstName] = useState(owner.firstName || '');
     const [middleName, setMiddleName] = useState(owner.middleName || '');
     const [selectedBankName, setSelectedBankName] = useState('');
-
+    const [submitChangeOwner, setSubmitChangeOwner] = useState(false);
     useEffect(() => {
         setSelectedBankName(owner.bankName || '');
     }, [owner.bankName]);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         const bankName = (selectedBankName || '').trim();
@@ -23,7 +23,15 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
             toast.error('Выберите банк.');
             return;
         }
+        if (!lastName) {
+            toast.error("Введите фамилию")
+        }
+        if (!firstName) {
+            toast.error("Введите имя")
+        }
 
+        setSubmitChangeOwner(true); await new Promise(r => setTimeout(r, 1800)); setSubmitChangeOwner(true);
+        toast.success('Владелец изменён');
         onSave({
             id: owner.id,
             lastName: lastName.trim(),
@@ -32,7 +40,6 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
             bankName,
         });
 
-        toast.success('Владелец изменён');
     }
 
     return (
@@ -74,7 +81,14 @@ export default function EditOwnerModal({ owner, onClose, onSave, onDelete }) {
                     </div>
 
                     <div className="modal-buttons">
-                        <button type="submit" className="submit-button">Сохранить</button>
+                        <button type="submit" className="submit-button">
+                            {submitChangeOwner ? (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                    <span className="btn-spinner" aria-label="Загрузка" />
+                                    Сохраняем…
+                                </span>
+                            ) : 'Сохранить'}
+                        </button>
                         <button type="button" className="cancel-button" onClick={onClose}>Отмена</button>
                         <button
                             type="button"

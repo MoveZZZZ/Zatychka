@@ -9,9 +9,9 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
 
     const [form, setForm] = useState({ lastName: '', firstName: '', middleName: '' });
     const [selectedBankName, setSelectedBankName] = useState('');
-    const [loading, setLoading] = useState(false);
+    //const [loading, setLoading] = useState(false);
     const [err, setErr] = useState('');
-
+    const [addOwnerLoading, setAddOwnerLoading] = useState(false);
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
@@ -37,7 +37,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
             bankName,
         };
 
-        setLoading(true);
+
         try {
             const created = await addOwner(payload);
             onAdded?.({
@@ -48,13 +48,12 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                 bankName: payload.bankName,
                 requisites: [],
             });
+            setAddOwnerLoading(true); await new Promise(r => setTimeout(r, 1800)); setAddOwnerLoading(true);
             toast.success('Владелец добавлен');
             onClose();
         } catch (e) {
-            setErr(e?.message || 'Не удалось добавить владельца');
             toast.error('Не удалось добавить владельца');
         } finally {
-            setLoading(false);
         }
     };
 
@@ -77,7 +76,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         value={form.lastName}
                         onChange={handleChange}
                         required
-                        disabled={loading}
+                        disabled={addOwnerLoading}
                         autoFocus
                     />
                     <input
@@ -87,7 +86,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         value={form.firstName}
                         onChange={handleChange}
                         required
-                        disabled={loading}
+                        disabled={addOwnerLoading}
                     />
                     <input
                         type="text"
@@ -95,7 +94,7 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         placeholder="Отчество или второе имя владельца (при наличии)"
                         value={form.middleName}
                         onChange={handleChange}
-                        disabled={loading}
+                        disabled={addOwnerLoading}
                     />
 
                     {/* якорь для абсолютного меню */}
@@ -103,8 +102,13 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         <BankDropdown value={selectedBankName} onChange={setSelectedBankName} />
                     </div>
 
-                    <button type="submit" className="submit-button" disabled={loading}>
-                        {loading ? 'Добавляем…' : 'Добавить'}
+                    <button type="submit" className="submit-button" disabled={addOwnerLoading}>
+                        {addOwnerLoading ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                <span className="btn-spinner" aria-label="Загрузка" />
+                                Добавляем…
+                            </span>
+                        ) : 'Добавить'}
                     </button>
                 </form>
             </div>

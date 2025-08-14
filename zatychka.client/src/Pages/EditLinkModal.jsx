@@ -3,6 +3,7 @@ import './AddLinkModal.css';
 import { getDevices } from '../api/devices';
 import { listOwners } from '../api/owners';
 import Spinner from '../components/Spinner';
+import { useToast } from '../context/ToastContext';
 function pick(obj, ...keys) {
     for (const k of keys) {
         if (obj?.[k] !== undefined && obj?.[k] !== null) return obj[k];
@@ -74,6 +75,9 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
     const [err, setErr] = useState('');
     const [fieldErrs, setFieldErrs] = useState({});
     const [submitting, setSubmitting] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
+
+    const toast = useToast();
 
     useEffect(() => {
         let cancelled = false;
@@ -86,7 +90,7 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
                     setOwners(Array.isArray(own) ? own : []);
                 }
             } catch {
-                if (!cancelled) setErr('Не удалось загрузить устройства/реквизиты');
+                if (!cancelled) toast.error('Не удалось загрузить устройства/реквизиты');
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -149,10 +153,11 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
 
         try {
             setSubmitting(true);
+            setSubmitLoading(true); await new Promise(r => setTimeout(r, 1800)); setSubmitLoading(true);
             const saved = await onSave?.(payload); 
             if (saved) onClose?.();                
         } catch (e) {
-            setErr(e?.message || 'Не удалось сохранить изменения');
+            toast.error('Не удалось сохранить изменения');
         } finally {
             setSubmitting(false);
         }
@@ -266,9 +271,13 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
                             />
                         </div>
 
-
                             <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
-                                {submitting ? 'Сохраняем…' : 'Сохранить'}
+                            {submitting ? (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                    <span className="btn-spinner" aria-label="Загрузка" />
+                                    Сохраняем…
+                                </span>
+                                ) : 'Сохранить'}
                             </button>
                     </>
                 )}

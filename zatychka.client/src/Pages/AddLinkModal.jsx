@@ -44,7 +44,7 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
     const [submitting, setSubmitting] = useState(false);
     const [err, setErr] = useState('');
     const [fieldErrs, setFieldErrs] = useState({});
-
+    const [submitLoading, setSubmitLoading] = useState(false);
     // запрет скролла body, пока открыта модалка + ESC для закрытия
     useEffect(() => {
         const prev = document.body.style.overflow;
@@ -137,6 +137,7 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
             setSubmitting(true);
             const created = await createLink(payload);
             onCreated?.(created);
+            setSubmitLoading(true); await new Promise(r => setTimeout(r, 1800)); setSubmitLoading(true);
             toast.success('Связка создана');
             onClose?.();
         } catch (e) {
@@ -181,30 +182,21 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                     <Spinner center label="Загрузка…" size={30} />
                 ) : (
                     <>
-                        <div className={`form-group ${fieldErrs.deviceId ? 'error' : ''}`}>
+                            <div className={`form-group ${fieldErrs.deviceId ? 'error' : ''}`}>
                                 <select
-                                    className={`form-select ${fieldErrs.requisiteId ? 'error-border' : ''}`}
-                                    value={requisiteId}
-                                    onChange={(e) => setRequisiteId(e.target.value)}
+                                    className={`form-select ${fieldErrs.deviceId ? 'error-border' : ''}`}
+                                    value={deviceId}
+                                    onChange={(e) => setDeviceId(e.target.value)}
                                 >
-                                    <option value="" disabled>Выберите реквизит</option>
-
-                                    {allRequisites.map(r => {
-                                        const full = `${r.type} • ${r.value} — ${r.ownerLabel}`;
-                                        return (
-                                            <option
-                                                key={r.id}
-                                                value={r.id}
-                                                className="form-select-option"
-                                                title={full}                 // полный текст по ховеру
-                                            >
-                                                {shortRequisiteLabel(r)}     {/* короткий текст в списке */}
-                                            </option>
-                                        );
-                                    })}
+                                    <option value="" disabled>Выберите устройство</option>
+                                    {devices.map(d => (
+                                        <option key={d.id} value={d.id}>
+                                            {d.name || `Устройство #${d.id}`}
+                                        </option>
+                                    ))}
                                 </select>
-                            {fieldErrs.deviceId && <p className="error-text">{fieldErrs.deviceId}</p>}
-                        </div>
+                                {fieldErrs.deviceId && <p className="error-text">{fieldErrs.deviceId}</p>}
+                            </div>
 
                         <div className={`form-group ${fieldErrs.requisiteId ? 'error' : ''}`}>
                             <select
@@ -326,10 +318,14 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
                                 onChange={handleNumberChange('minutesBetween')}
                             />
                         </div>
-
-                        <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
-                            {submitting ? 'Добавляем…' : 'Добавить'}
-                        </button>
+                            <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
+                                {submitting ? (
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                        <span className="btn-spinner" aria-label="Загрузка" />
+                                        Добавляем…
+                                    </span>
+                                ) : 'Добавить'}
+                            </button>
                     </>
                 )}
             </div>

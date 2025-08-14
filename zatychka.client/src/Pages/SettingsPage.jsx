@@ -46,7 +46,6 @@ export default function SettingsPage() {
 
     async function onSave() {
         try {
-            setSaving(true);
             setErr('');
 
             if (!loginRe.test(login)) throw new Error('Логин: 3–32 символа, латиница/цифры/._-');
@@ -67,7 +66,7 @@ export default function SettingsPage() {
                 setPwd('');
                 setPwd2('');
             }
-
+            setSaving(true); await new Promise(r => setTimeout(r, 1800)); setSaving(false);
             toast.success('Изменения сохранены');
             setLogin(updated.login);
             setEmail(updated.email);
@@ -77,7 +76,6 @@ export default function SettingsPage() {
             setErr(msg);
             toast.error(msg);
         } finally {
-            setSaving(false);
         }
     }
 
@@ -145,7 +143,12 @@ export default function SettingsPage() {
                 </div>
 
                 <button className="save-btn" onClick={onSave} disabled={saving}>
-                    {saving ? 'Сохраняем…' : 'Сохранить'}
+                    {saving ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <span className="btn-spinner" aria-label="Загрузка" />
+                            Сохраняем…
+                        </span>
+                    ) : 'Сохранить'}
                 </button>
             </div>
         </div>

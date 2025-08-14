@@ -4,12 +4,12 @@ import { useToast } from '../context/ToastContext';
 const EditDeviceModal = ({ device, onClose, onUpdate, onDelete }) => {
     const toast = useToast();
     const [name, setName] = useState(device.name || '');
-    const [loading, setLoading] = useState(false);
+    const [loadingChange, setLoadingChange] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false);
     const [err, setErr] = useState(null);
 
     const handleUpdate = async () => {
         if (!name.trim()) return;
-        setLoading(true);
         setErr(null);
         try {
             const res = await fetch(`https://localhost:5132/api/devices/${device.id}`, {
@@ -21,18 +21,17 @@ const EditDeviceModal = ({ device, onClose, onUpdate, onDelete }) => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const updated = await res.json();
             onUpdate?.(updated);
+            setLoadingChange(true); await new Promise(r => setTimeout(r, 1800)); setLoadingChange(true);
             toast.success('Изменения сохранены');
             onClose();
         } catch (e) {
             setErr('Не удалось изменить устройство');
             toast.error('Не удалось изменить устройство');
         } finally {
-            setLoading(false);
         }
     };
 
     const handleDelete = async () => {
-        setLoading(true);
         setErr(null);
         try {
             const res = await fetch(`https://localhost:5132/api/devices/${device.id}`, {
@@ -41,13 +40,13 @@ const EditDeviceModal = ({ device, onClose, onUpdate, onDelete }) => {
             });
             if (!res.ok && res.status !== 204) throw new Error(`HTTP ${res.status}`);
             onDelete?.(device.id);
+            setLoadingDelete(true); await new Promise(r => setTimeout(r, 1800)); setLoadingDelete(true);
             toast.success('Устройство удалено');
             onClose();
         } catch (e) {
             setErr('Не удалось удалить устройство');
             toast.error('Не удалось удалить устройство');
         } finally {
-            setLoading(false);
         }
     };
 
@@ -61,16 +60,26 @@ const EditDeviceModal = ({ device, onClose, onUpdate, onDelete }) => {
                     className="modal-input"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
+                    disabled={loadingDelete}
                 />
 
 
-                <button className="modal-action" onClick={handleUpdate} disabled={loading}>
-                    {loading ? 'Сохраняем…' : 'Изменить устройство'}
+                <button className="modal-action" onClick={handleUpdate} disabled={loadingChange}>
+                    {loadingChange ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <span className="btn-spinner" aria-label="Загрузка" />
+                            Сохраняем…
+                        </span>
+                    ) : 'Изменить устройство'}
                 </button>
 
-                <button className="modal-delete" onClick={handleDelete} disabled={loading}>
-                    {loading ? 'Удаляем…' : 'Удалить устройство'}
+                <button className="modal-delete" onClick={handleDelete} disabled={loadingDelete}>
+                    {loadingDelete ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <span className="btn-spinner" aria-label="Загрузка" />
+                            Удаляем…
+                        </span>
+                    ) : 'Удалить устройство'}
                 </button>
             </div>
         </div>

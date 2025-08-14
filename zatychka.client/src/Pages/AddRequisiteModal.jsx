@@ -51,6 +51,7 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
         try {
             setSubmitting(true);
             await onAdd({ type: TYPE_MAP[type], value: String(value).trim(), ownerId: owner.id });
+            setSubmitting(true); await new Promise(r => setTimeout(r, 1800)); setSubmitting(true);
             toast.success('Реквизит успешно добавлен');
             onClose();
         } catch (e) {
@@ -147,7 +148,12 @@ export default function AddRequisiteModal({ owner, onClose, onAdd }) {
                 )}
 
                 <button className="submit-btn" onClick={handleSubmit} disabled={submitting}>
-                    {submitting ? 'Добавляем…' : 'Добавить'}
+                    {submitting ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <span className="btn-spinner" aria-label="Загрузка" />
+                            Добавляем…
+                        </span>
+                    ) : 'Добавить'}
                 </button>
             </div>
         </div>

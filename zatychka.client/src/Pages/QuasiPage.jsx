@@ -89,7 +89,7 @@ export default function QuasiPage() {
             <Breadcrumbs />
             <h2 className="page-title-quasi">Quasi-приём</h2>
 
-            {/* Вкладки */}
+
             <div className="tabs">
                 {tabs.map((t) => (
                     <button
@@ -103,7 +103,7 @@ export default function QuasiPage() {
                 ))}
             </div>
 
-            {/* Фильтры */}
+
             <div className="transactions-filters">
                 <div className="search-box">
                     <svg

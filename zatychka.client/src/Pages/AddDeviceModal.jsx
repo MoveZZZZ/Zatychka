@@ -19,6 +19,7 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
         try {
             const created = await addDevice(name);
             onAdded?.(created);
+            setLoading(true); await new Promise(r => setTimeout(r, 1800)); setLoading(true);
             toast.success('Устройство добавленно');
             onClose();
         } catch (e) {
@@ -26,7 +27,6 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
             setErr(msg);
             toast.error(msg);
         } finally {
-            setLoading(false);
         }
     };
 
@@ -56,7 +56,12 @@ const AddDeviceModal = ({ onClose, onAdded }) => {
                 {err && <div className="modal-error">{err}</div>}
 
                 <button className="modal-add-btn" onClick={handleAdd} disabled={loading}>
-                    {loading ? 'Добавляем…' : 'Добавить'}
+                    {loading ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <span className="btn-spinner" aria-label="Загрузка" />
+                            Добавляем…
+                        </span>
+                    ) : 'Добавить'}
                 </button>
             </div>
         </div>

@@ -160,6 +160,7 @@ export default function WorkZone() {
     const [showAdd, setShowAdd] = useState(false);
     const [editing, setEditing] = useState(null);
     const [toggleFor, setToggleFor] = useState(null);
+    const [submitDelete, setSubmitDelete] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -185,7 +186,7 @@ export default function WorkZone() {
             toast.success('Связка удалена');
         } catch (e) {
             setLinks(prev);
-            toast.error(e?.message || 'Не удалось удалить связку');
+            toast.error('Не удалось удалить связку');
         }
     }
 
