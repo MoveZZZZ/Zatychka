@@ -278,7 +278,7 @@ export default function StatisticsPage() {
                         </g>
                     </svg>
                     <span className="section-title-text">{t.intake.title}</span>
-                    <span className="section-title-date"> — {displayDate}</span>
+                    <span className="section-title-date">— {displayDate}</span>
                 </h3>
 
                 {isAdmin && editMode && editing && (

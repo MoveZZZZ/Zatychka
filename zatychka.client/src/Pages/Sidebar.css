@@ -17,7 +17,6 @@ html, body {
     flex-direction: column;
     justify-content: flex-start;
     padding: 20px;
-    gap: 20px;
     font-family: 'Mulish', sans-serif;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -128,15 +127,30 @@ html, body {
     }
 
 /* ===== детали ===== */
-.sidebar-header h1 {
-    font-size: 20px;
+.sidebar-header {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-auto-rows: max-content;
+    row-gap: 10px; /* расстояние между логотипом, полосой и остальным */
 }
 
-.sidebar-section {
-    padding-bottom: 14px;
-    margin-block: 2px 0;
-    /* убираем жесткое ограничение высоты, чтобы работал общий скролл */
-}
+    /* центрируем и увеличиваем именно этот логотип в header */
+    .sidebar-header > .logo {
+        display: block;
+        margin: 0 auto -1px; /* центр по горизонтали */
+        width: clamp(140px, 70%, 260px); /* крупнее, можно править числа */
+        height: auto;
+        object-fit: contain;
+    }
+    .sidebar-header::after {
+        content: "";
+        height: 1px;
+        background: rgba(255,255,255,0.12);
+        display: block;
+        grid-row: 2;
+    }
+
 
 .sidebar-footer {
     margin-bottom: 10px;
@@ -230,6 +244,7 @@ html, body {
     font-size: 12px;
     gap: 5px;
     margin: 10px 0 20px;
+    max-width: 42%;
 }
 
 .rate-icon {
@@ -556,29 +571,46 @@ html, body {
 /* было 12px/20px */
 
 .sidebar-section {
-    padding-bottom: 8px; /* было 14px */
-    margin-block: 4px 0; /* было 2px 0 */
+    margin: -8px 0; /* было больше */
+    padding-bottom: 6px; /* было больше */
 }
-
+    .sidebar-section > * + * {
+        margin-top: 6px; /* расстояние между соседними элементами секции */
+    }
 .section-header {
-    gap: 4px; /* было 5px */
-    margin: 2px 0 4px; /* было 15px 0 15px */
-    padding: 2px 0; /* было 4px 0 */
+    padding: 6px 0;
+    margin: 6px 0;
+    display: grid !important;
+    grid-template-columns: 24px 1fr 16px;
+    align-items: center;
+    column-gap: 10px;
+    min-height: 36px;
 }
 
 .section-icon {
-    margin-top: 12px;
+    grid-column: 1;
+    width: 24px;
+    height: 24px;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 /* было 20px */
 .section-toggle {
-    margin-top: 16px;
+    grid-column: 3;
+    width: 14px;
+    height: 14px;
+    margin: 0 !important;
+    justify-self: end;
+    align-self: center;
 }
-/* было 25px */
 
+/* список пунктов — компактнее */
 .menu-list {
-    gap: 4px; /* было 5px */
-    margin: 2px 0 6px; /* было 5px 0 */
-    padding-left: 28px; /* было 33px */
+    gap: 3px;
+    margin: 2px 0 4px;
+    padding-left: 24px;
 }
 
 /* Чуть компактнее на мобилке */

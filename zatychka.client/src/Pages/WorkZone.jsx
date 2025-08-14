@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import './WorkZone.css';
 import AddLinkModal from './AddLinkModal';
 import EditLinkModal from './EditLinkModal';
@@ -177,6 +177,21 @@ export default function WorkZone() {
         })();
         return () => { cancelled = true; };
     }, []);
+    const fetchLinks = useCallback(async () => {
+        try {
+            setLoading(true);
+            const data = await listLinks();
+            setLinks(Array.isArray(data) ? data : []);
+            setErr('');
+        } catch {
+            setErr('Не удалось загрузить связки');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+    useEffect(() => {
+        fetchLinks();
+    }, [fetchLinks]);
 
     async function handleDelete(id) {
         const prev = links;
@@ -184,6 +199,7 @@ export default function WorkZone() {
         try {
             await apiDeleteLink(id);
             toast.success('Связка удалена');
+            await fetchLinks();
         } catch (e) {
             setLinks(prev);
             toast.error('Не удалось удалить связку');
@@ -194,6 +210,7 @@ export default function WorkZone() {
         const saved = await apiUpdateLink(updated.id, updated);
         setLinks(prev => prev.map(l => (l.id === saved.id ? { ...l, ...saved } : l)));
         toast.success('Связка обновлена');
+        await fetchLinks();
         return saved;
     }
 
@@ -226,7 +243,7 @@ export default function WorkZone() {
                                 onEdit={() => setEditing(link)}
                                 onDelete={() => handleDelete(link.id)}
                             />
-                        );
+                        );ы
                     })}
                 </div>
             ))}
@@ -234,7 +251,7 @@ export default function WorkZone() {
             {showAdd && (
                 <AddLinkModal
                     isOpen={showAdd}
-                    onClose={() => setShowAdd(false)}
+                    onClose={async () => { setShowAdd(false); await fetchLinks(); }}
                     onCreated={(createdFull) => setLinks(prev => [...prev, createdFull])}
                 />
             )}
@@ -242,7 +259,7 @@ export default function WorkZone() {
             {editing && (
                 <EditLinkModal
                     bundle={editing}
-                    onClose={() => setEditing(null)}
+                    onClose={async () => { setEditing(null); await fetchLinks(); }}
                     onSave={handleSave}
                 />
             )}

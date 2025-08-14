@@ -5,36 +5,36 @@ import Breadcrumbs from '../components/Breadcrumbs';
 const tabs = ['Все', 'В работе', 'Свободные'];
 
 const sampleTransactions = [
-    {
-        id: '1',
-        date: '08.08.2025 13:45',
-        status: 'Создана',
-        requisites: 'Карта VISA •••• 1234',
-        requester: 'Trader123',
-        info: 'Ожидает оплаты',
-        sum: '500 USDT',
-        type: 'В работе',
-    },
-    {
-        id: '2',
-        date: '08.08.2025 11:20',
-        status: 'Ожидает оплаты',
-        requisites: 'BTC Wallet',
-        requester: 'TraderX',
-        info: 'Ожидает 3-DS',
-        sum: '1200 USDT',
-        type: 'Все',
-    },
-    {
-        id: '3',
-        date: '07.08.2025 19:05',
-        status: 'Ожидает спор админа',
-        requisites: 'USDT TRC-20',
-        requester: 'CryptoGuy',
-        info: 'Спор открыт',
-        sum: '800 USDT',
-        type: 'Свободные',
-    },
+    //{
+    //    id: '1',
+    //    date: '08.08.2025 13:45',
+    //    status: 'Создана',
+    //    requisites: 'Карта VISA •••• 1234',
+    //    requester: 'Trader123',
+    //    info: 'Ожидает оплаты',
+    //    sum: '500 USDT',
+    //    type: 'В работе',
+    //},
+    //{
+    //    id: '2',
+    //    date: '08.08.2025 11:20',
+    //    status: 'Ожидает оплаты',
+    //    requisites: 'BTC Wallet',
+    //    requester: 'TraderX',
+    //    info: 'Ожидает 3-DS',
+    //    sum: '1200 USDT',
+    //    type: 'Все',
+    //},
+    //{
+    //    id: '3',
+    //    date: '07.08.2025 19:05',
+    //    status: 'Ожидает спор админа',
+    //    requisites: 'USDT TRC-20',
+    //    requester: 'CryptoGuy',
+    //    info: 'Спор открыт',
+    //    sum: '800 USDT',
+    //    type: 'Свободные',
+    //},
 ];
 
 const quasiStatuses = [
