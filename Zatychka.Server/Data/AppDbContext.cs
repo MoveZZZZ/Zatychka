@@ -24,39 +24,24 @@ namespace Zatychka.Server.Data
         public DbSet<PrivateStatisticsUser> PrivateStatisticsUsers { get; set; } = null!;
 
         public DbSet<PayinTransactionPublic> PayinTransactionsPublic => Set<PayinTransactionPublic>();
+        public DbSet<PayinTransactionPrivate> PayinTransactionsPrivate => Set<PayinTransactionPrivate>();
 
         public DbSet<BalanceChange> BalanceChanges => Set<BalanceChange>();
         public DbSet<FrozenBalanceChange> FrozenBalanceChanges => Set<FrozenBalanceChange>();
         public DbSet<PublicDispute> PublicDisputes { get; set; } = null!;
         public DbSet<Zatychka.Server.Models.IntakeDateConfig> IntakeDateConfigs { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<PrivateDispute> PrivateDisputes { get; set; } = null!;
+        public DbSet<UserTelegramLink> TelegramLinks { get; set; } = null!;
+        protected override void OnModelCreating(ModelBuilder b)
         {
-            base.OnModelCreating(modelBuilder);
-
-           
-            modelBuilder.Entity<PublicDispute>()
-                .HasOne(d => d.Requisite)
-                .WithMany()
-                .HasForeignKey(d => d.RequisiteId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<PublicDispute>()
-                .HasOne(d => d.Device)
-                .WithMany()
-                .HasForeignKey(d => d.DeviceId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<PayinTransactionPublic>()
-                .HasOne(t => t.Requisite)
-                .WithMany()
-                .HasForeignKey(t => t.RequisiteId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<PayinTransactionPublic>()
-                .HasOne(t => t.Device)
-                .WithMany()
-                .HasForeignKey(t => t.DeviceId)
-                .OnDelete(DeleteBehavior.SetNull);
+            b.Entity<UserTelegramLink>(e =>
+            {
+                e.ToTable("UserTelegramLinks");
+                e.HasIndex(x => x.UserId).IsUnique();
+                e.HasIndex(x => x.Username).IsUnique();
+                e.Property(x => x.Username).HasColumnType("varchar(64)");
+                e.Property(x => x.Source).HasColumnType("varchar(128)");
+            });
         }
     }
 }

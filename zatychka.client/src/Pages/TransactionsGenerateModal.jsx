@@ -1,9 +1,10 @@
 ﻿import React, { useEffect, useState } from 'react';
 import './TransactionsGenerateModal.css';
-import { searchLinks, generateTransactions } from '../api/links';
+import { searchLinks} from '../api/links';
+import { generateTransactionsByLinks } from '../api/payin';
 import { useToast } from '../context/ToastContext';
 
-export default function TransactionsGenerateModal({ onClose }) {
+export default function TransactionsGenerateModal({ scope = 'public', onClose, onDone }) {
     const toast = useToast();
     const [login, setLogin] = useState('');
     const [loading, setLoading] = useState(false);
@@ -48,11 +49,23 @@ export default function TransactionsGenerateModal({ onClose }) {
 
     async function run() {
         try {
-            if (selected.size === 0) { toast.info('Выберите хотя бы одну связку'); return; }
+            if (selected.size === 0) {
+                toast.info('Выберите хотя бы одну связку');
+                return;
+            }
+            const cnt = Number(count || 0);
+            if (!Number.isInteger(cnt) || cnt <= 0) {
+                toast.error('Количество должно быть > 0');
+                return;
+            }
+
             setLoading(true);
             const linkIds = Array.from(selected);
-            const res = await generateTransactions(linkIds, Number(count || 0));
-            toast.success(`Создано транзакций: ${res.created}`);
+
+            const res = await generateTransactionsByLinks(scope, linkIds, cnt);
+
+            toast.success(`Создано транзакций: ${res.created ?? 0}`);
+            onDone?.(res);
             onClose?.();
         } catch (e) {
             toast.error(e?.message || 'Не удалось сгенерировать');
@@ -60,6 +73,7 @@ export default function TransactionsGenerateModal({ onClose }) {
             setLoading(false);
         }
     }
+
 
     const allSelected = selected.size === links.length && links.length > 0;
 

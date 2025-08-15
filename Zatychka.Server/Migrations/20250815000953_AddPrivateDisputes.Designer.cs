@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zatychka.Server.Data;
 
@@ -10,9 +11,11 @@ using Zatychka.Server.Data;
 namespace Zatychka.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250815000953_AddPrivateDisputes")]
+    partial class AddPrivateDisputes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -625,44 +628,6 @@ namespace Zatychka.Server.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Zatychka.Server.Models.UserTelegramLink", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Source")
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
-
-                    b.Property<long?>("TelegramUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.HasIndex("Username")
-                        .IsUnique();
-
-                    b.ToTable("UserTelegramLinks", (string)null);
-                });
-
             modelBuilder.Entity("Zatychka.Server.Models.UserWallet", b =>
                 {
                     b.Property<int>("Id")
@@ -793,7 +758,8 @@ namespace Zatychka.Server.Migrations
                 {
                     b.HasOne("Zatychka.Server.Models.Device", "Device")
                         .WithMany()
-                        .HasForeignKey("DeviceId");
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Zatychka.Server.Models.Link", "Link")
                         .WithMany()
@@ -801,7 +767,8 @@ namespace Zatychka.Server.Migrations
 
                     b.HasOne("Zatychka.Server.Models.OwnerRequisite", "Requisite")
                         .WithMany()
-                        .HasForeignKey("RequisiteId");
+                        .HasForeignKey("RequisiteId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Device");
 
@@ -859,11 +826,13 @@ namespace Zatychka.Server.Migrations
                 {
                     b.HasOne("Zatychka.Server.Models.Device", "Device")
                         .WithMany()
-                        .HasForeignKey("DeviceId");
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Zatychka.Server.Models.OwnerRequisite", "Requisite")
                         .WithMany()
-                        .HasForeignKey("RequisiteId");
+                        .HasForeignKey("RequisiteId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Device");
 
@@ -871,17 +840,6 @@ namespace Zatychka.Server.Migrations
                 });
 
             modelBuilder.Entity("Zatychka.Server.Models.RefreshToken", b =>
-                {
-                    b.HasOne("Zatychka.Server.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Zatychka.Server.Models.UserTelegramLink", b =>
                 {
                     b.HasOne("Zatychka.Server.Models.User", "User")
                         .WithMany()

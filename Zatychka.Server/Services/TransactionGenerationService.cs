@@ -91,6 +91,255 @@ namespace Zatychka.Server.Services
             public bool IgnoreTiming { get; set; } = true;
         }
 
+
+
+        // Services/TransactionGenerationService.cs (добавить внутрь класса)
+
+        public class GeneratePrivateResult
+        {
+            public int Created { get; set; }
+            public Dictionary<int, int> ByLink { get; set; } = new();
+            public List<int> SkippedInactive { get; set; } = new();
+        }
+
+        /// <summary>
+        /// Генерация в приватную таблицу: по выбранным Link.Id, учитывая их лимиты в текущем дне/месяце.
+        /// Пишем в PayinTransactionPrivate с UserId = link.UserId.
+        /// </summary>
+        public async Task<GeneratePrivateResult> GeneratePrivateAsync(GenerateRequest req, CancellationToken ct = default)
+        {
+            var result = new GeneratePrivateResult();
+            if (req.Count <= 0 || req.LinkIds.Count == 0) return result;
+
+            var links = await _db.Links.Where(l => req.LinkIds.Contains(l.Id)).ToListAsync(ct);
+            var active = links.Where(l => l.IsActive).ToList();
+            result.SkippedInactive = links.Where(l => !l.IsActive).Select(l => l.Id).ToList();
+            if (active.Count == 0) return result;
+
+            var nowUtc = DateTime.UtcNow;
+            var today = DateTime.UtcNow.Date;
+            var mFrom = new DateTime(nowUtc.Year, nowUtc.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var mTo = mFrom.AddMonths(1);
+
+            var counters = new Dictionary<int, (int total, int daily, int monthly)>();
+            foreach (var l in active)
+            {
+                var total = await _db.PayinTransactionsPrivate.CountAsync(x => x.DeviceId == l.DeviceId && x.RequisiteId == l.RequisiteId && x.UserId == l.UserId, ct);
+                var daily = await _db.PayinTransactionsPrivate.CountAsync(x => x.DeviceId == l.DeviceId && x.RequisiteId == l.RequisiteId && x.UserId == l.UserId && x.Date >= today && x.Date < today.AddDays(1), ct);
+                var monthly = await _db.PayinTransactionsPrivate.CountAsync(x => x.DeviceId == l.DeviceId && x.RequisiteId == l.RequisiteId && x.UserId == l.UserId && x.Date >= mFrom && x.Date < mTo, ct);
+                counters[l.Id] = (total, daily, monthly);
+            }
+
+            int Capacity(Link l)
+            {
+                var c = counters[l.Id];
+                var t = l.TotalTxCountLimit.HasValue ? (l.TotalTxCountLimit.Value - c.total) : int.MaxValue;
+                var d = l.DailyTxCountLimit.HasValue ? (l.DailyTxCountLimit.Value - c.daily) : int.MaxValue;
+                var m = l.MonthlyTxCountLimit.HasValue ? (l.MonthlyTxCountLimit.Value - c.monthly) : int.MaxValue;
+                return Math.Max(0, Math.Min(t, Math.Min(d, m)));
+            }
+
+            var toInsert = new List<PayinTransactionPrivate>();
+            for (int i = 0; i < req.Count; i++)
+            {
+                var candidates = active.Where(l => Capacity(l) > 0).ToList();
+                if (candidates.Count == 0) break;
+
+                var link = candidates[_rnd.Next(candidates.Count)];
+                var deal = RandomMoney(link.MinAmountUsdt, link.MaxAmountUsdt);
+                var income = Math.Round(deal * 0.935m, 2, MidpointRounding.AwayFromZero);
+                var status = RandomStatus(); // "Заморожена" | "Создана" | "Выполнена"
+
+                toInsert.Add(new PayinTransactionPrivate
+                {
+                    UserId = link.UserId,
+                    DeviceId = link.DeviceId,
+                    RequisiteId = link.RequisiteId,
+                    Date = nowUtc,
+                    Status = status switch
+                    {
+                        "Заморожена" => PayinStatus.Frozen,
+                        "Создана" => PayinStatus.Created,
+                        _ => PayinStatus.Completed
+                    },
+                    DealAmount = deal,
+                    IncomeAmount = income
+                });
+
+                var c = counters[link.Id];
+                counters[link.Id] = (c.total + 1, c.daily + 1, c.monthly + 1);
+                if (!result.ByLink.ContainsKey(link.Id)) result.ByLink[link.Id] = 0;
+                result.ByLink[link.Id] += 1;
+            }
+
+            if (toInsert.Count > 0)
+            {
+                await _db.PayinTransactionsPrivate.AddRangeAsync(toInsert, ct);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            result.Created = toInsert.Count;
+            return result;
+        }
+
+        // ===== Бэкоф за месяц (PRIVATE) =====
+
+        public class BackfillMonthPrivateRequest
+        {
+            public int Year { get; set; }
+            public int Month { get; set; }
+            public int? MaxTotalCount { get; set; }
+            public List<PairConfig> Pairs { get; set; } = new();
+
+            public class PairConfig
+            {
+                public int UserId { get; set; }
+                public int DeviceId { get; set; }
+                public int RequisiteId { get; set; }
+                public decimal MinAmountUsdt { get; set; }
+                public decimal MaxAmountUsdt { get; set; }
+                public int DailyLimit { get; set; }
+                public int MonthlyLimit { get; set; }
+            }
+        }
+
+        public class BackfillMonthPrivateResult
+        {
+            public int Created { get; set; }
+            public Dictionary<string, int> ByPair { get; set; } = new();
+        }
+
+        public async Task<BackfillMonthPrivateResult> BackfillMonthPrivateAsync(BackfillMonthPrivateRequest req, CancellationToken ct = default)
+        {
+            if (req.Year < 2000 || req.Month is < 1 or > 12) throw new ArgumentException("Некорректный месяц/год");
+            if (req.Pairs == null || req.Pairs.Count == 0) return new BackfillMonthPrivateResult();
+
+            var monthStart = new DateTime(req.Year, req.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var monthEnd = monthStart.AddMonths(1);
+            var daysInMonth = (int)(monthEnd - monthStart).TotalDays;
+
+            var devIds = req.Pairs.Select(p => p.DeviceId).Distinct().ToList();
+            var rqIds = req.Pairs.Select(p => p.RequisiteId).Distinct().ToList();
+            var usIds = req.Pairs.Select(p => p.UserId).Distinct().ToList();
+
+            var existing = await _db.PayinTransactionsPrivate
+                .AsNoTracking()
+                .Where(t => t.Date >= monthStart && t.Date < monthEnd
+                            && t.DeviceId != null && t.RequisiteId != null
+                            && devIds.Contains(t.DeviceId!.Value)
+                            && rqIds.Contains(t.RequisiteId!.Value)
+                            && usIds.Contains(t.UserId))
+                .Select(t => new { t.UserId, t.DeviceId, t.RequisiteId, t.Date })
+                .ToListAsync(ct);
+
+            string Key(int u, int d, int r) => $"{u}:{d}:{r}";
+            int[] EmptyDays() => Enumerable.Repeat(0, daysInMonth).ToArray();
+
+            var monthly = new Dictionary<string, int>();
+            var perDay = new Dictionary<string, int[]>();
+            foreach (var p in req.Pairs)
+            {
+                var k = Key(p.UserId, p.DeviceId, p.RequisiteId);
+                monthly[k] = 0;
+                perDay[k] = EmptyDays();
+            }
+            foreach (var e in existing)
+            {
+                var k = Key(e.UserId, e.DeviceId!.Value, e.RequisiteId!.Value);
+                if (!monthly.ContainsKey(k)) continue;
+                monthly[k] += 1;
+                var idx = (e.Date.Date - monthStart).Days;
+                if (idx >= 0 && idx < daysInMonth) perDay[k][idx] += 1;
+            }
+
+            var remainMonth = new Dictionary<string, int>();
+            var remainDay = new Dictionary<string, int[]>();
+            foreach (var p in req.Pairs)
+            {
+                var k = Key(p.UserId, p.DeviceId, p.RequisiteId);
+                var used = monthly[k];
+                remainMonth[k] = Math.Max(0, p.MonthlyLimit - used);
+
+                var arr = new int[daysInMonth];
+                var usedDays = perDay[k];
+                for (int i = 0; i < daysInMonth; i++)
+                    arr[i] = Math.Max(0, p.DailyLimit - usedDays[i]);
+                remainDay[k] = arr;
+            }
+
+            int overall = remainMonth.Values.Sum();
+            if (overall <= 0) return new BackfillMonthPrivateResult();
+
+            var hardCap = req.MaxTotalCount.HasValue ? Math.Min(req.MaxTotalCount.Value, overall) : overall;
+
+            bool HasAnyDay(string k)
+            {
+                if (remainMonth[k] <= 0) return false;
+                var a = remainDay[k];
+                for (int i = 0; i < a.Length; i++) if (a[i] > 0) return true;
+                return false;
+            }
+
+            var activeKeys = remainMonth.Keys.Where(HasAnyDay).ToList();
+            var result = new BackfillMonthPrivateResult();
+            var toInsert = new List<PayinTransactionPrivate>();
+            var map = req.Pairs.ToDictionary(p => Key(p.UserId, p.DeviceId, p.RequisiteId));
+
+            for (int i = 0; i < hardCap && activeKeys.Count > 0; i++)
+            {
+                var k = activeKeys[_rnd.Next(activeKeys.Count)];
+                var cfg = map[k];
+
+                var days = remainDay[k];
+                var options = new List<int>();
+                for (int d = 0; d < days.Length; d++) if (days[d] > 0) options.Add(d);
+                if (options.Count == 0) { activeKeys.Remove(k); continue; }
+
+                var dayIndex = options[_rnd.Next(options.Count)];
+                var dt = monthStart.AddDays(dayIndex)
+                                   .AddHours(_rnd.Next(0, 24))
+                                   .AddMinutes(_rnd.Next(0, 60))
+                                   .AddSeconds(_rnd.Next(0, 60));
+
+                var deal = RandomMoney(cfg.MinAmountUsdt, cfg.MaxAmountUsdt);
+                var income = Math.Round(deal * 0.935m, 2, MidpointRounding.AwayFromZero);
+                var status = RandomStatus();
+
+                toInsert.Add(new PayinTransactionPrivate
+                {
+                    UserId = cfg.UserId,
+                    DeviceId = cfg.DeviceId,
+                    RequisiteId = cfg.RequisiteId,
+                    Date = dt,
+                    Status = status switch
+                    {
+                        "Заморожена" => PayinStatus.Frozen,
+                        "Создана" => PayinStatus.Created,
+                        _ => PayinStatus.Completed
+                    },
+                    DealAmount = deal,
+                    IncomeAmount = income
+                });
+
+                remainMonth[k] -= 1;
+                days[dayIndex] -= 1;
+                if (remainMonth[k] <= 0 || !HasAnyDay(k)) activeKeys.Remove(k);
+
+                if (!result.ByPair.ContainsKey(k)) result.ByPair[k] = 0;
+                result.ByPair[k] += 1;
+            }
+
+            if (toInsert.Count > 0)
+            {
+                await _db.PayinTransactionsPrivate.AddRangeAsync(toInsert, ct);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            result.Created = toInsert.Count;
+            return result;
+        }
+
+
         public class GenerateResult
         {
             public int Created { get; set; }
@@ -403,4 +652,5 @@ namespace Zatychka.Server.Services
             return result;
         }
     }
+
 }

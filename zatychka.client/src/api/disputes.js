@@ -11,16 +11,17 @@ function qs(obj = {}) {
     return s ? `?${s}` : '';
 }
 
-
-export async function fetchDisputes({ statuses, transactionId } = {}) {
-    const url = `${API}/disputes/public${qs({ statuses, transactionId })}`;
+// ===== список споров (public/private)
+export async function fetchDisputes(scope = 'public', { statuses, transactionId, userId } = {}) {
+    const url = `${API}/disputes/${scope}${qs({ statuses, transactionId, userId })}`;
     const res = await fetch(url, { credentials: 'include' });
     if (!res.ok) throw new Error('Не удалось загрузить споры');
     return res.json();
 }
 
-export async function createDispute(body) {
-    const res = await fetch(`${API}/disputes/public`, {
+// ===== создание спора (public/private)
+export async function createDispute(scope = 'public', body) {
+    const res = await fetch(`${API}/disputes/${scope}`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -33,8 +34,9 @@ export async function createDispute(body) {
     return res.json(); // { id }
 }
 
-export async function deleteDispute(id) {
-    const res = await fetch(`${API}/disputes/public/${id}`, {
+// ===== удаление спора (public/private)
+export async function deleteDispute(scope = 'public', id) {
+    const res = await fetch(`${API}/disputes/${scope}/${id}`, {
         method: 'DELETE',
         credentials: 'include',
     });

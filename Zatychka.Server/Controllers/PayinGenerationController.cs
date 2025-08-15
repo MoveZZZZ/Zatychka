@@ -88,6 +88,67 @@ namespace Zatychka.Server.Controllers
             var res = await _svc.BackfillMonthAsync(req, ct);
             return Ok(res);
         }
+
+
+        [HttpPost("private")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GeneratePrivate([FromBody] GenerateDto dto, CancellationToken ct)
+        {
+            if (dto.LinkIds == null || dto.LinkIds.Count == 0) return BadRequest("Выберите хотя бы одну связку");
+            if (dto.Count <= 0) return BadRequest("Count должен быть > 0");
+            var res = await _svc.GeneratePrivateAsync(new TransactionGenerationService.GenerateRequest { LinkIds = dto.LinkIds, Count = dto.Count }, ct);
+            return Ok(res);
+        }
+
+        // ===== PRIVATE: за месяц (без связок) =====
+        public class BackfillPrivateDto
+        {
+            public int Year { get; set; }
+            public int Month { get; set; }
+            public int? MaxTotalCount { get; set; }
+            public List<PairDto> Pairs { get; set; } = new();
+            public class PairDto
+            {
+                public int UserId { get; set; }
+                public int DeviceId { get; set; }
+                public int RequisiteId { get; set; }
+                public decimal MinAmountUsdt { get; set; }
+                public decimal MaxAmountUsdt { get; set; }
+                public int DailyLimit { get; set; }
+                public int MonthlyLimit { get; set; }
+            }
+        }
+
+        [HttpPost("backfill-month-private")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> BackfillMonthPrivate([FromBody] BackfillPrivateDto dto, CancellationToken ct)
+        {
+            if (dto.Month < 1 || dto.Month > 12) return BadRequest("Некорректный месяц");
+            if (dto.Year < 2000) return BadRequest("Некорректный год");
+            if (dto.Pairs == null || dto.Pairs.Count == 0) return BadRequest("Добавьте хотя бы одну пару");
+
+            var req = new TransactionGenerationService.BackfillMonthPrivateRequest
+            {
+                Year = dto.Year,
+                Month = dto.Month,
+                MaxTotalCount = dto.MaxTotalCount,
+                Pairs = dto.Pairs.Select(p => new TransactionGenerationService.BackfillMonthPrivateRequest.PairConfig
+                {
+                    UserId = p.UserId,
+                    DeviceId = p.DeviceId,
+                    RequisiteId = p.RequisiteId,
+                    MinAmountUsdt = p.MinAmountUsdt,
+                    MaxAmountUsdt = p.MaxAmountUsdt,
+                    DailyLimit = p.DailyLimit,
+                    MonthlyLimit = p.MonthlyLimit
+                }).ToList()
+            };
+
+            var res = await _svc.BackfillMonthPrivateAsync(req, ct);
+            return Ok(res);
+        }
+
+
     }
 }
 

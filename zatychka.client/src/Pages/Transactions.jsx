@@ -1,19 +1,26 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+﻿// src/Pages/Transactions.jsx
+import React, { useEffect, useMemo, useState } from 'react';
 import './Transactions.css';
 import Breadcrumbs from '../components/Breadcrumbs';
 import useUserInfo from '../hooks/useUserInfo';
 import { isAdminRole } from '../utils/roles';
 import { useEditMode } from '../context/EditModeContext';
+import { useDataScope } from '../context/DataScopeContext'; // ← как в Балансе
+
 import {
     fetchPayinTransactions,
-    createPayinTransaction,
+    createPayinTransactionPublic,
+    createPayinTransactionPrivate,
     deletePayinTransaction,
     lookupRequisites,
     lookupDevices,
+    lookupUsers
 } from '../api/payin';
+
 import Spinner from '../components/Spinner';
 import GenerateByLinksModal from './TransactionsGenerateModal';
-import TransactionsBackfillModal from './TransactionsBackfillModal';
+import TransactionsBackfillModal from './TransactionsBackfillModal';             // PUBLIC backfill (месяц/день)
+import TransactionsBackfillPrivateModal from './TransactionsBackfillPrivateModal'; // PRIVATE backfill (месяц/день)
 
 const STATUS_OPTIONS = ['Создана', 'Выполнена', 'Заморожена'];
 
@@ -21,13 +28,21 @@ export default function Transactions() {
     const me = useUserInfo();
     const isAdmin = isAdminRole(me?.role);
     const { editMode } = useEditMode();
-    const canEdit = isAdmin && editMode;
+    const editable = isAdmin && editMode;
+
+    // глобальная область данных как в BalancePage
+    const { scope, setScope } = useDataScope(); // 'public' | 'private'
 
     // фильтры
     const [selectedStatuses, setSelectedStatuses] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [statusSearch, setStatusSearch] = useState('');
     const [transactionSearch, setTransactionSearch] = useState('');
+
+    // для админа — смотреть приват по конкретному пользователю
+    const [viewUserLogin, setViewUserLogin] = useState('');
+    const [viewUserList, setViewUserList] = useState([]);
+    const [viewUserId, setViewUserId] = useState('');
 
     // данные
     const [items, setItems] = useState([]);
@@ -55,8 +70,14 @@ export default function Transactions() {
     const [dealAmount, setDealAmount] = useState('');
     const [incomeAmount, setIncomeAmount] = useState('');
 
-    const [backfillOpen, setBackfillOpen] = useState(false);
+    // только для приватного добавления
+    const [userLogin, setUserLogin] = useState('');
+    const [userList, setUserList] = useState([]);
+    const [userId, setUserId] = useState('');
+
+    // модалки генерации
     const [generateOpen, setGenerateOpen] = useState(false);
+    const [backfillOpen, setBackfillOpen] = useState(false); // одна кнопка — внутри покажем нужную модалку
 
     // закрытие выпадашки при клике вне её
     useEffect(() => {
@@ -66,7 +87,6 @@ export default function Transactions() {
         return () => document.removeEventListener('click', onDocClick);
     }, [dropdownOpen]);
 
-    // статусы в выпадашке
     const filteredStatuses = useMemo(
         () => STATUS_OPTIONS.filter(s => s.toLowerCase().includes(statusSearch.toLowerCase())),
         [statusSearch]
@@ -85,9 +105,15 @@ export default function Transactions() {
             const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
                 ? Number(transactionSearch.trim())
                 : undefined;
+
             const params = { id, page: currentPage, pageSize };
             if (selectedStatuses.length > 0) params.status = selectedStatuses;
-            const response = await fetchPayinTransactions(params);
+
+            if (scope === 'private' && isAdmin && viewUserId) {
+                params.userId = Number(viewUserId);
+            }
+
+            const response = await fetchPayinTransactions(scope, params);
             setItems(response?.items || []);
             setTotal(response?.total || 0);
         } catch (e) {
@@ -103,12 +129,16 @@ export default function Transactions() {
             try {
                 setLoading(true);
                 setErr('');
+
                 const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
                     ? Number(transactionSearch.trim())
                     : undefined;
+
                 const params = { id, page: currentPage, pageSize };
                 if (selectedStatuses.length > 0) params.status = selectedStatuses;
-                const response = await fetchPayinTransactions(params);
+                if (scope === 'private' && isAdmin && viewUserId) params.userId = Number(viewUserId);
+
+                const response = await fetchPayinTransactions(scope, params);
                 if (!cancelled) {
                     setItems(response?.items || []);
                     setTotal(response?.total || 0);
@@ -120,24 +150,24 @@ export default function Transactions() {
             }
         })();
         return () => { cancelled = true; };
-    }, [selectedStatuses, transactionSearch, currentPage]);
+    }, [scope, selectedStatuses, transactionSearch, currentPage, viewUserId]);
 
-    // lookup (по ЛОГИНУ)
+    // lookups
     async function searchRequisites() {
-        try {
-            const list = await lookupRequisites(rqLogin, 20);
-            setRqList(list);
-        } catch (e) {
-            setErr(e?.message || 'Не удалось получить реквизиты');
-        }
+        try { setRqList(await lookupRequisites(rqLogin, 20)); }
+        catch (e) { setErr(e?.message || 'Не удалось получить реквизиты'); }
     }
     async function searchDevices() {
-        try {
-            const list = await lookupDevices(devLogin, 20);
-            setDevList(list);
-        } catch (e) {
-            setErr(e?.message || 'Не удалось получить устройства');
-        }
+        try { setDevList(await lookupDevices(devLogin, 20)); }
+        catch (e) { setErr(e?.message || 'Не удалось получить устройства'); }
+    }
+    async function searchUsers() {
+        try { setUserList(await lookupUsers(userLogin, 20)); }
+        catch (e) { setErr(e?.message || 'Не удалось получить пользователей'); }
+    }
+    async function searchViewUsers() {
+        try { setViewUserList(await lookupUsers(viewUserLogin, 20)); }
+        catch (e) { setErr(e?.message || 'Не удалось получить пользователей'); }
     }
 
     async function addTx() {
@@ -146,7 +176,7 @@ export default function Transactions() {
             setErr('');
             if (!dealAmount || !incomeAmount) throw new Error('Укажите суммы');
 
-            const body = {
+            const baseBody = {
                 date: new Date(newDate).toISOString(),
                 status: newStatus,
                 requisiteId: rqId ? Number(rqId) : null,
@@ -155,7 +185,13 @@ export default function Transactions() {
                 incomeAmount: Number(incomeAmount),
             };
 
-            await createPayinTransaction(body);
+            if (scope === 'public') {
+                await createPayinTransactionPublic(baseBody);
+            } else {
+                if (!userId) throw new Error('Выберите пользователя');
+                await createPayinTransactionPrivate({ userId: Number(userId), ...baseBody });
+            }
+
             setAdding(false);
 
             // очистка
@@ -164,6 +200,7 @@ export default function Transactions() {
             setRqLogin(''); setRqList([]); setRqId(null);
             setDevLogin(''); setDevList([]); setDevId(null);
             setDealAmount(''); setIncomeAmount('');
+            setUserLogin(''); setUserList([]); setUserId('');
 
             await reload();
         } catch (e) {
@@ -174,10 +211,10 @@ export default function Transactions() {
     }
 
     async function removeTx(id) {
-        if (!canEdit) return;
+        if (!editable) return;
         if (!window.confirm(`Удалить транзакцию #${id}?`)) return;
         try {
-            await deletePayinTransaction(id);
+            await deletePayinTransaction(scope, id);
             await reload();
         } catch (e) {
             setErr(e?.message || 'Не удалось удалить транзакцию');
@@ -192,9 +229,49 @@ export default function Transactions() {
     return (
         <div className="transactions-container">
             <Breadcrumbs />
-            <div className="rq-header">
-            <h2 className="page-title">Приём</h2>
+
+            <div className="head-row">
+                <h2 className="page-title">Приём</h2>
+
+                {/* Переключатель области данных — как в BalancePage */}
+                {editable && (
+                    <div className="mode-switch">
+                        <label>
+                            <input
+                                type="radio"
+                                name="tx-scope"
+                                value="public"
+                                checked={scope === 'public'}
+                                onChange={() => setScope('public')}
+                                disabled={loading}
+                            /> Публичные
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="tx-scope"
+                                value="private"
+                                checked={scope === 'private'}
+                                onChange={() => setScope('private')}
+                                disabled={loading}
+                            /> Приватные
+                        </label>
+                    </div>
+                )}
             </div>
+
+            {editable && scope === "private" && isAdmin && (
+                <div className="admin-view-user">
+                    <div className="inline">
+                        <input placeholder="Логин пользователя (для просмотра)" value={viewUserLogin} onChange={e => setViewUserLogin(e.target.value)} />
+                        <button onClick={searchViewUsers}>Найти</button>
+                    </div>
+                    <select value={viewUserId} onChange={e => setViewUserId(e.target.value)}>
+                        <option value="">— Мои / все —</option>
+                        {viewUserList.map(u => <option key={u.id} value={u.id}>{u.login} (id {u.id})</option>)}
+                    </select>
+                </div>
+            )}
 
             <div className="transactions-filters">
                 <div className="search-box-trans">
@@ -214,7 +291,6 @@ export default function Transactions() {
                         {selectedStatuses.length > 0 ? `Выбрано ${selectedStatuses.length} статуса` : 'Статус'}
                         <span className="arrow">▼</span>
                     </div>
-
                     {dropdownOpen && (
                         <div className="dropdown-menu-trans" onClick={(e) => e.stopPropagation()}>
                             <input
@@ -234,23 +310,41 @@ export default function Transactions() {
                     )}
                 </div>
 
-                {canEdit && (
+                {editable && (
                     <div className="actions-row">
                         <button className="add-btn" onClick={() => setAdding(v => !v)}>
                             {adding ? 'Скрыть форму' : 'Добавить транзакцию'}
                         </button>
+
+                        {/* 1) Генерация по связкам (public/private — внутри модалки по scope) */}
                         <button className="add-btn secondary" onClick={() => setGenerateOpen(true)}>
                             Сгенерировать по связкам
                         </button>
+
+                        {/* 2) Генерация за месяц/день (без связок, пары device+requisite; для private — ещё user) */}
                         <button className="add-btn secondary" onClick={() => setBackfillOpen(true)}>
-                            Сгенерировать за месяц
+                            Сгенерировать за месяц/день
                         </button>
                     </div>
                 )}
             </div>
 
-            {adding && canEdit && (
+            {adding && editable && (
                 <div className="add-form">
+                    {scope === 'private' && (
+                        <div className="field wide">
+                            <label>Пользователь (логин)</label>
+                            <div className="inline">
+                                <input type="text" placeholder="login" value={userLogin} onChange={e => setUserLogin(e.target.value)} />
+                                <button onClick={searchUsers} type="button">Найти</button>
+                            </div>
+                            <select value={userId} onChange={e => setUserId(e.target.value)}>
+                                <option value="">— не выбрано —</option>
+                                {userList.map(u => <option key={u.id} value={u.id}>{u.login} (id {u.id})</option>)}
+                            </select>
+                        </div>
+                    )}
+
                     <div className="field">
                         <label>Дата</label>
                         <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} />
@@ -272,9 +366,7 @@ export default function Transactions() {
                         <select value={rqId ?? ''} onChange={e => setRqId(e.target.value || null)}>
                             <option value="">— не выбрано —</option>
                             {rqList.map(r => (
-                                <option key={r.id} value={r.id}>
-                                    {r.ownerLogin} — {r.display}
-                                </option>
+                                <option key={r.id} value={r.id}>{r.ownerLogin} — {r.display}</option>
                             ))}
                         </select>
                     </div>
@@ -288,9 +380,7 @@ export default function Transactions() {
                         <select value={devId ?? ''} onChange={e => setDevId(e.target.value || null)}>
                             <option value="">— не выбрано —</option>
                             {devList.map(d => (
-                                <option key={d.id} value={d.id}>
-                                    {d.ownerLogin} — {d.name}
-                                </option>
+                                <option key={d.id} value={d.id}>{d.ownerLogin} — {d.name}</option>
                             ))}
                         </select>
                     </div>
@@ -313,7 +403,7 @@ export default function Transactions() {
                 </div>
             )}
 
-            {/* таблица в общем стилевом контейнере */}
+            {/* сама таблица */}
             <div className="disputes-table tx-table-scroll">
                 <table>
                     <thead>
@@ -324,20 +414,20 @@ export default function Transactions() {
                             <th>Устройство</th>
                             <th>Сумма сделки</th>
                             <th>Сумма поступления</th>
-                            {canEdit && <th></th>}
+                            {editable && <th></th>}
                         </tr>
                     </thead>
 
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={canEdit ? 7 : 6} className="no-disputes">
+                                <td colSpan={editable ? (scope === 'private' ? 8 : 7) : (scope === 'private' ? 7 : 6)} className="no-disputes">
                                     <Spinner center label="Загрузка…" size={30} />
                                 </td>
                             </tr>
                         ) : items.length === 0 ? (
                             <tr>
-                                <td colSpan={canEdit ? 7 : 6} className="no-disputes">
+                                <td colSpan={editable ? (scope === 'private' ? 8 : 7) : (scope === 'private' ? 7 : 6)} className="no-disputes">
                                         <div className="empty-message-table">Транзакций пока нет (Транзакции хранятся 30 дней)</div>
                                 </td>
                             </tr>
@@ -357,11 +447,9 @@ export default function Transactions() {
                                     <td>{tx.deviceName ?? (tx.deviceId ? `ID ${tx.deviceId}` : '—')}</td>
                                     <td>{tx.dealAmount != null ? Number(tx.dealAmount).toFixed(2) : '0.00'} USDT</td>
                                     <td>{tx.incomeAmount != null ? Number(tx.incomeAmount).toFixed(2) : '0.00'} USDT</td>
-                                    {canEdit && (
+                                    {editable && (
                                         <td>
-                                            <button className="delete-btn" onClick={() => removeTx(tx.id)}>
-                                                Удалить
-                                            </button>
+                                            <button className="delete-btn" onClick={() => removeTx(tx.id)}>Удалить</button>
                                         </td>
                                     )}
                                 </tr>
@@ -379,14 +467,24 @@ export default function Transactions() {
                 </div>
             )}
 
-            {canEdit && generateOpen && (
+            {/* Модалки генерации */}
+            {editable && generateOpen && (
                 <GenerateByLinksModal
+                    scope={scope}
                     onClose={() => setGenerateOpen(false)}
                     onDone={() => { setGenerateOpen(false); reload(); }}
                 />
             )}
-            {canEdit && (
+
+            {editable && backfillOpen && scope === 'public' && (
                 <TransactionsBackfillModal
+                    open={backfillOpen}
+                    onClose={() => setBackfillOpen(false)}
+                    onDone={() => { setBackfillOpen(false); reload(); }}
+                />
+            )}
+            {editable && backfillOpen && scope === 'private' && (
+                <TransactionsBackfillPrivateModal
                     open={backfillOpen}
                     onClose={() => setBackfillOpen(false)}
                     onDone={() => { setBackfillOpen(false); reload(); }}

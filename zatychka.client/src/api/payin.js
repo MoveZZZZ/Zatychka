@@ -1,21 +1,6 @@
 ﻿const API = 'https://localhost:5132/api';
 
-function qs(obj = {}) {
-    const p = new URLSearchParams();
-    Object.entries(obj).forEach(([k, v]) => {
-        if (v !== undefined && v !== null && v !== '') p.append(k, String(v));
-    });
-    const s = p.toString();
-    return s ? `?${s}` : '';
-}
-
-// ПУБЛИЧНЫЕ транзакции (единственные)
-export async function fetchPayinTransactions({ status, id, page = 1, pageSize = 50 } = {}) {
-    const url = `${API}/payin/transactions/public${qs({ status, id, page, pageSize })}`;
-    const res = await fetch(url, { credentials: 'include' });
-    if (!res.ok) throw new Error('Не удалось загрузить транзакции');
-    return res.json();
-}
+//payin.js
 
 export async function createPayinTransaction(body) {
     const url = `${API}/payin/transactions/public`;
@@ -32,15 +17,6 @@ export async function createPayinTransaction(body) {
     return res.json();
 }
 
-export async function deletePayinTransaction(id) {
-    const url = `${API}/payin/transactions/public/${id}`;
-    const res = await fetch(url, { method: 'DELETE', credentials: 'include' });
-    if (!res.ok) {
-        const t = await res.text();
-        throw new Error(t || 'Не удалось удалить транзакцию');
-    }
-    return true;
-}
 
 // LOOKUP по ЛОГИНУ
 export async function lookupRequisites(login, take = 20) {
@@ -71,4 +47,102 @@ export async function backfillByMonth(body) {
         throw new Error(t || 'Не удалось сгенерировать за месяц');
     }
     return res.json(); // { created, byPair: { "dev:req": n } }
+}
+
+
+
+function qs(obj = {}) {
+    const p = new URLSearchParams();
+    Object.entries(obj).forEach(([k, v]) => {
+        if (v === undefined || v === null || v === '') return;
+        p.append(k, String(v));
+    });
+    const s = p.toString();
+    return s ? `?${s}` : '';
+}
+
+// ===== список
+export async function fetchPayinTransactions(scope = 'public', { status, id, page = 1, pageSize = 50, userId, userLogin } = {}) {
+    const url = `${API}/payin/transactions/${scope}${qs({ status: Array.isArray(status) ? status.join(',') : status, id, page, pageSize, userId, userLogin })}`;
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) throw new Error('Не удалось загрузить транзакции');
+    return res.json();
+}
+
+// ===== создание
+export async function createPayinTransactionPublic(body) {
+    const res = await fetch(`${API}/payin/transactions/public`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || 'Не удалось создать');
+    }
+    return res.json();
+}
+
+export async function createPayinTransactionPrivate(body /* { userId, date, status, deviceId?, requisiteId?, dealAmount, incomeAmount } */) {
+    const res = await fetch(`${API}/payin/transactions/private`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || 'Не удалось создать');
+    }
+    return res.json();
+}
+
+// ===== удаление
+export async function deletePayinTransaction(scope = 'public', id) {
+    const res = await fetch(`${API}/payin/transactions/${scope}/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    });
+    if (!res.ok) throw new Error('Не удалось удалить');
+    return true;
+}
+
+// ===== генерация по связкам
+export async function generateTransactionsByLinks(scope = 'public', linkIds, count = 100) {
+    const path = scope === 'private' ? 'private' : '';
+    const url = `${API}/payin/generate${path ? '/' + path : ''}`;
+    const res = await fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ linkIds, count }),
+    });
+    if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || 'Не удалось сгенерировать');
+    }
+    return res.json();
+}
+
+// ===== backfill за месяц (private)
+export async function backfillByMonthPrivate(body /* {year, month, maxTotalCount?, pairs:[{userId, deviceId, requisiteId, minAmountUsdt, maxAmountUsdt, dailyLimit, monthlyLimit}]} */) {
+    const res = await fetch(`${API}/payin/generate/backfill-month-private`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || 'Не удалось сгенерировать (private)');
+    }
+    return res.json();
+}
+
+// ===== lookup пользователей по логину (для приватного создания/бэкоффа)
+export async function lookupUsers(login, take = 20) {
+    const res = await fetch(`${API}/users/lookup${qs({ login, take })}`, { credentials: 'include' });
+    if (!res.ok) throw new Error('Не удалось найти пользователей');
+    return res.json(); // [{id, login, email?}]
 }

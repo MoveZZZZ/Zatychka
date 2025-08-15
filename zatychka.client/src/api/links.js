@@ -1,6 +1,6 @@
 ﻿
 import { get, post, put, del } from './client';
-
+//links.js
 export function listLinks() {
     return get('/api/links');
 }
