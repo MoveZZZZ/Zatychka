@@ -362,7 +362,7 @@ export default function BalancePage() {
         <div className="balance-page">
             <Breadcrumbs />
 
-            <div className="balance-header">
+            <div className="rq-header">
                 <h2 className="page-title">Баланс</h2>
 
                 {editable && (

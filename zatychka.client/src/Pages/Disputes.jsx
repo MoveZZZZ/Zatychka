@@ -189,7 +189,7 @@ export default function Disputes() {
         <div className="transactions-container">
             <Breadcrumbs />
 
-            <div className="head-row">
+            <div className="rq-header">
                 <h2 className="page-title">Споры</h2>
 
                 {/* Переключатель области — как в Transactions. Показываем только при editable,

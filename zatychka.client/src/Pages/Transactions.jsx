@@ -230,7 +230,7 @@ export default function Transactions() {
         <div className="transactions-container">
             <Breadcrumbs />
 
-            <div className="head-row">
+            <div className="rq-header">
                 <h2 className="page-title">Приём</h2>
 
                 {/* Переключатель области данных — как в BalancePage */}

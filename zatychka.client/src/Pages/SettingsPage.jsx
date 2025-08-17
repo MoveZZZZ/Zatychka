@@ -187,8 +187,9 @@ export default function SettingsPage() {
     return (
         <div className="settings-page">
             <Breadcrumbs />
+            <div className="rq-header">
             <h2 className="settings-title">Настройки</h2>
-
+            </div>
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
             {/* Telegram блок — показывает статус ТЕКУЩЕГО пользователя */}

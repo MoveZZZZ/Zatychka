@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\assets\icons\" />
+    <Folder Include="src\assets\wallets\" />
   </ItemGroup>
 </Project>
