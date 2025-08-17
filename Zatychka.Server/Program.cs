@@ -25,9 +25,13 @@ builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<IRequisiteRepository, RequisiteRepository>();
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUserWalletRepository, UserWalletRepository>();
+builder.Services.AddScoped<ITronDepositService, TronDepositService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
-
+builder.Services.AddHttpClient("trongrid", c =>
+{
+    c.BaseAddress = new Uri("https://api.trongrid.io/");
+});
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddSingleton(sp =>

@@ -32,6 +32,7 @@ namespace Zatychka.Server.Data
         public DbSet<Zatychka.Server.Models.IntakeDateConfig> IntakeDateConfigs { get; set; }
         public DbSet<PrivateDispute> PrivateDisputes { get; set; } = null!;
         public DbSet<UserTelegramLink> TelegramLinks { get; set; } = null!;
+        public DbSet<DepositCursor> DepositCursors { get; set; } = default!;
         protected override void OnModelCreating(ModelBuilder b)
         {
             b.Entity<UserTelegramLink>(e =>

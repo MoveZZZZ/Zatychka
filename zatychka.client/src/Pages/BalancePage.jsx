@@ -19,6 +19,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { fetchBalanceHistory, createBalanceHistory, deleteBalanceHistory } from '../api/balanceHistory';
 import { useToast } from '../context/ToastContext';
 import qr1 from '../assets/qr.png';
+import { checkDepositsApi } from '../api/deposits';
 
 /* === словари и порядок типов для чипсов и селектов === */
 const TYPE_LABELS = {
@@ -236,9 +237,34 @@ export default function BalancePage() {
     const [checkLoading, setCheckLoading] = useState(false);
     async function handleCheckDeposits() {
         try {
+            if (!selectedWallet?.address) {
+                toast.error('Сначала покажите кошелёк и скопируйте адрес.');
+                return;
+            }
             setCheckLoading(true);
-            await new Promise(r => setTimeout(r, 1800));
-            toast.error('Новых поступлений нет');
+
+            const userId = scope === 'private' ? Number(me?.id || me?.userId || 0) || null : null;
+
+            const dataRes = await checkDepositsApi({
+                address: selectedWallet.address,
+                userId
+            });
+
+            const added = Number(dataRes?.count || 0);
+
+            if (added > 0) {
+                toast.success(`Новые поступления: ${added}`);
+                try {
+                    const list = await fetchBalanceHistory(scope, historyKind, {
+                        types: selectedTypes && selectedTypes.length ? selectedTypes : undefined,
+                    });
+                    setRows(list);
+                } catch { }
+            } else {
+                toast.error('Новых поступлений нет');
+            }
+        } catch (e) {
+            toast.error(e?.message || 'Ошибка проверки депозита');
         } finally {
             setCheckLoading(false);
         }
@@ -559,6 +585,7 @@ export default function BalancePage() {
                                                 >
                                                     {checkLoading ? <span className="btn-spinner btn-spinner-sm" aria-label="Загрузка" /> : 'Проверить зачисления'}
                                                 </button>
+
                                                 <p className="wallet-note"><span>⚠</span> Кошелёк может обновляться</p>
                                             </div>
                                         </div>
