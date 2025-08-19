@@ -1,4 +1,3 @@
-/* ===== Заголовок страницы — гарантированно виден ===== */
 .disputes-page .page-title-dis {
     display: block !important;
     font-size: 30px;
@@ -9,7 +8,7 @@
     padding: 0 24px;
 }
 
-/* ===== Карточка фильтров ===== */
+
 .filters-card {
     background: #1F1F1F;
     border: 1px solid #2b2f36;
@@ -24,18 +23,18 @@
     margin-bottom: 10px;
 }
 
-/* Внутренний контейнер для содержимого фильтров (чипсов и т.п.) */
+
 .filters-inner {
     display: block;
     margin-top: 10px;
 }
 
-/* Кнопка-тумблер (на десктопе скрыта) */
+
 .filters-toggle {
     display: none;
 }
 
-/* Чипы */
+
 .chips {
     display: flex;
     flex-wrap: wrap;
@@ -71,15 +70,14 @@
         box-shadow: 0 0 0 1px rgba(200,150,41,0.25) inset;
     }
 
-/* ===== Таблица — всегда готова к горизонтальному скроллу на узких ===== */
+
 .disputes-table {
     background-color: #1e1e1e;
     border: 1px solid #444;
     border-radius: 15px;
-    overflow: hidden; /* для скруглений */
+    overflow: hidden; 
 }
 
-/* обёртка для скролла */
 .disputes-table {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -90,7 +88,7 @@
         width: 100%;
         border-collapse: collapse;
         table-layout: fixed;
-        min-width: 820px; /* чтобы появился горизонтальный скролл на узких */
+        min-width: 820px;
     }
 
     .disputes-table thead {
@@ -122,9 +120,9 @@
     font-size: 16px;
 }
 
-/* ===== Планшеты и телефоны — «как было»: тумблер + сворачивание ===== */
+
 @media (max-width: 1024px) {
-    /* уменьшаем отступы карточки фильтров */
+   
     .filters-card {
         padding: 10px;
         margin-bottom: 10px;
@@ -133,7 +131,7 @@
     .filters-title {
         display: none !important;
     }
-    /* показываем кнопку-тумблер */
+
     .filters-toggle {
         display: flex;
         align-items: center;
@@ -156,7 +154,7 @@
         gap: 6px;
     }
 
-    /* бейдж «Все» или число выбранных */
+
     .filters-summary {
         background: #2b2416;
         color: #ffcc66;
@@ -166,7 +164,6 @@
         padding: 2px 8px;
     }
 
-    /* на мобильных/планшетах содержимое скрыто по умолчанию */
     .filters-inner {
         display: none;
         margin-top: 10px;
@@ -176,7 +173,7 @@
         display: block;
     }
 
-    /* уплотняем чипсы и делаем горизонтальный скролл */
+
     .chips {
         gap: 6px;
     }
@@ -185,13 +182,13 @@
             flex-wrap: nowrap;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none; 
         }
 
             .chips.chips-scroll::-webkit-scrollbar {
                 display: none;
             }
-    /* Chrome/Safari */
+
 
     .chip {
         padding: 6px 10px;
@@ -204,19 +201,19 @@
         margin-bottom: 8px;
     }
 
-    /* заголовок компактнее */
+
     .disputes-page .page-title-dis {
         font-size: 26px;
         margin-top: 55px;
     }
 
-    /* гарантируем горизонт-скролл таблицы */
+
     .disputes-table table {
         min-width: 780px;
     }
 }
 
-/* ===== Очень узкие телефоны ===== */
+
 @media (max-width: 390px) {
     .chip {
         padding: 6px 8px;
@@ -228,42 +225,41 @@
         margin-top: 55px;
     }
 
-    /* таблица может быть ещё шире относительно экрана — оставляем скролл */
+
     .disputes-table table {
         min-width: 720px;
     }
 }
-/* Каркас таблицы (без прокрутки) */
+
 .disputes-table {
     background-color: #1e1e1e;
     border: 1px solid #444;
     border-radius: 15px;
     width: 100%;
-    /* никакого overflow тут */
     overflow: visible;
 }
 
-    /* Прокручиваемая внутренняя обёртка */
+
     .disputes-table .table-scroll {
         display: block;
         text-align: center;
         width: 100%;
-        overflow-x: auto; /* горизонтальный скролл */
+        overflow-x: auto; 
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-x: contain;
-        border-radius: 15px; /* чтобы скролл содержимого уважал скругления */
+        border-radius: 15px; 
     }
 
-        /* Таблица внутри — задаём минимальную ширину, чтобы появился скролл */
+
         .disputes-table .table-scroll > table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            min-width: 820px; /* при необходимости скорректируйте */
+            min-width: 820px; 
         }
 
-    /* Оформление заголовка/ячеек как было */
+
     .disputes-table thead {
         background-color: #2a2a2a;
         color: #ccc;
@@ -286,7 +282,7 @@
         border-bottom: none;
     }
 
-/* На планшетах/телефонах — можно сузить минимальную ширину (по желанию) */
+
 @media (max-width: 1024px) {
     .disputes-table .table-scroll > table {
         min-width: 780px;

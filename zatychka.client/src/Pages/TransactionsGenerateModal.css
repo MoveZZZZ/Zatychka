@@ -1,97 +1,148 @@
+/* Overlay Ч как в .tx-modal-overlay */
 .tg-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.5);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: 1100;
 }
 
+/*  оробка модалки Ч цвета/радиусы/тени как в .tx-modal + анимаци€ */
 .tg-modal {
     width: min(900px, 92%);
     max-height: 86vh;
     overflow: auto;
-    background: #2a2a2d;
-    color: #fff;
-    border-radius: 8px;
+    background: #1e1e2e;
+    color: #f0f0f0;
+    border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    animation: tg-fadeIn 0.25s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* ’едер Ч как .tx-modal-header */
 .tg-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
     .tg-head h3 {
         margin: 0;
+        font-size: 18px;
+        font-weight: 600;
     }
 
+/*  нопка закрыти€ Ч как .tx-close-btn */
 .tg-close {
     background: none;
     border: none;
-    color: #fff;
-    font-size: 24px;
+    color: #aaa;
+    font-size: 22px;
     cursor: pointer;
+    transition: color 0.2s;
 }
 
+    .tg-close:hover {
+        color: #fff;
+    }
+
+/* –€ды и подписи */
 .tg-row {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
+    gap: 10px;
 }
 
     .tg-row label {
         margin-right: 10px;
         white-space: nowrap;
+        color: #cfcfcf;
+        font-size: 14px;
     }
 
-.tg-input {
+/* »нпуты Ч как .tx-field input */
+.tg-input,
+.tg-table .table-input {
     flex: 1;
-    padding: 8px 12px;
-    background: #3a3a3d;
-    border: 1px solid #4a4a4d;
-    color: #fff;
-    border-radius: 4px;
+    padding: 8px 10px;
+    background: #2a2a3a;
+    border: 1px solid #444;
+    color: #f0f0f0;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
 }
+
+    .tg-input:focus,
+    .tg-table .table-input:focus {
+        border-color: #4a90e2;
+    }
 
     .tg-input.small {
         width: 100px;
         flex: none;
     }
 
+/*  нопки Ч как .tx-btn (+ варианты primary/ghost/disabled) */
 .tg-btn {
     padding: 8px 16px;
-    background: #4a4a4d;
     border: none;
-    color: #fff;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    margin-left: 10px;
+    font-weight: 500;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    background: #444;
+    color: #eee;
 }
 
-    .tg-btn.primary {
-        background: #007bff;
+    .tg-btn:hover {
+        background: #555;
     }
+
+    .tg-btn.primary {
+        background: #4a90e2;
+        color: #fff;
+    }
+
+        .tg-btn.primary:hover {
+            background: #357ab8;
+        }
 
     .tg-btn.ghost {
         background: transparent;
         border: 1px solid #4a4a4d;
+        color: #ddd;
     }
 
+        .tg-btn.ghost:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
     .tg-btn:disabled {
-        opacity: 0.5;
+        opacity: 0.6;
         cursor: not-allowed;
     }
 
-.tg-err {
-    color: #ff4d4d;
-    margin-bottom: 15px;
+/* ќшибки Ч бокс как .tx-error-box */
+.tg-err,
+.tg-error-box {
+    background: #4a1e1e;
+    color: #ffb3b3;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 10px;
+    border: 1px solid #b33;
 }
 
+/* —писки и пустые состо€ни€ */
 .tg-list {
     max-height: 400px;
     overflow-y: auto;
@@ -104,24 +155,24 @@
     color: #aaa;
 }
 
-.tg-select-all {
-    margin-bottom: 10px;
-}
-
+/* “аблица Ч цвета в стиле новой модалки */
 .tg-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 14px;
 }
 
-    .tg-table th, .tg-table td {
+    .tg-table th,
+    .tg-table td {
         padding: 10px;
         text-align: left;
-        border-bottom: 1px solid #4a4a4d;
+        border-bottom: 1px solid #444;
     }
 
     .tg-table th {
-        background: #3a3a3d;
-        font-weight: bold;
+        background: #2a2a3a;
+        color: #e6e6e6;
+        font-weight: 600;
     }
 
     .tg-table tr.muted {
@@ -132,8 +183,22 @@
             opacity: 0.7;
         }
 
+/* Ќижние действи€ */
 .tg-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+/* јнимаци€ по€влени€ Ч аналог .tx-fadeIn */
+@keyframes tg-fadeIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }

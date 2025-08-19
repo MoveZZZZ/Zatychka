@@ -4,14 +4,12 @@ import './AutomationModal.css';
 import qrImage from '../assets/qr.png';
 
 const AutomationModal = ({ onClose }) => {
-    // создаём контейнер для портала
     const portalElRef = useRef(null);
     if (!portalElRef.current) {
         portalElRef.current = document.createElement('div');
         portalElRef.current.setAttribute('data-portal', 'automation-modal');
     }
 
-    // монтируем контейнер в body и лочим скролл фона
     useEffect(() => {
         document.body.appendChild(portalElRef.current);
         const prevOverflow = document.body.style.overflow;
@@ -22,7 +20,6 @@ const AutomationModal = ({ onClose }) => {
         };
     }, []);
 
-    // всё содержимое модалки рендерим в портал
     return createPortal(
         <div className="modal-overlay-auto modal-overlay--top" onClick={onClose}>
             <div

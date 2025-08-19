@@ -6,7 +6,7 @@
     padding: 0 24px;
 }
 
-/* ===== Карточки баланса сверху ===== */
+
 .balance-cards {
     display: flex;
     gap: 16px;
@@ -46,7 +46,6 @@
     color: #E5E5E5;
 }
 
-/* ===== Блоки Вывод/Пополнение ===== */
 .balance-sections {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -70,7 +69,7 @@
     min-height: 100%;
 }
 
-/* ===== Значок TRC20 ===== */
+
 .badge {
     font-family: 'Mulish', sans-serif;
     display: inline-block;
@@ -84,7 +83,7 @@
     line-height: 1;
 }
 
-/* ===== Инпуты ===== */
+
 .input-koshelok,
 .input-row input {
     width: 100%;
@@ -188,7 +187,7 @@
         box-shadow: 0 0 40px rgba(200, 150, 41, 0.5);
     }
 
-/* ===== QR-код ===== */
+
 .qr-block {
     position: relative;
     margin-top: 20px;
@@ -226,7 +225,7 @@
     color: #aaa;
 }
 
-/* ===== История баланса ===== */
+
 .history-section {
     margin-top: 40px;
 }
@@ -260,14 +259,14 @@
         cursor: default;
     }
 
-/* таблицы */
+
 .table-wrap {
     width: 100%;
     overflow-x: auto;
 }
 
     .table-wrap table {
-        min-width: 640px; /* на мобилке уйдёт в горизонтальный скролл */
+        min-width: 640px;
     }
 
 table {
@@ -290,7 +289,7 @@ th, td {
     color: #a0a0a0;
 }
 
-/* ===== Кошелёк ===== */
+
 .wallet-container {
     position: relative;
     border: 1px solid #444;
@@ -331,7 +330,7 @@ th, td {
     flex-shrink: 0;
 }
 
-/* Правая часть */
+
 .wallet-content {
     flex: 1;
     display: flex;
@@ -339,7 +338,7 @@ th, td {
     gap: 16px;
 }
 
-/* Верхняя строка */
+
 .wallet-label-row {
     display: flex;
     align-items: center;
@@ -349,7 +348,7 @@ th, td {
     color: #fff;
 }
 
-/* Адрес */
+
 .wallet-address-box {
     display: flex;
     align-items: center;
@@ -362,7 +361,7 @@ th, td {
     word-break: break-all;
 }
 
-/* Кнопка + уведомление */
+
 .wallet-bottom {
     display: flex;
     justify-content: space-between;
@@ -419,7 +418,7 @@ th, td {
         box-shadow: 0 0 40px rgba(200, 150, 41, 0.5);
     }
 
-/* История — шапка и сегменты */
+
 .history-head {
     display: flex;
     justify-content: space-between;
@@ -477,7 +476,7 @@ th, td {
             display: inline-flex;
         }
 
-/* === Карточка фильтров (Типы) === */
+
 .filters-card {
     background: #1F1F1F;
     border: 1px solid #2b2f36;
@@ -492,7 +491,7 @@ th, td {
     margin-bottom: 10px;
 }
 
-/* === Чипсы типов === */
+
 .chips {
     display: flex;
     flex-wrap: wrap;
@@ -527,7 +526,7 @@ th, td {
         transform: translateY(1px);
     }
 
-/* ===== Спиннеры ===== */
+
 .btn-spinner {
     display: inline-block;
     width: 18px;
@@ -556,7 +555,7 @@ th, td {
     cursor: default;
 }
 
-/* ==== Копирование адреса ==== */
+
 .copy-wrap {
     position: relative;
     display: inline-block;
@@ -621,11 +620,7 @@ th, td {
     cursor: default;
 }
 
-/* ========================= */
-/* ===  АДАПТИВ/RESPONSIVE === */
-/* ========================= */
 
-/* планшеты ≤ 1024px */
 @media (max-width: 1024px) {
     .balance-cards {
         flex-direction: column;
@@ -656,7 +651,7 @@ th, td {
     .qr-code {
         width: 140px;
         height: 140px;
-        margin: 0 auto; /* центрируем QR на мобильных */
+        margin: 0 auto; 
     }
 
     .wallet-address-box {
@@ -680,7 +675,7 @@ th, td {
         justify-content: center;
     }
 
-    /* таблицы — чуть крупнее, с прокруткой из .table-wrap */
+
     thead {
         font-size: 12px;
     }
@@ -707,7 +702,7 @@ th, td {
         display: none !important;
     }
 }
-/* телефоны ≤ 640px */
+
 @media (max-width: 640px) {
     .page-title {
         font-size: 22px;
@@ -791,7 +786,7 @@ th, td {
     font-family: 'Mulish', sans-serif;
 }
 
-/* очень маленькие экраны ≤ 380px */
+
 @media (max-width: 380px) {
     .page-title {
         font-size: 20px;
@@ -815,16 +810,16 @@ th, td {
         font-size: 14px;
     }
 }
-/* ====== Компактные фильтры на мобиле/планшете ====== */
+
 .filters-toggle {
-    display: none; /* по умолчанию скрыто, показываем только на малых экранах */
+    display: none; 
 }
 
 .filters-inner {
-    /* на десктопе раздел открыт всегда */
+    
 }
 
-/* Иконка-стрелка в кнопке */
+
 .filters-toggle .chev {
     transition: transform .2s ease;
 }
@@ -834,7 +829,7 @@ th, td {
     }
 
 @media (max-width: 1024px) {
-    /* уменьшаем отступы карточки фильтров */
+
     .filters-card {
         padding: 10px;
         margin-bottom: 10px;
@@ -843,7 +838,7 @@ th, td {
     {
         margin-top:80px;
     }
-    /* показываем кнопку-тумблер */
+
     .filters-toggle {
         display: flex;
         align-items: center;
@@ -866,7 +861,7 @@ th, td {
         gap: 6px;
     }
 
-    /* бейдж «Все» или число выбранных */
+
     .filters-summary {
         background: #2b2416;
         color: #ffcc66;
@@ -876,7 +871,7 @@ th, td {
         padding: 2px 8px;
     }
 
-    /* на мобильных содержимое скрыто по умолчанию */
+
     .filters-inner {
         display: none;
         margin-top: 10px;
@@ -886,7 +881,7 @@ th, td {
         display: block;
     }
 
-    /* уплотняем чипсы и делаем горизонтальный скролл */
+
     .chips {
         gap: 6px;
     }
@@ -895,17 +890,17 @@ th, td {
             flex-wrap: nowrap;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none; 
         }
 
             .chips.chips-scroll::-webkit-scrollbar {
-                display: none; /* Chrome/Safari */
+                display: none; 
             }
 
     .chip {
         padding: 6px 10px;
         font-size: 13px;
-        white-space: nowrap; /* чтобы красиво ехали в ряд */
+        white-space: nowrap; 
     }
 
     .filters-title {
@@ -920,7 +915,7 @@ th, td {
         font-size: 12px;
     }
 }
-/* Контейнер переключателя */
+
 .segmented {
     position: relative;
     display: flex;
@@ -933,13 +928,13 @@ th, td {
     user-select: none;
 }
 
-/* Подсветка активной половинки (ползунок) */
+
 .segmented-thumb {
     position: absolute;
     top: 6px;
     left: 6px;
     height: calc(100% - 12px);
-    width: calc(50% - 3px); /* половина с учётом gap */
+    width: calc(50% - 3px);
     border-radius: 999px;
     background: #1f2126;
     box-shadow: inset 0 0 0 1px rgba(255,204,102,0.25);
@@ -949,24 +944,24 @@ th, td {
     z-index: 0;
 }
 
-/* Куда едет ползунок */
+
 .segmented[data-active="simple"] .segmented-thumb {
     transform: translateX(0);
 }
 
 .segmented[data-active="frozen"] .segmented-thumb {
-    transform: translateX(calc(100% + 6px)); /* 6px — gap между сегментами */
+    transform: translateX(calc(100% + 6px)); 
 }
 
-/* Кнопки */
+
 .segmented .seg {
     position: relative;
-    z-index: 1; /* выше ползунка */
+    z-index: 1; 
     flex: 1;
     appearance: none;
     border: 0;
     outline: 0;
-    background: transparent; /* фон делает ползунок */
+    background: transparent; 
     color: #d9dde3;
     padding: 10px 18px;
     border-radius: 999px;
@@ -988,7 +983,7 @@ th, td {
         transform: translateY(1px);
     }
 
-    /* Активная — только цвет текста/иконки */
+
     .segmented .seg.active {
         color: #ffcc66;
         box-shadow: none;
@@ -1000,7 +995,7 @@ th, td {
         display: inline-flex;
     }
 
-/* Reduced motion */
+
 @media (prefers-reduced-motion: reduce) {
     .segmented-thumb {
         transition: none;
@@ -1011,7 +1006,7 @@ th, td {
     }
 }
 
-/* Планшеты: если начнёт переноситься — лучше убрать ползунок и сделать две отдельные кнопки */
+
 @media (max-width: 1024px) {
     .segmented {
         flex-wrap: wrap;
@@ -1022,7 +1017,7 @@ th, td {
     .segmented-thumb {
         display: none;
     }
-    /* скрываем ползунок */
+
     .segmented .seg {
         flex: 1 1 48%;
         background: #151515;
@@ -1035,7 +1030,7 @@ th, td {
         }
 }
 
-/* Телефоны: столбиком */
+
 @media (max-width: 640px) {
     .segmented {
         flex-direction: column;

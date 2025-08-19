@@ -6,7 +6,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    padding: 20px; /* чтобы не прилипало к краю на узких */
+    padding: 20px; 
     -webkit-overflow-scrolling: touch;
 }
 
@@ -38,7 +38,7 @@
     margin-bottom: 20px;
 }
 
-/* === поля (оставляем ваш стиль, добавил box-sizing и высоту) === */
+
 .form-select {
     width: 100%;
     height: 44px;
@@ -73,18 +73,18 @@
     }
 
 .form-select-option {
-    /* поддержка зависит от браузера, но обычно работает */
+
     background: #1f1f1f;
     color: #e5e5e5;
     font-size: 14px;
 }
 
-/* выбранный пункт (в закрытом селекте) */
+
 .form-select option:checked {
     color: #fff;
 }
 
-/* IE/старый Edge */
+
 .form-select::-ms-expand {
     display: none;
 }
@@ -111,7 +111,7 @@
     margin-top: 4px;
 }
 
-/* — две колонки — */
+
 .form-row-second {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -132,7 +132,7 @@
         margin-bottom: 15px;
     }
 
-/* — три колонки — */
+
 .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -165,9 +165,7 @@
     margin-top: 32px;
 }
 
-/* ============ адаптив ============ */
 
-/* планшеты */
 @media (max-width: 1024px) {
     .modal-content {
         max-width: min(640px, 80vw);
@@ -177,7 +175,7 @@
     }
 }
 
-/* телефоны */
+
 @media (max-width: 640px) {
     .modal-overlay {
         padding: 12px;
@@ -202,12 +200,12 @@
 
     .form-row,
     .form-row-second {
-        grid-template-columns: 1fr; /* одна колонка */
+        grid-template-columns: 1fr; 
         gap: 14px;
     }
 }
 
-/* очень узкие */
+
 @media (max-width: 380px) {
     .modal-content {
         padding: 18px;

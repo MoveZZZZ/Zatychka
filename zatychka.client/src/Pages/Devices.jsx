@@ -59,7 +59,6 @@ export default function Devices() {
                         <div key={device.id} className="devices-row">
                             <div className="device-col status">
                                 <WifiOff size={18} className="offline-icon" />
-                                {/* «Чипс» статуса — компактный на мобиле */}
                                 <span
                                     className="status-label offline"
                                     title="Офлайн"

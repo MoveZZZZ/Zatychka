@@ -1,5 +1,4 @@
-﻿// src/Pages/AddLinkModal.jsx
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import './AddLinkModal.css';
 
 import { getDevices } from '../api/devices';
@@ -22,7 +21,7 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
 
     const toast = useToast();
     const [devices, setDevices] = useState([]);
-    const [owners, setOwners] = useState([]); // [{id,..., requisites:[{id,type,value}]}]
+    const [owners, setOwners] = useState([]); 
 
     const [deviceId, setDeviceId] = useState('');
     const [requisiteId, setRequisiteId] = useState('');
@@ -45,7 +44,6 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
     const [err, setErr] = useState('');
     const [fieldErrs, setFieldErrs] = useState({});
     const [submitLoading, setSubmitLoading] = useState(false);
-    // запрет скролла body, пока открыта модалка + ESC для закрытия
     useEffect(() => {
         const prev = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
@@ -157,7 +155,7 @@ export default function AddLinkModal({ isOpen, onClose, onCreated }) {
     };
 
     const shortRequisiteLabel = (r) => {
-        const type = r.type;                      // "phone" | "card" | "email"
+        const type = r.type;                     
         const value = middleTruncate(String(r.value), 14);
         const owner = middleTruncate(r.ownerLabel || "", 18);
         return `${type} • ${value} — ${owner}`;

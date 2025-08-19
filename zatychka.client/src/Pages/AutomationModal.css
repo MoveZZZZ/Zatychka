@@ -1,5 +1,4 @@
-﻿/* базовые стили — как были */
-.modal-overlay-auto {
+﻿.modal-overlay-auto {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.2);
@@ -14,11 +13,8 @@
     padding: 24px 16px;
 }
 
-/* модификатор: поверх всего приложения */
 .modal-overlay--top {
-    /* максимально высокий слой, отдельный класс чтобы
-     не ломать другие модалки в проекте */
-    z-index: 2147483647; /* Int max – выше сайдбара/хедера/прочего */
+    z-index: 2147483647; 
 }
 
 .modal-auto-window {
@@ -93,7 +89,7 @@
         color: #ddd;
     }
 
-/* планшеты */
+
 @media (max-width: 1024px) {
     .modal-title {
         font-size: 30px;
@@ -108,7 +104,7 @@
     }
 }
 
-/* телефоны */
+
 @media (max-width: 640px) {
     :root {
         --mobile-header-height: 56px;
@@ -151,7 +147,6 @@
 
 }
 
-/* очень узкие телефоны */
 @media (max-width: 380px) {
     .modal-title {
         font-size: 22px;

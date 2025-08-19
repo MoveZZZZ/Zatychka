@@ -1,4 +1,3 @@
-/* ==== исходные стили (оставлены) ==== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -9,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000; /* перекрывает сайдбар/хедер */
+    z-index: 10000; 
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
 }
@@ -60,16 +59,14 @@
     cursor: pointer;
 }
 
-/* небольшая подсказка об ошибке */
+
 .modal-error {
     color: #ffb3b3;
     font-size: 13px;
     margin: -8px 0 12px;
 }
 
-/* ==== адаптация ==== */
 
-/* Планшеты и уже: если модалка выше экрана – даём скролл и ужимаем ширину */
 @media (max-width: 1024px) {
     .modal-overlay {
         align-items: flex-start;
@@ -85,7 +82,7 @@
     }
 }
 
-/* Телефоны */
+
 @media (max-width: 640px) {
     :root {
         --mobile-header-height: 56px;
@@ -128,7 +125,7 @@
     }
 }
 
-/* Очень узкие телефоны */
+
 @media (max-width: 380px) {
     .device-modal h2 {
         font-size: 19px;

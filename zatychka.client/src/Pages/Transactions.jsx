@@ -6,7 +6,7 @@ import useUserInfo from '../hooks/useUserInfo';
 import { isAdminRole } from '../utils/roles';
 import { useEditMode } from '../context/EditModeContext';
 import { useDataScope } from '../context/DataScopeContext'; // ← как в Балансе
-
+import TransactionsExactSumModal from './TransactionsExactSumModal';
 import {
     fetchPayinTransactions,
     createPayinTransactionPublic,
@@ -78,7 +78,7 @@ export default function Transactions() {
     // модалки генерации
     const [generateOpen, setGenerateOpen] = useState(false);
     const [backfillOpen, setBackfillOpen] = useState(false); // одна кнопка — внутри покажем нужную модалку
-
+    const [exactSumOpen, setExactSumOpen] = useState(false);
     // закрытие выпадашки при клике вне её
     useEffect(() => {
         if (!dropdownOpen) return;
@@ -325,6 +325,10 @@ export default function Transactions() {
                         <button className="add-btn secondary" onClick={() => setBackfillOpen(true)}>
                             Сгенерировать за месяц/день
                         </button>
+
+                        <button className="add-btn secondary" onClick={() => setExactSumOpen(true)}>
+                            Генерировать по сумме (день)
+                        </button>
                     </div>
                 )}
             </div>
@@ -488,6 +492,15 @@ export default function Transactions() {
                     open={backfillOpen}
                     onClose={() => setBackfillOpen(false)}
                     onDone={() => { setBackfillOpen(false); reload(); }}
+                />
+            )}
+
+            {editable && exactSumOpen && (
+                <TransactionsExactSumModal
+                    scope={scope}
+                    open={exactSumOpen}
+                    onClose={() => setExactSumOpen(false)}
+                    onDone={() => { setExactSumOpen(false); reload(); }}
                 />
             )}
         </div>

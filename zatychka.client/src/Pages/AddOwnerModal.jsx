@@ -9,7 +9,6 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
 
     const [form, setForm] = useState({ lastName: '', firstName: '', middleName: '' });
     const [selectedBankName, setSelectedBankName] = useState('');
-    //const [loading, setLoading] = useState(false);
     const [err, setErr] = useState('');
     const [addOwnerLoading, setAddOwnerLoading] = useState(false);
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -97,7 +96,6 @@ const AddOwnerModal = ({ onClose, onAdded }) => {
                         disabled={addOwnerLoading}
                     />
 
-                    {/* якорь для абсолютного меню */}
                     <div className="owner-bank-dropdown-wrap">
                         <BankDropdown value={selectedBankName} onChange={setSelectedBankName} />
                     </div>

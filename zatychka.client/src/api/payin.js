@@ -146,3 +146,26 @@ export async function lookupUsers(login, take = 20) {
     if (!res.ok) throw new Error('Не удалось найти пользователей');
     return res.json(); // [{id, login, email?}]
 }
+
+export async function generateExactSumPublic(body) {
+    const res = await fetch(`${API}/payin/generate/exact-sum/public`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`Ошибка генерации (public)`);
+    return res.json();
+}
+
+
+export async function generateExactSumPrivate(body) {
+    const res = await fetch(`${API}/payin/generate/exact-sum/private`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`Ошибка генерации (private)`);
+    return res.json();
+}

@@ -64,9 +64,9 @@ namespace Zatychka.Server.Services
 
         string RandomStatus()
         {
-            var x = _rnd.NextDouble(); // [0,1)
-            if (x < 0.005) return "Заморожена";
-            if (x < 0.015) return "Создана";
+            //var x = _rnd.NextDouble(); // [0,1)
+            //if (x < 0.005) return "Заморожена";
+            //if (x < 0.015) return "Создана";
             return "Выполнена";
         }
 
@@ -90,6 +90,196 @@ namespace Zatychka.Server.Services
             /// </summary>
             public bool IgnoreTiming { get; set; } = true;
         }
+
+
+
+
+
+
+
+        /// <summary>
+        /// NEW ADMINKA
+        /// </summary>
+        public sealed class ExactSumGenerateResult
+        {
+            public int Created { get; set; }
+        }
+        public async Task<ExactSumGenerateResult> GenerateExactSumAsync(
+        DateTime dayUtc,
+        int count,
+        decimal min,
+        decimal max,
+        decimal total,
+        bool isPrivate,
+        CancellationToken ct = default)
+        {
+            if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (min < 0m) throw new ArgumentOutOfRangeException(nameof(min));
+            if (max < min) max = min;
+
+            int ToCents(decimal d) => (int)Math.Round(d * 100m, MidpointRounding.AwayFromZero);
+            decimal FromCents(int c) => c / 100m;
+
+            var totalC = ToCents(total);
+            var minC = ToCents(min);
+            var maxC = ToCents(max);
+
+            long lo = (long)minC * count;
+            long hi = (long)maxC * count;
+            if (totalC < lo || totalC > hi)
+                throw new ArgumentException("TotalAmount must satisfy Count*Min ≤ Total ≤ Count*Max");
+
+            var parts = SplitExactRandom(totalC, count, minC, maxC);
+
+
+            var links = await _db.Links.Where(l => l.IsActive).ToListAsync(ct);
+            if (links.Count == 0) throw new InvalidOperationException("Нет активных связок Link");
+
+
+            var day = new DateTime(dayUtc.Year, dayUtc.Month, dayUtc.Day, 0, 0, 0, DateTimeKind.Utc);
+
+            if (isPrivate)
+            {
+                var toInsertPr = new List<PayinTransactionPrivate>(count);
+                for (int i = 0; i < count; i++)
+                {
+                    var link = links[_rnd.Next(links.Count)];
+                    var deal = FromCents(parts[i]);
+                    var income = Math.Round(deal * 0.935m, 2, MidpointRounding.AwayFromZero);
+
+
+                    var dt = day
+                    .AddHours(_rnd.Next(0, 24))
+                    .AddMinutes(_rnd.Next(0, 60))
+                    .AddSeconds(_rnd.Next(0, 60));
+                    var statusStr = RandomStatus();
+                    var statusEnum = statusStr switch
+                    {
+                        "Заморожена" => PayinStatus.Frozen,
+                        "Создана" => PayinStatus.Created,
+                        _ => PayinStatus.Completed
+                    };
+
+
+                    toInsertPr.Add(new PayinTransactionPrivate
+                    {
+                        UserId = link.UserId,
+                        DeviceId = link.DeviceId,
+                        RequisiteId = link.RequisiteId,
+                        Date = dt,
+                        Status = statusEnum,
+                        DealAmount = deal,
+                        IncomeAmount = income
+                    });
+                }
+
+                await _db.PayinTransactionsPrivate.AddRangeAsync(toInsertPr, ct);
+                await _db.SaveChangesAsync(ct);
+                return new ExactSumGenerateResult { Created = toInsertPr.Count };
+            }
+            else
+            {
+                var toInsertPb = new List<PayinTransactionPublic>(count);
+                for (int i = 0; i < count; i++)
+                {
+                    var link = links[_rnd.Next(links.Count)];
+                    var deal = FromCents(parts[i]);
+                    var income = Math.Round(deal * 0.935m, 2, MidpointRounding.AwayFromZero);
+
+
+                    var dt = day
+                    .AddHours(_rnd.Next(0, 24))
+                    .AddMinutes(_rnd.Next(0, 60))
+                    .AddSeconds(_rnd.Next(0, 60));
+
+
+                    var status = RandomStatus();
+
+
+                    toInsertPb.Add(new PayinTransactionPublic
+                    {
+                        LinkId = link.Id,
+                        DeviceId = link.DeviceId,
+                        RequisiteId = link.RequisiteId,
+                        Date = dt,
+                        Status = status,
+                        DealAmount = deal,
+                        IncomeAmount = income
+                    });
+                }
+
+
+                await _db.PayinTransactionsPublic.AddRangeAsync(toInsertPb, ct);
+                await _db.SaveChangesAsync(ct);
+                return new ExactSumGenerateResult { Created = toInsertPb.Count };
+            }
+        }
+        private int[] SplitExactRandom(int totalC, int count, int minC, int maxC)
+        {
+            var adds = new int[count];
+            var remaining = totalC - minC * count;
+            var cap = maxC - minC;
+
+
+            for (int i = 0; i < count; i++)
+            {
+                int left = count - i - 1;
+                int low = Math.Max(0, remaining - cap * left);
+                int high = Math.Min(cap, remaining);
+                int give = (low == high) ? low : _rnd.Next(low, high + 1);
+                adds[i] = give;
+                remaining -= give;
+            }
+
+
+            var parts = new int[count];
+            for (int i = 0; i < count; i++) parts[i] = minC + adds[i];
+
+
+            for (int i = parts.Length - 1; i > 0; i--)
+            {
+                int j = _rnd.Next(i + 1);
+                (parts[i], parts[j]) = (parts[j], parts[i]);
+            }
+
+
+            var sum = parts.Sum();
+            if (sum != totalC)
+            {
+                int diff = totalC - sum;
+                int dir = Math.Sign(diff);
+                diff = Math.Abs(diff);
+                for (int k = 0; k < diff; k++) parts[k % parts.Length] += dir;
+            }
+
+
+            return parts;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

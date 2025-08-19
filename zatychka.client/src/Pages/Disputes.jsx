@@ -1,5 +1,4 @@
-﻿// src/Pages/Disputes.jsx
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import './Disputes.css';
 import Breadcrumbs from '../components/Breadcrumbs';
 import useUserInfo from '../hooks/useUserInfo';
@@ -33,13 +32,12 @@ export default function Disputes() {
     const { editMode } = useEditMode();
     const editable = isAdmin && editMode;
 
-    // ВАЖНО: для админа всегда используем сохранённый scope,
-    // даже если панель скрыта. Для обычного юзера — всегда public.
-    const { scope, setScope } = useDataScope(); // 'public' | 'private'
+
+    const { scope, setScope } = useDataScope(); 
     const effectiveScope = isAdmin ? scope : 'public';
     const isPrivate = effectiveScope === 'private';
 
-    // фильтры
+
     const [selectedStatuses, setSelectedStatuses] = useState([]);
     const toggleStatus = (val) => {
         setSelectedStatuses((prev) =>
@@ -47,16 +45,16 @@ export default function Disputes() {
         );
     };
 
-    // чипсы
+
     const [chipsCollapsed, setChipsCollapsed] = useState(true);
     const activeCount = selectedStatuses.length;
 
-    // данные
+
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState('');
 
-    // тикер таймера
+
     const tickRef = useRef(null);
     useEffect(() => {
         tickRef.current = setInterval(() => {
@@ -71,7 +69,7 @@ export default function Disputes() {
         return () => clearInterval(tickRef.current);
     }, []);
 
-    // загрузка + автообновление
+
     useEffect(() => {
         let cancelled = false;
         const reload = async () => {
@@ -91,7 +89,7 @@ export default function Disputes() {
         return () => { cancelled = true; clearInterval(id); };
     }, [effectiveScope, selectedStatuses]);
 
-    // форма добавления (только для админа в editMode)
+
     const [showAdd, setShowAdd] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -113,7 +111,7 @@ export default function Disputes() {
     const [mm, setMm] = useState('30');
     const [ss, setSs] = useState('0');
 
-    // выбор пользователя — только при создании private админом
+
     const [userLogin, setUserLogin] = useState('');
     const [userList, setUserList] = useState([]);
     const [userId, setUserId] = useState('');
@@ -156,7 +154,7 @@ export default function Disputes() {
             await createDispute(effectiveScope, body);
             setShowAdd(false);
 
-            // очистка
+
             setTransactionId('');
             setStatus('InProgress');
             setRqLogin(''); setRqList([]); setRqId('');
@@ -192,8 +190,7 @@ export default function Disputes() {
             <div className="rq-header">
                 <h2 className="page-title">Споры</h2>
 
-                {/* Переключатель области — как в Transactions. Показываем только при editable,
-            но выбранный scope сохраняется и используется даже когда панель скрыта. */}
+
                 {editable && (
                     <div className="mode-switch">
                         <label>
@@ -220,7 +217,7 @@ export default function Disputes() {
                 )}
             </div>
 
-            {/* Фильтры статусов */}
+
             <div className={`filters-card ${chipsCollapsed ? '' : 'open'}`}>
                 <button
                     type="button"
@@ -252,7 +249,7 @@ export default function Disputes() {
                 </div>
             </div>
 
-            {/* Кнопка «добавить» — только для админа в editMode */}
+
             {editable && (
                 <div className="toolbar-row" style={{ marginTop: 8 }}>
                     <button className="add-btn" onClick={() => setShowAdd((v) => !v)}>
@@ -264,10 +261,10 @@ export default function Disputes() {
             {err && <div className="error-banner">{err}</div>}
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
-            {/* Форма добавления */}
+
             {editable && showAdd && (
                 <div className="add-form">
-                    {/* Только если создаём private — выбор пользователя */}
+
                     {isPrivate && (
                         <div className="field wide">
                             <label>Пользователь (по логину)</label>

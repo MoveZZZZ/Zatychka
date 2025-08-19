@@ -21,7 +21,12 @@ import { useToast } from '../context/ToastContext';
 import qr1 from '../assets/qr.png';
 import { checkDepositsApi } from '../api/deposits';
 
-/* === словари и порядок типов для чипсов и селектов === */
+
+
+
+import {lookupUsers} from '../api/payin';
+
+
 const TYPE_LABELS = {
     Deposit: 'Пополнение',
     Withdrawal: 'Вывод',
@@ -66,21 +71,20 @@ export default function BalancePage() {
     const { editMode } = useEditMode();
     const editable = isAdmin && editMode;
 
-    // глобальная область данных
-    const { scope, setScope } = useDataScope(); // 'public' | 'private'
+    const { scope, setScope } = useDataScope(); 
 
     const [showWallet, setShowWallet] = useState(false);
 
-    // данные
+
     const [pub, setPub] = useState({ mainUsdt: 0, frozenUsdt: 0, insuranceUsdt: 0 });
     const [priv, setPriv] = useState({ mainUsdt: 0, frozenUsdt: 0, insuranceUsdt: 0 });
 
-    // ui
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [err, setErr] = useState('');
 
-    // inline-редактирование
+
     const [editing, setEditing] = useState({ main: false, frozen: false, insurance: false });
     const [draft, setDraft] = useState({ main: '', frozen: '', insurance: '' });
 
@@ -169,11 +173,11 @@ export default function BalancePage() {
         }
     }
 
-    // ===== История/Заморозка =====
-    const [historyKind, setHistoryKind] = useState('simple'); // 'simple' | 'frozen'
 
-    // Мультивыбор типов
-    const [selectedTypes, setSelectedTypes] = useState([]); // [] = все
+    const [historyKind, setHistoryKind] = useState('simple'); 
+
+
+    const [selectedTypes, setSelectedTypes] = useState([]); 
     const toggleType = (t) => {
         setSelectedTypes(prev =>
             prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
@@ -184,25 +188,25 @@ export default function BalancePage() {
     const [histLoading, setHistLoading] = useState(false);
     const [histErr, setHistErr] = useState('');
 
-    // форма добавления (только для админа)
+
     const canAddHistory = editable;
     const [showAdd, setShowAdd] = useState(false);
     const [savingHist, setSavingHist] = useState(false);
 
-    // поля формы - simple
+
     const [hDate, setHDate] = useState(() => new Date().toISOString().slice(0, 10));
     const [hType, setHType] = useState('Deposit');
     const [hAmount, setHAmount] = useState('');
     const [hBefore, setHBefore] = useState('');
     const [hAfter, setHAfter] = useState('');
-    const [hUserId, setHUserId] = useState(''); // для private
+    const [hUserId, setHUserId] = useState(''); 
 
-    // поля формы - frozen
+
     const [fFreeze, setFFreeze] = useState(() => new Date().toISOString().slice(0, 10));
     const [fUnfreeze, setFUnfreeze] = useState('');
     const [fType, setFType] = useState('Deposit');
     const [fAmount, setFAmount] = useState('');
-    const [fUserId, setFUserId] = useState(''); // для private
+    const [fUserId, setFUserId] = useState(''); 
 
     const toast = useToast();
     const TELEGRAM_MANAGER_URL = 'https://t.me/your_manager';
@@ -383,7 +387,18 @@ export default function BalancePage() {
         }
     }
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-    const selectedCount = selectedTypes.length; // 0 = все
+    const selectedCount = selectedTypes.length; 
+
+    const [userList, setUserList] = useState([]);
+    const [userLogin, setUserLogin] = useState('');
+    async function searchUsers() {
+        try {
+            setUserList(await lookupUsers(userLogin, 20));}
+        catch (e) {
+            setErr(e?.message || 'Не удалось получить пользователей');}
+    }
+
+
     return (
         <div className="balance-page">
             <Breadcrumbs />
@@ -608,7 +623,6 @@ export default function BalancePage() {
                 </div>
             </div>
 
-            {/* ===== История / Замороженный + фильтры ===== */}
             <div className="history-section">
                 <div className="history-head">
                     <div className="segmented" data-active={historyKind}>
@@ -644,9 +658,9 @@ export default function BalancePage() {
                     </div>
                 )}
 
-                {/* Фильтры по типам (мультивыбор) */}
+
                 <div className={`filters-card ${mobileFiltersOpen ? 'open' : ''}`}>
-                    {/* Кнопка-тогглер — видна только на мобиле/планшете */}
+
                     <button
                         type="button"
                         className="filters-toggle"
@@ -661,7 +675,7 @@ export default function BalancePage() {
                         </svg>
                     </button>
 
-                    {/* Внутренность — на десктопе видна всегда, на мобиле — только при .open */}
+
                     <div className="filters-inner">
                         <div className="filters-title">Типы</div>
                         <div className="chips chips-scroll">
@@ -682,7 +696,7 @@ export default function BalancePage() {
 
                 {histLoading && <Spinner center label="Загрузка…" size={30} />}
 
-                {/* Форма добавления */}
+
                 {showAdd && canAddHistory && (
                     <div className="add-form">
                         {historyKind === 'simple' ? (
@@ -699,8 +713,13 @@ export default function BalancePage() {
                                 </div>
                                 {scope === 'private' && (
                                     <div className="field">
-                                        <label>UserId</label>
-                                        <input type="number" value={hUserId} onChange={e => setHUserId(e.target.value)} placeholder="ID пользователя" />
+                                        <div className="inline">
+                                            <input placeholder="ID пользователя" value={userLogin} onChange={e => setUserLogin(e.target.value)} />
+                                            <button onClick={searchUsers}>Найти</button>
+                                        </div>
+                                        <select value={hUserId} onChange={e => setHUserId(e.target.value)}>
+                                            {userList.map(u => <option key={u.id} value={u.id}>{u.login} (id {u.id})</option>)}
+                                        </select>
                                     </div>
                                 )}
                                 <div className="field">
@@ -757,7 +776,7 @@ export default function BalancePage() {
                     </div>
                 )}
 
-                {/* Таблицы */}
+
                 {historyKind === 'simple' ? (
                     <div className="table-wrap">
                         <table>

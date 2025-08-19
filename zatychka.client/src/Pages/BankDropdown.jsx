@@ -30,7 +30,7 @@ const BankDropdown = ({ value, onChange }) => {
         };
     }, []);
 
-    const selectedBank = banks.find(bank => bank.name === value); // Ищем по name
+    const selectedBank = banks.find(bank => bank.name === value);
 
     return (
         <div className="bank-dropdown" ref={dropdownRef}>

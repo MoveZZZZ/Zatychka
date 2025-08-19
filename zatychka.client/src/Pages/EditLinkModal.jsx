@@ -48,11 +48,11 @@ const humanType = (t) => {
 export default function EditLinkModal({ bundle, onClose, onSave }) {
     if (!bundle) return null;
 
-    // списки для селектов
+
     const [devices, setDevices] = useState([]);
     const [owners, setOwners] = useState([]);
 
-    // локальное состояние формы; храним строки, чтобы позволять пустые значения
+
     const v = nums(bundle);
     const [deviceId, setDeviceId] = useState(getDeviceIdFromBundle(bundle) ?? '');
     const [requisiteId, setRequisiteId] = useState(getRequisiteIdFromBundle(bundle) ?? '');
@@ -98,7 +98,6 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
         return () => { cancelled = true; };
     }, []);
 
-    // плоский список реквизитов для селекта
     const allRequisites = useMemo(() => {
         const out = [];
         owners.forEach(o => {
@@ -172,7 +171,6 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
                     <Spinner center label="Загрузка…" size={30} />
                 ) : (
                     <>
-                        {/* Устройство */}
                         <div className={`form-group ${fieldErrs.deviceId ? 'error' : ''}`}>
                             <select
                                 className={`form-select ${fieldErrs.deviceId ? 'error-border' : ''}`}
@@ -189,7 +187,6 @@ export default function EditLinkModal({ bundle, onClose, onSave }) {
                             {fieldErrs.deviceId && <p className="error-text">{fieldErrs.deviceId}</p>}
                         </div>
 
-                        {/* Реквизит */}
                         <div className={`form-group ${fieldErrs.requisiteId ? 'error' : ''}`}>
                             <select
                                 className={`form-select ${fieldErrs.requisiteId ? 'error-border' : ''}`}
