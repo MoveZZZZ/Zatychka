@@ -226,6 +226,10 @@ export default function Transactions() {
         if (newPage >= 1 && newPage <= totalPages) setCurrentPage(newPage);
     };
 
+
+
+    const columnsCount = 7;
+    const actionsHidden = !editable;
     return (
         <div className="transactions-container">
             <Breadcrumbs />
@@ -418,20 +422,20 @@ export default function Transactions() {
                             <th>Устройство</th>
                             <th>Сумма сделки</th>
                             <th>Сумма поступления</th>
-                            {editable && <th></th>}
+                            <th className={`actions-col ${actionsHidden ? 'is-hidden' : ''}`}></th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={editable ? (scope === 'private' ? 8 : 7) : (scope === 'private' ? 7 : 6)} className="no-disputes">
+                                <td colSpan={columnsCount/*editable ? (scope === 'private' ? 7 : 6) : (scope === 'private' ? 7 : 6)*/} className="no-disputes">
                                     <Spinner center label="Загрузка…" size={30} />
                                 </td>
                             </tr>
                         ) : items.length === 0 ? (
                             <tr>
-                                <td colSpan={editable ? (scope === 'private' ? 8 : 7) : (scope === 'private' ? 7 : 6)} className="no-disputes">
+                                    <td colSpan={columnsCount/*editable ? (scope === 'private' ? 7 : 6) : (scope === 'private' ? 7 : 6)*/} className="no-disputes">
                                         <div className="empty-message-table">Транзакций пока нет (Транзакции хранятся 30 дней)</div>
                                 </td>
                             </tr>
@@ -451,11 +455,11 @@ export default function Transactions() {
                                     <td>{tx.deviceName ?? (tx.deviceId ? `ID ${tx.deviceId}` : '—')}</td>
                                     <td>{tx.dealAmount != null ? Number(tx.dealAmount).toFixed(2) : '0.00'} USDT</td>
                                     <td>{tx.incomeAmount != null ? Number(tx.incomeAmount).toFixed(2) : '0.00'} USDT</td>
-                                    {editable && (
-                                        <td>
+                                    <td className={`actions-col ${actionsHidden ? 'is-hidden' : ''}`}>
+                                        {editable && (
                                             <button className="delete-btn" onClick={() => removeTx(tx.id)}>Удалить</button>
-                                        </td>
-                                    )}
+                                        )}
+                                    </td>
                                 </tr>
                             ))
                         )}

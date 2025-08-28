@@ -1,0 +1,93 @@
+.ilm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.72);
+    display: grid;
+    place-items: center;
+    z-index: 1000;
+}
+
+.ilm-modal {
+    width: min(92vw, 520px);
+    background: #1f1f1f;
+    border: 1px solid #2b2f36;
+    border-radius: 16px;
+    padding: 20px 18px;
+    color: #e5e5e5;
+    box-shadow: 0 10px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.02);
+}
+
+.ilm-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.ilm-signal {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 22px;
+    color: #000;
+    background: linear-gradient(135deg, #ff4d4d, #ffb900);
+    box-shadow: 0 0 0 2px rgba(255, 185, 0, 0.28), 0 0 32px rgba(255,77,77,0.35);
+}
+
+.ilm-title {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #E5E5E5;
+}
+
+.ilm-message {
+    margin: 8px 2px 16px;
+    color: #cfd3d8;
+    line-height: 1.5;
+}
+
+.ilm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.ilm-btn {
+    appearance: none;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #2b2f36;
+    background: #0f1218;
+    color: #e5e5e5;
+    transition: transform .06s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+
+    .ilm-btn:hover {
+        background: rgba(255,255,255,.06);
+        border-color: #505763;
+    }
+
+    .ilm-btn:active {
+        transform: translateY(1px);
+    }
+
+    .ilm-btn.danger {
+        background: linear-gradient(180deg, #311616, #2a1212);
+        border-color: #5a2a2a;
+        box-shadow: 0 0 0 1px rgba(255, 77, 77, .15) inset, 0 0 30px rgba(255, 77, 77, .12);
+        color: #ffecec;
+        font-weight: 700;
+    }
+
+        .ilm-btn.danger:hover {
+            background: linear-gradient(180deg, #3b1c1c, #2f1515);
+            border-color: #7a3a3a;
+        }

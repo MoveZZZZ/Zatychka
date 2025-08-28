@@ -4,6 +4,7 @@ import AddLinkModal from './AddLinkModal';
 import EditLinkModal from './EditLinkModal';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Spinner from '../components/Spinner';
+import ImportantLineModal from './ImportantLineModal';
 import {
     listLinks,
     deleteLink as apiDeleteLink,
@@ -162,6 +163,7 @@ export default function WorkZone() {
     const [toggleFor, setToggleFor] = useState(null);
     const [submitDelete, setSubmitDelete] = useState(false);
 
+
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -214,16 +216,130 @@ export default function WorkZone() {
         return saved;
     }
 
+
+    // Ключи
+    const ENTRY_KEY = 'workzone_entry_active';
+    const EXIT_KEY = 'workzone_exit_active';
+
+    // Инициализируем состояние сразу из localStorage (ленивая инициализация useState)
+    const [entryActive, setEntryActive] = useState(() => {
+        try { return localStorage.getItem(ENTRY_KEY) === '1'; } catch { return false; }
+    });
+    const [exitActive, setExitActive] = useState(() => {
+        try { return localStorage.getItem(EXIT_KEY) === '1'; } catch { return false; }
+    });
+
+    // Состояние модалки и тексты
+    const [lineModalOpen, setLineModalOpen] = useState(false);
+    const [lineAction, setLineAction] = useState(null); // 'entry_on' | 'entry_off' | 'exit_on' | 'exit_off'
+    const [modalTitle, setModalTitle] = useState('Внимание!');
+    const [modalMessage, setModalMessage] = useState('');
+    const [modalContinueText, setModalContinueText] = useState('Продолжить');
+
+    // Пишем в LS только при изменениях (после инициализации)
+    useEffect(() => {
+        try { localStorage.setItem(ENTRY_KEY, entryActive ? '1' : '0'); } catch { }
+    }, [entryActive]);
+    useEffect(() => {
+        try { localStorage.setItem(EXIT_KEY, exitActive ? '1' : '0'); } catch { }
+    }, [exitActive]);
+
+    // Синхронизация между вкладками браузера
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === ENTRY_KEY) setEntryActive(e.newValue === '1');
+            if (e.key === EXIT_KEY) setExitActive(e.newValue === '1');
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
+
+    // Открытие модалки с правильным текстом
+    function openLineModal(kind) {
+        // kind: 'entry_on' | 'entry_off' | 'exit_on' | 'exit_off'
+        setLineAction(kind);
+        setModalTitle('Внимание!');
+        switch (kind) {
+            case 'entry_on':
+                setModalMessage('Вы хотите встать на вход. Администрация не несет ответсвенности за сохранность средств при случайной нажатии кнопки.');
+                break;
+            case 'entry_off':
+                setModalMessage('Вы действительно хотите выйти с линии (вход)?');
+                break;
+            case 'exit_on':
+                setModalMessage('Вы действительно хотите встать на выход? Вход будет автоматически завершён.');
+                break;
+            case 'exit_off':
+                setModalMessage('Вы действительно хотите выйти с линии (выход)?');
+                break;
+        }
+        setModalContinueText('Продолжить');
+        setLineModalOpen(true);
+    }
+    const closeLineModal = () => setLineModalOpen(false);
+
+    // Подтверждение модалки
+    function continueLine() {
+        if (lineAction === 'entry_on') {
+            setEntryActive(true);
+            setExitActive(false);
+            toast.success('Вы на линии, следите за реквизитами');
+        } else if (lineAction === 'entry_off') {
+            setEntryActive(false);
+        } else if (lineAction === 'exit_on') {
+            setExitActive(true);
+            setEntryActive(false);
+            toast.success('Вы на линии, следите за реквизитами');
+        } else if (lineAction === 'exit_off') {
+            setExitActive(false);
+        }
+        setLineModalOpen(false);
+    }
+
+
+
+
     return (
         <div className="workzone-container">
             <Breadcrumbs />
 
-            <div className="rq-header">
+            {/* шапка с заголовком и добавить-связку */}
+            <div className="rq-header workzone-header">
                 <h2 className="page-title">Рабочая зона</h2>
                 <button className="add-bundle-btn" onClick={() => setShowAdd(true)} type="button">
                     <span className="plus">+</span> Добавить связку
                 </button>
             </div>
+
+            {/* ===== ВАЖНЫЕ КНОПКИ (между заголовком и карточками) ===== */}
+            <div className="line-controls">
+                <button
+                    type="button"
+                    className={`line-cta ${entryActive ? 'is-active' : ''}`}
+                    onClick={() => openLineModal(entryActive ? 'entry_off' : 'entry_on')}
+                    title={entryActive ? 'Выключить вход' : 'Встать на вход'}
+                >
+                    <span className="dot" aria-hidden />
+                    <span className="label">
+                        {entryActive ? 'На линии — следите за реквизитами' : 'Встать на вход'}
+                    </span>
+                    {entryActive && <span className="badge">АКТИВНО</span>}
+                </button>
+
+                <button
+                    type="button"
+                    className={`line-cta danger ${exitActive ? 'is-active' : ''}`}
+                    onClick={() => openLineModal(exitActive ? 'exit_off' : 'exit_on')}
+                    title={exitActive ? 'Выключить выход' : 'Встать на выход'}
+                >
+                    <span className="dot" aria-hidden />
+                    <span className="label">
+                        {exitActive ? 'На линии — следите за реквизитами' : 'Встать на выход'}
+                    </span>
+                    {exitActive && <span className="badge">АКТИВНО</span>}
+                </button>
+            </div>
+            {/* ======================================================== */}
 
             {loading && <Spinner center label="Загрузка…" size={30} />}
 
@@ -243,7 +359,7 @@ export default function WorkZone() {
                                 onEdit={() => setEditing(link)}
                                 onDelete={() => handleDelete(link.id)}
                             />
-                        );ы
+                        );
                     })}
                 </div>
             ))}
@@ -264,16 +380,16 @@ export default function WorkZone() {
                 />
             )}
 
-            {toggleFor && (
-                <div className="wz-tmp-modal" onClick={() => setToggleFor(null)}>
-                    <div className="wz-tmp-box" onClick={e => e.stopPropagation()}>
-                        <h3>Управление связкой</h3>
-                        <p>ID: {toggleFor.id}</p>
-                        <p>Здесь будет модалка с опциями (позже).</p>
-                        <button onClick={() => setToggleFor(null)} type="button">Закрыть</button>
-                    </div>
-                </div>
-            )}
+            {/* Модалка подтверждения для «Встать на вход/выход» */}
+            <ImportantLineModal
+                open={lineModalOpen}
+                onCancel={closeLineModal}
+                onContinue={continueLine}
+                title={modalTitle}
+                message={modalMessage}
+                continueText={modalContinueText}
+                cancelText="Отменить"
+            />
         </div>
     );
 }

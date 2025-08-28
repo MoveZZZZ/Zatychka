@@ -470,3 +470,112 @@
         .wz-tmp-box button:hover {
             background: rgba(255,255,255,.06);
         }
+
+
+/* ===== Кнопки «Встать на вход/выход» ===== */
+.line-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 6px 0 18px;
+}
+
+.line-cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px 14px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--bz-border);
+    background: linear-gradient(180deg, #0f1218, #0a0d13);
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: .2px;
+    text-transform: none;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(200,150,41,0.18) inset, 0 14px 40px rgba(0,0,0,.35), 0 0 36px rgba(200,150,41,0.18);
+    transition: transform .06s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+
+    .line-cta .dot {
+        width: 28px;
+        height: 16px;
+        border-radius: 999px;
+        background: #151a22;
+        border: 1px solid #2b2f36;
+        position: relative;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+        .line-cta .dot::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 2px;
+            transform: translate(0,-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #c89629;
+            box-shadow: 0 0 12px rgba(200,150,41,.55);
+            transition: left .18s ease;
+        }
+
+    .line-cta .badge {
+        margin-left: 6px;
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: #000;
+        background: #ffb900;
+        box-shadow: 0 0 0 1px rgba(255,185,0,.35) inset, 0 0 24px rgba(255,185,0,.25);
+    }
+
+    .line-cta:hover {
+        border-color: rgba(200,150,41,0.45);
+        box-shadow: 0 0 0 1px rgba(200,150,41,0.28) inset, 0 16px 44px rgba(0,0,0,.4), 0 0 46px rgba(200,150,41,0.28);
+    }
+
+    .line-cta:active {
+        transform: translateY(1px);
+    }
+
+    .line-cta.is-active {
+        background: linear-gradient(180deg, #151a22, #0f1218);
+        border-color: rgba(200,150,41,0.6);
+    }
+
+        .line-cta.is-active .dot::after {
+            left: 14px; /* сдвиг «ползунка» */
+        }
+
+    .line-cta.danger {
+        /* для «Встать на выход» — чуть более красный акцент */
+        box-shadow: 0 0 0 1px rgba(255,77,77,.12) inset, 0 14px 40px rgba(0,0,0,.35), 0 0 36px rgba(255,77,77,.16);
+        border-color: #5a2a2a;
+    }
+
+        .line-cta.danger .dot::after {
+            background: #ff5656;
+            box-shadow: 0 0 12px rgba(255,77,77,.55);
+        }
+
+        .line-cta.danger:hover {
+            border-color: #7a3a3a;
+            box-shadow: 0 0 0 1px rgba(255,77,77,.22) inset, 0 16px 44px rgba(0,0,0,.4), 0 0 46px rgba(255,77,77,.26);
+        }
+
+/* адаптив для узких экранов */
+@media (max-width: 640px) {
+    .line-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .line-cta {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
