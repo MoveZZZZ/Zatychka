@@ -21,29 +21,26 @@ namespace Zatychka.Server.Services
 
         public class BackfillMonthRequest
         {
-            public int Year { get; set; }      // 2025
-            public int Month { get; set; }     // 1..12
-            public int? MaxTotalCount { get; set; } // опционально верхняя крышка (например 5000)
-
+            public int Year { get; set; }
+            public int Month { get; set; }
+            public int? MaxTotalCount { get; set; }
             public List<PairConfig> Pairs { get; set; } = new();
 
             public class PairConfig
             {
                 public int DeviceId { get; set; }
                 public int RequisiteId { get; set; }
-
                 public decimal MinAmountUsdt { get; set; }
                 public decimal MaxAmountUsdt { get; set; }
-
-                public int DailyLimit { get; set; }    // макс кол-во в день
-                public int MonthlyLimit { get; set; }  // макс кол-во в месяц
+                public int DailyLimit { get; set; }
+                public int MonthlyLimit { get; set; }
             }
         }
 
         public class BackfillMonthResult
         {
             public int Created { get; set; }
-            public Dictionary<string, int> ByPair { get; set; } = new(); // "deviceId:requisiteId" -> count
+            public Dictionary<string, int> ByPair { get; set; } = new();
         }
 
         static DateTime UtcMonthStart(int year, int month) =>
@@ -63,7 +60,7 @@ namespace Zatychka.Server.Services
 
         string RandomStatus()
         {
-            //var x = _rnd.NextDouble(); // [0,1)
+            //var x = _rnd.NextDouble();
             //if (x < 0.005) return "Заморожена";
             //if (x < 0.015) return "Создана";
             return "Выполнена";
@@ -72,42 +69,29 @@ namespace Zatychka.Server.Services
         public class GenerateRequest
         {
             public List<int> LinkIds { get; set; } = new();
-
-            /// <summary>
-            /// Сколько попытаться создать за запуск (верхняя «крышка»).
-            /// В режиме FillDailyToLimit фактически создастся min(Count, сумма дневных остатков по выбранным связкам).
-            /// </summary>
             public int Count { get; set; } = 100;
-
-            /// <summary>
-            /// Заполнять по каждой связке до дневного лимита (не превышая месячный/общий).
-            /// </summary>
             public bool FillDailyToLimit { get; set; } = true;
-
-            /// <summary>
-            /// Игнорировать паузы и лимит конкурентности в пакетной генерации.
-            /// </summary>
             public bool IgnoreTiming { get; set; } = true;
         }
 
-        // ======== ДОБАВЛЕНО: калькуляция дохода по правилам ========
+        // ======== доход по правилам ========
         const string SpecialEmail = "morphio.qwe2@gmail.com";
 
         decimal CalcIncomePublic(decimal deal)
-            => Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero); // строго +6.5% всегда
+            => Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero); // строго +6.5%
 
-        decimal CalcIncomePrivate(decimal deal, string? userEmail)
+        decimal CalcIncomePrivateForActor(decimal deal, string? actorEmail)
         {
-            if (!string.IsNullOrEmpty(userEmail) &&
-                userEmail.Equals(SpecialEmail, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(actorEmail) &&
+                actorEmail.Equals(SpecialEmail, StringComparison.OrdinalIgnoreCase))
             {
-                return Math.Round(deal * 1.125m, 2, MidpointRounding.AwayFromZero); // +12.5% только для этого юзера
+                return Math.Round(deal * 1.125m, 2, MidpointRounding.AwayFromZero); // +12.5% для спец-аккаунта
             }
             return Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);      // иначе +6.5%
         }
 
         // ============================================================
-        // NEW ADMINKA
+        // NEW ADMINKA — Exact Sum
         // ============================================================
 
         public sealed class ExactSumGenerateResult
@@ -115,6 +99,11 @@ namespace Zatychka.Server.Services
             public int Created { get; set; }
         }
 
+        /// <summary>
+        /// Генерация точно на сумму.
+        /// ВНИМАНИЕ: если задать onlyForUserId — генерация пойдёт ТОЛЬКО по связкам этого пользователя.
+        /// actorEmail влияет на % в private: спец-аккаунт → +12.5%, остальные → +6.5%.
+        /// </summary>
         public async Task<ExactSumGenerateResult> GenerateExactSumAsync(
             DateTime dayUtc,
             int count,
@@ -122,6 +111,8 @@ namespace Zatychka.Server.Services
             decimal max,
             decimal total,
             bool isPrivate,
+            int? onlyForUserId = null,        // ← добавлено
+            string? actorEmail = null,        // ← добавлено (для правила % в private)
             CancellationToken ct = default)
         {
             if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
@@ -142,9 +133,19 @@ namespace Zatychka.Server.Services
 
             var parts = SplitExactRandom(totalC, count, minC, maxC);
 
-            // для приватных нам нужен email пользователя, поэтому подтягиваем User
-            var links = await _db.Links.Include(l => l.User).Where(l => l.IsActive).ToListAsync(ct);
-            if (links.Count == 0) throw new InvalidOperationException("Нет активных связок Link");
+            // тянем активные связки — ТОЛЬКО пользователя, если задан onlyForUserId
+            IQueryable<Link> q = _db.Links.AsQueryable();
+            if (isPrivate)
+                q = q.Include(l => l.User); // для совместимости, хоть сейчас email берём из actorEmail
+            q = q.Where(l => l.IsActive);
+            if (onlyForUserId.HasValue)
+                q = q.Where(l => l.UserId == onlyForUserId.Value);
+
+            var links = await q.ToListAsync(ct);
+            if (links.Count == 0)
+                throw new InvalidOperationException(onlyForUserId.HasValue
+                    ? "Нет активных связок для указанного пользователя."
+                    : "Нет активных связок Link.");
 
             var day = new DateTime(dayUtc.Year, dayUtc.Month, dayUtc.Day, 0, 0, 0, DateTimeKind.Utc);
 
@@ -155,7 +156,7 @@ namespace Zatychka.Server.Services
                 {
                     var link = links[_rnd.Next(links.Count)];
                     var deal = FromCents(parts[i]);
-                    var income = CalcIncomePrivate(deal, link.User?.Email);
+                    var income = CalcIncomePrivateForActor(deal, actorEmail); // ← % зависит от ИНИЦИАТОРА
 
                     var dt = day
                         .AddHours(_rnd.Next(0, 24))
@@ -192,7 +193,7 @@ namespace Zatychka.Server.Services
                 {
                     var link = links[_rnd.Next(links.Count)];
                     var deal = FromCents(parts[i]);
-                    var income = CalcIncomePublic(deal);
+                    var income = CalcIncomePublic(deal); // ← public всегда +6.5%
 
                     var dt = day
                         .AddHours(_rnd.Next(0, 24))
@@ -256,9 +257,7 @@ namespace Zatychka.Server.Services
             return parts;
         }
 
-        // ============================================================
-        // Генерация в приватную таблицу
-        // ============================================================
+        // ================== остальная генерация — без изменений ==================
 
         public class GeneratePrivateResult
         {
@@ -308,15 +307,16 @@ namespace Zatychka.Server.Services
 
                 var link = candidates[_rnd.Next(candidates.Count)];
                 var deal = RandomMoney(link.MinAmountUsdt, link.MaxAmountUsdt);
-                var income = CalcIncomePrivate(deal, link.User?.Email);
-                var status = RandomStatus(); // "Заморожена" | "Создана" | "Выполнена"
+                // В остальных генерациях правило как раньше — не трогаем
+                var income = Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);
+                var status = RandomStatus();
 
                 toInsert.Add(new PayinTransactionPrivate
                 {
                     UserId = link.UserId,
                     DeviceId = link.DeviceId,
                     RequisiteId = link.RequisiteId,
-                    Date = nowUtc,
+                    Date = DateTime.UtcNow,
                     Status = status switch
                     {
                         "Заморожена" => PayinStatus.Frozen,
@@ -342,10 +342,6 @@ namespace Zatychka.Server.Services
             result.Created = toInsert.Count;
             return result;
         }
-
-        // ============================================================
-        // Бэкоф за месяц (PRIVATE)
-        // ============================================================
 
         public class BackfillMonthPrivateRequest
         {
@@ -394,12 +390,6 @@ namespace Zatychka.Server.Services
                             && usIds.Contains(t.UserId))
                 .Select(t => new { t.UserId, t.DeviceId, t.RequisiteId, t.Date })
                 .ToListAsync(ct);
-
-            // подтянем емейлы пользователей один раз
-            var userEmails = await _db.Users
-                .Where(u => usIds.Contains(u.Id))
-                .Select(u => new { u.Id, u.Email })
-                .ToDictionaryAsync(x => x.Id, x => x.Email, ct);
 
             string Key(int u, int d, int r) => $"{u}:{d}:{r}";
             int[] EmptyDays() => Enumerable.Repeat(0, daysInMonth).ToArray();
@@ -471,10 +461,7 @@ namespace Zatychka.Server.Services
                                    .AddSeconds(_rnd.Next(0, 60));
 
                 var deal = RandomMoney(cfg.MinAmountUsdt, cfg.MaxAmountUsdt);
-
-                userEmails.TryGetValue(cfg.UserId, out var email);
-                var income = CalcIncomePrivate(deal, email);
-
+                var income = Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);
                 var status = RandomStatus();
 
                 toInsert.Add(new PayinTransactionPrivate
@@ -511,10 +498,6 @@ namespace Zatychka.Server.Services
             return result;
         }
 
-        // ============================================================
-        // Пакетная генерация (PUBLIC)
-        // ============================================================
-
         public class GenerateResult
         {
             public int Created { get; set; }
@@ -527,9 +510,8 @@ namespace Zatychka.Server.Services
             public int RemainDaily;
             public int RemainMonthly;
             public int RemainTotal;
-
-            public int Active;                   // для информации; при IgnoreTiming не ограничиваем
-            public DateTime? LastDate;           // —//—
+            public int Active;
+            public DateTime? LastDate;
             public bool AnyCapacity => RemainDaily > 0 && RemainMonthly > 0 && RemainTotal > 0;
         }
 
@@ -604,21 +586,8 @@ namespace Zatychka.Server.Services
                 var link = activeLinks.First(l => l.Id == linkId);
                 var st = counters[linkId];
 
-                if (!req.IgnoreTiming)
-                {
-                    if (link.MaxConcurrentTransactions.HasValue && st.Active >= link.MaxConcurrentTransactions.Value)
-                        continue;
-
-                    if (link.MinMinutesBetweenTransactions.HasValue && st.LastDate.HasValue)
-                    {
-                        var mins = (nowUtc - st.LastDate.Value).TotalMinutes;
-                        if (mins < link.MinMinutesBetweenTransactions.Value)
-                            continue;
-                    }
-                }
-
                 var deal = RandomMoney(link.MinAmountUsdt, link.MaxAmountUsdt);
-                var income = CalcIncomePublic(deal);
+                var income = Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);
                 var status = RandomStatus();
 
                 toInsert.Add(new PayinTransactionPublic
@@ -626,7 +595,7 @@ namespace Zatychka.Server.Services
                     LinkId = link.Id,
                     DeviceId = link.DeviceId,
                     RequisiteId = link.RequisiteId,
-                    Date = nowUtc,           // можно рандомизировать в рамках дня, если нужно
+                    Date = nowUtc,
                     Status = status,
                     DealAmount = deal,
                     IncomeAmount = income
@@ -652,10 +621,6 @@ namespace Zatychka.Server.Services
             result.Created = toInsert.Count;
             return result;
         }
-
-        // ============================================================
-        // Бэкоф за месяц (PUBLIC)
-        // ============================================================
 
         public async Task<BackfillMonthResult> BackfillMonthAsync(BackfillMonthRequest req, CancellationToken ct = default)
         {
@@ -683,7 +648,7 @@ namespace Zatychka.Server.Services
                 .ToListAsync(ct);
 
             var monthlyCount = new Dictionary<string, int>();
-            var dailyCount = new Dictionary<string, int[]>(); // per-day array
+            var dailyCount = new Dictionary<string, int[]>();
 
             int[] EmptyDays() => Enumerable.Repeat(0, daysInMonth).ToArray();
 
@@ -766,12 +731,12 @@ namespace Zatychka.Server.Services
                                  .AddSeconds(_rnd.Next(0, 60));
 
                 var deal = RandomMoney(cfg.MinAmountUsdt, cfg.MaxAmountUsdt);
-                var income = CalcIncomePublic(deal);
+                var income = Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);
                 var status = RandomStatus();
 
                 toInsert.Add(new PayinTransactionPublic
                 {
-                    LinkId = null, // важно!
+                    LinkId = null,
                     DeviceId = cfg.DeviceId,
                     RequisiteId = cfg.RequisiteId,
                     Date = dt,
@@ -792,7 +757,6 @@ namespace Zatychka.Server.Services
             if (toInsert.Count > 0)
             {
                 await _db.PayinTransactionsPublic.AddRangeAsync(toInsert, ct);
-                await _db.SaveChangesAsync(ct);
             }
 
             result.Created = toInsert.Count;

@@ -41,8 +41,9 @@ namespace Zatychka.Server.Controllers
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> List([FromQuery] int? id, [FromQuery] string? status,
-                                              [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
-                                              [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+                                       [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
+                                       [FromQuery] int page = 1, [FromQuery] int pageSize = 50,
+                                       [FromQuery] int? all = null)                // ← добавили необязательный флаг
         {
             var q = _db.PayinTransactionsPrivate
                 .AsNoTracking()
@@ -51,18 +52,32 @@ namespace Zatychka.Server.Controllers
                 .Include(x => x.User)
                 .AsQueryable();
 
-            // фильтрация по владельцу
             var isAdmin = User.IsInRole("admin");
+            var uid = CurrentUserId();
+
             if (isAdmin)
             {
                 if (userId.HasValue)
+                {
                     q = q.Where(x => x.UserId == userId.Value);
+                }
                 else if (!string.IsNullOrWhiteSpace(userLogin))
+                {
                     q = q.Where(x => x.User.Login == userLogin);
+                }
+                else if (all == 1)
+                {
+                    // админ явно запросил все — оставляем без фильтра
+                }
+                else
+                {
+                    // админ без фильтров → показываем ТОЛЬКО свои
+                    if (uid == null) return Unauthorized();
+                    q = q.Where(x => x.UserId == uid.Value);
+                }
             }
             else
             {
-                var uid = CurrentUserId();
                 if (uid == null) return Unauthorized();
                 q = q.Where(x => x.UserId == uid.Value);
             }
@@ -103,6 +118,7 @@ namespace Zatychka.Server.Controllers
 
             return Ok(new { items, total });
         }
+
         private static bool TryParsePayinStatus(string? s, out PayinStatus st)
         {
             switch (s?.Trim())
