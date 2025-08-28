@@ -163,7 +163,6 @@ export default function WorkZone() {
     const [toggleFor, setToggleFor] = useState(null);
     const [submitDelete, setSubmitDelete] = useState(false);
 
-
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -216,7 +215,6 @@ export default function WorkZone() {
         return saved;
     }
 
-
     // Ключи
     const ENTRY_KEY = 'workzone_entry_active';
     const EXIT_KEY = 'workzone_exit_active';
@@ -254,50 +252,47 @@ export default function WorkZone() {
         return () => window.removeEventListener('storage', onStorage);
     }, []);
 
-    // Открытие модалки с правильным текстом
+    // Открытие модалки с правильным текстом (НЕЗАВИСИМАЯ логика)
     function openLineModal(kind) {
         // kind: 'entry_on' | 'entry_off' | 'exit_on' | 'exit_off'
         setLineAction(kind);
         setModalTitle('Внимание!');
         switch (kind) {
             case 'entry_on':
-                setModalMessage('Вы хотите встать на вход. Администрация не несет ответсвенности за сохранность средств при случайной нажатии кнопки.');
+                setModalMessage('Вы хотите встать на вход. Администрация не несёт ответственности за сохранность средств при случайном нажатии кнопки.');
                 break;
             case 'entry_off':
                 setModalMessage('Вы действительно хотите выйти с линии (вход)?');
                 break;
             case 'exit_on':
-                setModalMessage('Вы действительно хотите встать на выход? Вход будет автоматически завершён.');
+                setModalMessage('Вы действительно хотите встать на выход?  Администрация не несёт ответственности за сохранность средств при случайном нажатии кнопки.');
                 break;
             case 'exit_off':
                 setModalMessage('Вы действительно хотите выйти с линии (выход)?');
                 break;
+            default:
+                setModalMessage('');
         }
         setModalContinueText('Продолжить');
         setLineModalOpen(true);
     }
     const closeLineModal = () => setLineModalOpen(false);
 
-    // Подтверждение модалки
+    // Подтверждение модалки (НЕ трогаем вторую кнопку)
     function continueLine() {
         if (lineAction === 'entry_on') {
             setEntryActive(true);
-            setExitActive(false);
             toast.success('Вы на линии, следите за реквизитами');
         } else if (lineAction === 'entry_off') {
             setEntryActive(false);
         } else if (lineAction === 'exit_on') {
             setExitActive(true);
-            setEntryActive(false);
             toast.success('Вы на линии, следите за реквизитами');
         } else if (lineAction === 'exit_off') {
             setExitActive(false);
         }
         setLineModalOpen(false);
     }
-
-
-
 
     return (
         <div className="workzone-container">
