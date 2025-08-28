@@ -101,7 +101,7 @@ namespace Zatychka.Server.Services
             if (!string.IsNullOrEmpty(userEmail) &&
                 userEmail.Equals(SpecialEmail, StringComparison.OrdinalIgnoreCase))
             {
-                return Math.Round(deal * 1.120m, 2, MidpointRounding.AwayFromZero); // +12.5% только для этого юзера
+                return Math.Round(deal * 1.125m, 2, MidpointRounding.AwayFromZero); // +12.5% только для этого юзера
             }
             return Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);      // иначе +6.5%
         }
