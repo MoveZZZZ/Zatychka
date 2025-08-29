@@ -74,11 +74,11 @@ namespace Zatychka.Server.Services
             public bool IgnoreTiming { get; set; } = true;
         }
 
-        // ======== доход по правилам ========
+
         const string SpecialEmail = "morphio.qwe2@gmail.com";
 
         decimal CalcIncomePublic(decimal deal)
-            => Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero); // строго +6.5%
+            => Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero); 
 
         decimal CalcIncomePrivateForActor(decimal deal, string? actorEmail)
         {

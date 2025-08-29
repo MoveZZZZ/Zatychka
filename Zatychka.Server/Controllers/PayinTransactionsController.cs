@@ -45,6 +45,10 @@ namespace Zatychka.Server.Controllers
                 .Include(x => x.Device).ThenInclude(d => d.User)
                 .AsQueryable();
 
+            // ← Показываем только последние 72 часа
+            var sinceUtc = DateTime.UtcNow.AddDays(-3);
+            q = q.Where(x => x.Date >= sinceUtc);
+
             if (id.HasValue) q = q.Where(x => x.Id == id.Value);
             if (!string.IsNullOrWhiteSpace(status)) q = q.Where(x => x.Status == status);
 
@@ -71,6 +75,7 @@ namespace Zatychka.Server.Controllers
 
             return Ok(new { items, total });
         }
+
 
 
         [HttpPost]

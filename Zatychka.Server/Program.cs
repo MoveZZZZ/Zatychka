@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Zatychka.Server.Controllers;
 using Zatychka.Server.Data;
 using Zatychka.Server.Repositories;
 using Zatychka.Server.Services;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IRequisiteRepository, RequisiteRepository>();
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUserWalletRepository, UserWalletRepository>();
 builder.Services.AddScoped<ITronDepositService, TronDepositService>();
+builder.Services.AddScoped<ReserveController, ReserveController>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("trongrid", c =>

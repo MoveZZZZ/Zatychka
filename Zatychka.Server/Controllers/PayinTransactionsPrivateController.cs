@@ -37,14 +37,14 @@ namespace Zatychka.Server.Controllers
             };
         }
 
-
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> List([FromQuery] int? id, [FromQuery] string? status,
-                                       [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
-                                       [FromQuery] int page = 1, [FromQuery] int pageSize = 50,
-                                       [FromQuery] int? all = null)                // ← добавили необязательный флаг
+                                              [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
+                                              [FromQuery] int page = 1, [FromQuery] int pageSize = 50,
+                                              [FromQuery] int? all = null) // флаг "показать все" для админа
         {
+            // базовый запрос
             var q = _db.PayinTransactionsPrivate
                 .AsNoTracking()
                 .Include(x => x.Requisite).ThenInclude(r => r.Owner).ThenInclude(o => o.User)
@@ -52,6 +52,11 @@ namespace Zatychka.Server.Controllers
                 .Include(x => x.User)
                 .AsQueryable();
 
+            // ОГРАНИЧЕНИЕ: последние 72 часа
+            var sinceUtc = DateTime.UtcNow.Date.AddDays(-2);
+            q = q.Where(x => x.Date >= sinceUtc);
+
+            // фильтрация по владельцу
             var isAdmin = User.IsInRole("admin");
             var uid = CurrentUserId();
 
@@ -67,11 +72,11 @@ namespace Zatychka.Server.Controllers
                 }
                 else if (all == 1)
                 {
-                    // админ явно запросил все — оставляем без фильтра
+                    // админ явно запросил все (за последние 72 часа) — оставляем без доп. фильтра
                 }
                 else
                 {
-                    // админ без фильтров → показываем ТОЛЬКО свои
+                    // админ без фильтров → показываем ТОЛЬКО свои (за последние 72 часа)
                     if (uid == null) return Unauthorized();
                     q = q.Where(x => x.UserId == uid.Value);
                 }
@@ -82,8 +87,10 @@ namespace Zatychka.Server.Controllers
                 q = q.Where(x => x.UserId == uid.Value);
             }
 
+            // фильтр по id (узкоспециальный)
             if (id.HasValue) q = q.Where(x => x.Id == id.Value);
 
+            // фильтр по статусам
             if (!string.IsNullOrWhiteSpace(status))
             {
                 var list = status.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);

@@ -525,6 +525,7 @@
     .line-cta .badge {
         margin-left: 6px;
         font-size: 11px;
+        margin-bottom: 4px;
         padding: 4px 8px;
         border-radius: 999px;
         color: #000;
@@ -566,16 +567,123 @@
             box-shadow: 0 0 0 1px rgba(255,77,77,.22) inset, 0 16px 44px rgba(0,0,0,.4), 0 0 46px rgba(255,77,77,.26);
         }
 
-/* адаптив для узких экранов */
-@media (max-width: 640px) {
-    .line-controls {
-        flex-direction: column;
-        align-items: stretch;
+
+
+/* слева — две кнопки одинаковой ширины */
+.line-controls{
+  display:flex;
+  gap:16px;
+  align-items:stretch;
+  flex-wrap:wrap;
+}
+.line-cta{
+  width:var(--wz-cta-width);
+  min-height:var(--wz-cta-height);
+}
+
+:root {
+    --wz-cta-height: 56px;
+}
+
+/* общий ряд из 4 колонок:
+   [вход][выход][плашка 70%][кнопка 25%] */
+.wz-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.7fr 0.25fr; /* справа 70%/25% от ширины ряда */
+    column-gap: 16px;
+    align-items: stretch;
+    margin: 6px 0 18px;
+}
+
+/* выравниваем правые элементы по стилю кнопок линий */
+.wz-cta-skin {
+    min-height: var(--wz-cta-height);
+    border-radius: 16px;
+    border: 1px solid var(--bz-border);
+    background: linear-gradient(180deg, #0f1218, #0a0d13);
+    color: #e5e5e5;
+    box-shadow: 0 0 0 1px rgba(200,150,41,.12) inset, 0 10px 32px rgba(0,0,0,.32);
+}
+
+/* плашка «Рабочий резерв» внутри своей карточки справа */
+.wz-small-card {
+    display: grid;
+    grid-template-columns: 1fr auto; /* слева заголовок, справа значение/инпут */
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+}
+
+.wz-reserve-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--bz-sub);
+}
+
+.wz-small-value-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--bz-text);
+}
+
+    .wz-small-value-btn.clickable {
+        cursor: pointer;
     }
 
-    .line-cta {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
+.wz-usdt {
+    font-size: 14px;
+    font-weight: 700;
+    opacity: .8;
+    margin-left: 6px;
+}
+
+.wz-small-input {
+    width: 160px;
+    border-radius: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--bz-border);
+    background: #141821;
+    color: #fff;
+    font-size: 16px;
+    justify-self: end;
+}
+
+/* кнопка кошелька справа */
+.wz-wallet-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    text-align: center;
+    padding: 0 16px;
+    transition: transform .06s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+    .wz-wallet-btn:hover {
+        border-color: rgba(200,150,41,0.45);
+        box-shadow: 0 0 0 1px rgba(200,150,41,.18) inset, 0 14px 40px rgba(0,0,0,.35);
+    }
+
+/* адаптив: на планшете/телефоне переносим в 2 строки */
+@media (max-width: 1200px) {
+    .wz-top-row {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 10px;
+    }
+
+    .wz-small-card,
+    .wz-wallet-btn {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 720px) {
+    .wz-top-row {
+        grid-template-columns: 1fr;
     }
 }

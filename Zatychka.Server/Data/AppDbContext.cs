@@ -33,15 +33,32 @@ namespace Zatychka.Server.Data
         public DbSet<PrivateDispute> PrivateDisputes { get; set; } = null!;
         public DbSet<UserTelegramLink> TelegramLinks { get; set; } = null!;
         public DbSet<DepositCursor> DepositCursors { get; set; } = default!;
-        protected override void OnModelCreating(ModelBuilder b)
+
+
+        public DbSet<PublicReserve> PublicReserves => Set<PublicReserve>();
+        public DbSet<PrivateReserve> PrivateReserves => Set<PrivateReserve>();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            b.Entity<UserTelegramLink>(e =>
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<PublicReserve>(b =>
             {
-                e.ToTable("UserTelegramLinks");
-                e.HasIndex(x => x.UserId).IsUnique();
-                e.HasIndex(x => x.Username).IsUnique();
-                e.Property(x => x.Username).HasColumnType("varchar(64)");
-                e.Property(x => x.Source).HasColumnType("varchar(128)");
+                b.ToTable("PublicReserves");
+                b.HasKey(x => x.Id);
+                b.Property(x => x.Amount).HasPrecision(18, 2).IsRequired();
+                b.Property(x => x.UpdatedAt).IsRequired();
+
+                b.HasData(new PublicReserve { Id = 1, Amount = 0m, UpdatedAt = DateTimeOffset.UtcNow });
+            });
+
+            modelBuilder.Entity<PrivateReserve>(b =>
+            {
+                b.ToTable("PrivateReserves");
+                b.HasKey(x => x.Id);
+                b.Property(x => x.UserId).HasMaxLength(128).IsRequired();
+                b.Property(x => x.Amount).HasPrecision(18, 2).IsRequired();
+                b.Property(x => x.UpdatedAt).IsRequired();
+                b.HasIndex(x => x.UserId).IsUnique();
             });
         }
     }
