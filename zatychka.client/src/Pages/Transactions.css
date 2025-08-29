@@ -468,3 +468,9 @@
         z-index: 1500;
     }
 }
+.tx-hint {
+    margin: 12px 0;
+    font-size: 14px;
+    color: #999;
+    font-style: italic;
+}

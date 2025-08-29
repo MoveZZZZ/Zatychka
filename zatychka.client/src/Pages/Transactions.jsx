@@ -466,7 +466,9 @@ export default function Transactions() {
                     </tbody>
                 </table>
             </div>
-
+            <div className="tx-hint">
+                В истории транзакций показаны операции за последние 3 дня
+            </div>
             {total > 0 && (
                 <div className="pagination">
                     <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Предыдущая</button>
