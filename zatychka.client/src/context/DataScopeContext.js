@@ -1,7 +1,7 @@
 // src/context/DataScopeContext.js
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-const DataScopeContext = createContext({ scope: 'public', setScope: () => { } });
+const DataScopeContext = createContext({ scope: 'private', setScope: () => { } });
 
 export function DataScopeProvider({ children }) {
     const fromQuery = (() => {
@@ -14,7 +14,7 @@ export function DataScopeProvider({ children }) {
     })();
 
     const [scope, setScope] = useState(() =>
-        fromQuery || localStorage.getItem('dataScope') || 'public'
+        fromQuery || localStorage.getItem('dataScope') || 'private'
     );
 
     useEffect(() => {
