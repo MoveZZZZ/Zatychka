@@ -49,7 +49,7 @@ const AutomationModal = ({ onClose }) => {
                         Скачать .apk
                     </a>
                     <a
-                        href="https://t.me/sharqchannel"
+                        href="https://t.me/ebrag_wd"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="tg-button"

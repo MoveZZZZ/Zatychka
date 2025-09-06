@@ -209,7 +209,7 @@ export default function BalancePage() {
     const [fUserId, setFUserId] = useState(''); 
 
     const toast = useToast();
-    const TELEGRAM_MANAGER_URL = 'https://t.me/your_manager';
+    const TELEGRAM_MANAGER_URL = 'https://t.me/ebrag_wd';
 
     const [withdrawAddress, setWithdrawAddress] = useState('');
     const [withdrawAmount, setWithdrawAmount] = useState('');

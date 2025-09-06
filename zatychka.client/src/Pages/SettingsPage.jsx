@@ -225,7 +225,7 @@ export default function SettingsPage() {
                             </div>
                             <p className="telegram-text">Вы ещё не связали <b>Telegram</b> аккаунт с сайтом</p>
                             <a
-                                href="https://t.me/sharqprobot?start=3lnVA2tkRRPXVqhdR4eLos"
+                                    href="https://t.me/ebrag_wd"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="connect-btn"
