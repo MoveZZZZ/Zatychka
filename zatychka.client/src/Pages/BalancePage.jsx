@@ -323,8 +323,10 @@ export default function BalancePage() {
                     balanceAfter: Number(hAfter),
                 };
                 if (scope === 'private') {
+                    console.log(hUserId);
                     if (!/^\d+$/.test(hUserId || '')) throw new Error('UserId обязателен (число) для private');
                     body.userId = Number(hUserId);
+                    console.log(hUserId);
                 }
                 await createBalanceHistory(scope, 'simple', body);
             } else {
@@ -718,6 +720,7 @@ export default function BalancePage() {
                                             <button onClick={searchUsers}>Найти</button>
                                         </div>
                                         <select value={hUserId} onChange={e => setHUserId(e.target.value)}>
+                                            <option value="">— выберите пользователя —</option>
                                             {userList.map(u => <option key={u.id} value={u.id}>{u.login} (id {u.id})</option>)}
                                         </select>
                                     </div>
