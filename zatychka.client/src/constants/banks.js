@@ -70,6 +70,7 @@ import nest from '../assets/icons/nest.png';
 import credit_agricol from '../assets/icons/credit_agricol.png';
 import citi from '../assets/icons/citi.png';
 import toyota_bank from '../assets/icons/toyota_bank.png';
+import trustee_bank from '../assets/icons/trustee.png';
 
 export const banks = [
     { name: 'Не выбран', value: '', logo: null },
@@ -145,4 +146,5 @@ export const banks = [
     { name: "Credit Agricole", value: 'credit_agricol', logo: credit_agricol },
     { name: "Citi Handlowy", value: 'citi', logo: citi },
     { name: "Toyota Bank", value: 'toyota_bank', logo: toyota_bank },
+    { name: "Trustee", value: 'trustee_bank', logo: trustee_bank },
 ];
