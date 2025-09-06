@@ -30,12 +30,12 @@ import {lookupUsers} from '../api/payin';
 const TYPE_LABELS = {
     Deposit: 'Пополнение',
     Withdrawal: 'Вывод',
-    Transaction: 'Транзакция',
+    //Transaction: 'Транзакция',
     TraderReward: 'Награда трейдеру',
-    MerchantEarning: 'Заработок мерчанта',
-    Dispute: 'Спор',
+    //MerchantEarning: 'Заработок мерчанта',
+    //Dispute: 'Спор',
 };
-const TYPE_ORDER = ['Deposit', 'Withdrawal', 'Transaction', 'TraderReward', 'MerchantEarning', 'Dispute'];
+const TYPE_ORDER = ['Deposit', 'Withdrawal', /*'Transaction'*/, 'TraderReward', /*'MerchantEarning', 'Dispute'*/];
 const TYPE_OPTIONS = TYPE_ORDER.map(v => ({ value: v, label: TYPE_LABELS[v] }));
 
 function Card({ title, value, editable, editing, onClick, onChange, onCommit, saving }) {
@@ -720,7 +720,7 @@ export default function BalancePage() {
                                             <button onClick={searchUsers}>Найти</button>
                                         </div>
                                         <select value={hUserId} onChange={e => setHUserId(e.target.value)}>
-                                            <option value="">— выберите пользователя —</option>
+                                        <option value="">— выберите пользователя —</option>
                                             {userList.map(u => <option key={u.id} value={u.id}>{u.login} (id {u.id})</option>)}
                                         </select>
                                     </div>
