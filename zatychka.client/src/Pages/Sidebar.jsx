@@ -358,7 +358,7 @@ export default function Sidebar() {
                             <li><NavLink to="/payin/disputes" className={({ isActive }) => isActive ? 'active' : ''}>Споры</NavLink></li>
                             <li><NavLink to="/payin/payment" className={({ isActive }) => isActive ? 'active' : ''}>Реквизиты</NavLink></li>
                             <li><NavLink to="/payin/devices" className={({ isActive }) => isActive ? 'active' : ''}>Устройства</NavLink></li>
-                            <li><NavLink to="/payin/notifications" className={({ isActive }) => isActive ? 'active' : ''}>Уведомления</NavLink></li>
+                            {/*<li><NavLink to="/payin/notifications" className={({ isActive }) => isActive ? 'active' : ''}>Уведомления</NavLink></li>*/}
                         </ul>
                     )}
                 </div>
