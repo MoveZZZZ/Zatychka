@@ -126,17 +126,17 @@ namespace Zatychka.Server.Controllers
         //    return Ok(new { items, total });
         //}
 
-        //private static bool TryParsePayinStatus(string? s, out PayinStatus st)
-        //{
-        //    switch (s?.Trim())
-        //    {
-        //        case "Создана": st = PayinStatus.Created; return true;
-        //        case "Выполнена": st = PayinStatus.Completed; return true;
-        //        case "Заморожена": st = PayinStatus.Frozen; return true;
-        //        default:
-        //            return Enum.TryParse(s, ignoreCase: true, out st); 
-        //    }
-        //}
+        private static bool TryParsePayinStatus(string? s, out PayinStatus st)
+        {
+            switch (s?.Trim())
+            {
+                case "Создана": st = PayinStatus.Created; return true;
+                case "Выполнена": st = PayinStatus.Completed; return true;
+                case "Заморожена": st = PayinStatus.Frozen; return true;
+                default:
+                    return Enum.TryParse(s, ignoreCase: true, out st);
+            }
+        }
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> List([FromQuery] int? id, [FromQuery] string? status,
