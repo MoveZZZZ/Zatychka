@@ -265,42 +265,168 @@ namespace Zatychka.Server.Services
             }
         }
 
+        //private int[] SplitExactRandom(int totalC, int count, int minC, int maxC)
+        //{
+        //    var adds = new int[count];
+        //    var remaining = totalC - minC * count;
+        //    var cap = maxC - minC;
+
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        int left = count - i - 1;
+        //        int low = Math.Max(0, remaining - cap * left);
+        //        int high = Math.Min(cap, remaining);
+        //        int give = (low == high) ? low : _rnd.Next(low, high + 1);
+        //        adds[i] = give;
+        //        remaining -= give;
+        //    }
+
+        //    var parts = new int[count];
+        //    for (int i = 0; i < count; i++) parts[i] = minC + adds[i];
+
+        //    for (int i = parts.Length - 1; i > 0; i--)
+        //    {
+        //        int j = _rnd.Next(i + 1);
+        //        (parts[i], parts[j]) = (parts[j], parts[i]);
+        //    }
+
+        //    var sum = parts.Sum();
+        //    if (sum != totalC)
+        //    {
+        //        int diff = totalC - sum;
+        //        int dir = Math.Sign(diff);
+        //        diff = Math.Abs(diff);
+        //        for (int k = 0; k < diff; k++) parts[k % parts.Length] += dir;
+        //    }
+
+        //    return parts;
+        //}
+        // Поле Random как и раньше
+
         private int[] SplitExactRandom(int totalC, int count, int minC, int maxC)
         {
-            var adds = new int[count];
-            var remaining = totalC - minC * count;
+            if (count <= 0) return Array.Empty<int>();
+            if (minC > maxC) throw new ArgumentException("minC > maxC");
+            var minTotal = minC * (long)count;
+            var maxTotal = maxC * (long)count;
+            if (totalC < minTotal || totalC > maxTotal)
+                throw new ArgumentOutOfRangeException(nameof(totalC), "totalC не укладывается в [min*count, max*count]");
+
+            // 1) Базовое распределение: всем по minC
+            var parts = Enumerable.Repeat(minC, count).ToArray();
             var cap = maxC - minC;
 
-            for (int i = 0; i < count; i++)
+            int remaining = totalC - minC * count;
+            if (remaining == 0) // уже готово
             {
-                int left = count - i - 1;
-                int low = Math.Max(0, remaining - cap * left);
-                int high = Math.Min(cap, remaining);
-                int give = (low == high) ? low : _rnd.Next(low, high + 1);
-                adds[i] = give;
-                remaining -= give;
+                // перемешаем для вида
+                for (int i = parts.Length - 1; i > 0; i--)
+                {
+                    int j = _rnd.Next(i + 1);
+                    (parts[i], parts[j]) = (parts[j], parts[i]);
+                }
+                return parts;
             }
 
-            var parts = new int[count];
-            for (int i = 0; i < count; i++) parts[i] = minC + adds[i];
+            // 2) Случайные веса (экспоненциальные) → доли оставшегося пула
+            //    wi ~ Exp(1) => нормируем до 1
+            var w = new double[count];
+            double wSum = 0.0;
+            for (int i = 0; i < count; i++)
+            {
+                // -ln(U) с U∈(0,1)
+                double u;
+                do { u = _rnd.NextDouble(); } while (u <= double.Epsilon);
+                w[i] = -Math.Log(u);
+                wSum += w[i];
+            }
 
+            // 3) "Непрерывное" распределение по весам с учётом cap
+            var target = new double[count];
+            for (int i = 0; i < count; i++)
+            {
+                var want = (w[i] / wSum) * remaining;
+                target[i] = Math.Min(cap, want);
+            }
+
+            // 4) Интегрируем: пол кладём по полу, остаток (remainder) раздаём
+            var add = new int[count];
+            int used = 0;
+            var frac = new double[count];
+            for (int i = 0; i < count; i++)
+            {
+                add[i] = (int)Math.Floor(target[i]);
+                if (add[i] > cap) add[i] = cap; // на всякий
+                used += add[i];
+                frac[i] = Math.Max(0, target[i] - add[i]);
+            }
+
+            int rem = remaining - used;
+            // 5) Раздаём остаток единиц, случайно и пропорционально дробным частям,
+            //    при этом не превышая cap.
+            while (rem > 0)
+            {
+                // сумма «вероятностей» среди ещё не достигших cap
+                double pool = 0.0;
+                for (int i = 0; i < count; i++)
+                    if (add[i] < cap) pool += (frac[i] > 0 ? frac[i] : 1e-9); // маленькая подкладка, чтобы было случайнее
+
+                // если вдруг все упёрлись в cap (не должно случиться при корректных входах) — просто раскидаем равномерно
+                if (pool <= 0)
+                {
+                    int i = _rnd.Next(count);
+                    if (add[i] < cap) { add[i]++; rem--; }
+                    continue;
+                }
+
+                double r = _rnd.NextDouble() * pool;
+                double run = 0.0;
+                for (int i = 0; i < count; i++)
+                {
+                    if (add[i] >= cap) continue;
+                    run += (frac[i] > 0 ? frac[i] : 1e-9);
+                    if (run >= r)
+                    {
+                        add[i]++;
+                        rem--;
+                        break;
+                    }
+                }
+            }
+
+            // 6) Складываем с минимумом
+            for (int i = 0; i < count; i++)
+                parts[i] += add[i];
+
+            // 7) Финальная страховка: если из-за округлений что-то по сумме поехало —
+            //    аккуратно корректируем в пределах [minC, maxC]
+            int diff = totalC - parts.Sum();
+            while (diff != 0)
+            {
+                if (diff > 0)
+                {
+                    // нужно увеличить
+                    int i = _rnd.Next(count);
+                    if (parts[i] < maxC) { parts[i]++; diff--; }
+                }
+                else
+                {
+                    // нужно уменьшить
+                    int i = _rnd.Next(count);
+                    if (parts[i] > minC) { parts[i]--; diff++; }
+                }
+            }
+
+            // 8) Перемешаем для случайного порядка
             for (int i = parts.Length - 1; i > 0; i--)
             {
                 int j = _rnd.Next(i + 1);
                 (parts[i], parts[j]) = (parts[j], parts[i]);
             }
 
-            var sum = parts.Sum();
-            if (sum != totalC)
-            {
-                int diff = totalC - sum;
-                int dir = Math.Sign(diff);
-                diff = Math.Abs(diff);
-                for (int k = 0; k < diff; k++) parts[k % parts.Length] += dir;
-            }
-
             return parts;
         }
+
 
         // ================== остальная генерация — без изменений ==================
 
