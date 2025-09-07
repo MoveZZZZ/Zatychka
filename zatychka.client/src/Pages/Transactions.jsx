@@ -467,7 +467,7 @@ export default function Transactions() {
                 </table>
             </div>
             <div className="tx-hint">
-                В истории транзакций показаны операции за последние 3 дня
+                В истории транзакций показаны операции за последние 3 дня фактической работы
             </div>
             {total > 0 && (
                 <div className="pagination">
