@@ -97,7 +97,6 @@ export default function Transactions() {
             prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
         );
     };
-
     async function reload() {
         try {
             setLoading(true);
@@ -108,13 +107,21 @@ export default function Transactions() {
 
             const params = { id, page: currentPage, pageSize };
             if (selectedStatuses.length > 0) params.status = selectedStatuses;
-
             if (scope === 'private' && isAdmin && viewUserId) {
                 params.userId = Number(viewUserId);
             }
 
             const response = await fetchPayinTransactions(scope, params);
-            setItems(response?.items || []);
+            const items = response?.items || [];
+
+            // ▲ сортировка по id (поменяй 'desc' на 'asc' при необходимости)
+            const sortDir = 'desc'; // 'asc' | 'desc'
+            const sorted = items.slice().sort((a, b) => {
+                const ai = Number(a?.id ?? 0), bi = Number(b?.id ?? 0);
+                return sortDir === 'asc' ? ai - bi : bi - ai;
+            });
+
+            setItems(sorted);
             setTotal(response?.total || 0);
         } catch (e) {
             setErr(e?.message || 'Не удалось загрузить транзакции');
@@ -122,6 +129,31 @@ export default function Transactions() {
             setLoading(false);
         }
     }
+
+    //async function reload() {
+    //    try {
+    //        setLoading(true);
+    //        setErr('');
+    //        const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
+    //            ? Number(transactionSearch.trim())
+    //            : undefined;
+
+    //        const params = { id, page: currentPage, pageSize };
+    //        if (selectedStatuses.length > 0) params.status = selectedStatuses;
+
+    //        if (scope === 'private' && isAdmin && viewUserId) {
+    //            params.userId = Number(viewUserId);
+    //        }
+
+    //        const response = await fetchPayinTransactions(scope, params);
+    //        setItems(response?.items || []);
+    //        setTotal(response?.total || 0);
+    //    } catch (e) {
+    //        setErr(e?.message || 'Не удалось загрузить транзакции');
+    //    } finally {
+    //        setLoading(false);
+    //    }
+    //}
 
     useEffect(() => {
         let cancelled = false;
@@ -140,7 +172,16 @@ export default function Transactions() {
 
                 const response = await fetchPayinTransactions(scope, params);
                 if (!cancelled) {
-                    setItems(response?.items || []);
+                    const items = response?.items || [];
+
+                    // ▼ сортировка по id (сменить на 'asc' при необходимости)
+                    const sortDir = 'desc'; // 'asc' | 'desc'
+                    const sorted = items.slice().sort((a, b) => {
+                        const ai = Number(a?.id ?? 0), bi = Number(b?.id ?? 0);
+                        return sortDir === 'asc' ? ai - bi : bi - ai;
+                    });
+
+                    setItems(sorted);
                     setTotal(response?.total || 0);
                 }
             } catch (e) {
@@ -151,6 +192,35 @@ export default function Transactions() {
         })();
         return () => { cancelled = true; };
     }, [scope, selectedStatuses, transactionSearch, currentPage, viewUserId]);
+
+    //useEffect(() => {
+    //    let cancelled = false;
+    //    (async () => {
+    //        try {
+    //            setLoading(true);
+    //            setErr('');
+
+    //            const id = transactionSearch.trim() && /^\d+$/.test(transactionSearch.trim())
+    //                ? Number(transactionSearch.trim())
+    //                : undefined;
+
+    //            const params = { id, page: currentPage, pageSize };
+    //            if (selectedStatuses.length > 0) params.status = selectedStatuses;
+    //            if (scope === 'private' && isAdmin && viewUserId) params.userId = Number(viewUserId);
+
+    //            const response = await fetchPayinTransactions(scope, params);
+    //            if (!cancelled) {
+    //                setItems(response?.items || []);
+    //                setTotal(response?.total || 0);
+    //            }
+    //        } catch (e) {
+    //            if (!cancelled) setErr(e?.message || 'Не удалось загрузить транзакции');
+    //        } finally {
+    //            if (!cancelled) setLoading(false);
+    //        }
+    //    })();
+    //    return () => { cancelled = true; };
+    //}, [scope, selectedStatuses, transactionSearch, currentPage, viewUserId]);
 
     // lookups
     async function searchRequisites() {
