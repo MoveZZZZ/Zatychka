@@ -446,6 +446,9 @@ export default function Disputes() {
                     </table>
                 </div>
             </div>
+            <div className="tx-hint">
+                Споры отображаются по транзакциям за последние 3 фактических рабочих дня
+            </div>
         </div>
     );
 }
