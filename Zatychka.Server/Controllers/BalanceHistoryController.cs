@@ -59,7 +59,7 @@ namespace Zatychka.Server.Controllers
             if (types != null && types.Count > 0)
                 q = q.Where(x => types.Contains(x.Type));
 
-            var list = await q/*.OrderByDescending(x => x.Date)*/
+            var list = await q.OrderByDescending(x => x.Id)
                 .Select(x => new {
                     id = x.Id,
                     date = x.Date,
@@ -114,7 +114,7 @@ namespace Zatychka.Server.Controllers
             if (types != null && types.Count > 0)
                 q = q.Where(x => types.Contains(x.Type));
 
-            var list = await q/*.OrderByDescending(x => x.Date)*/
+            var list = await q.OrderByDescending(x => x.Id)
                 .Select(x => new {
                     id = x.Id,
                     date = x.Date,
