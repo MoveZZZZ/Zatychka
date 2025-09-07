@@ -399,7 +399,7 @@ export default function Transactions() {
                     </div>
 
                     <div className="field">
-                        <label>Сумма поступления (USDT)</label>
+                        <label>Сумма поступления (EUR)</label>
                         <input type="number" min="0" step="0.01" value={incomeAmount} onChange={e => setIncomeAmount(e.target.value)} />
                     </div>
 
@@ -454,7 +454,7 @@ export default function Transactions() {
                                     <td>{tx.requisiteDisplay ?? (tx.requisiteId ? `ID ${tx.requisiteId}` : '—')}</td>
                                     <td>{tx.deviceName ?? (tx.deviceId ? `ID ${tx.deviceId}` : '—')}</td>
                                     <td>{tx.dealAmount != null ? Number(tx.dealAmount).toFixed(2) : '0.00'} USDT</td>
-                                    <td>{tx.incomeAmount != null ? Number(tx.incomeAmount).toFixed(2) : '0.00'} USDT</td>
+                                    <td>{tx.incomeAmount != null ? Number(tx.incomeAmount).toFixed(2) : '0.00'} EUR</td>
                                     <td className={`actions-col ${actionsHidden ? 'is-hidden' : ''}`}>
                                         {editable && (
                                             <button className="delete-btn" onClick={() => removeTx(tx.id)}>Удалить</button>

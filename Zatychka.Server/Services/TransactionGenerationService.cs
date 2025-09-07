@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text.Json;
 using Zatychka.Server.Data;
 using Zatychka.Server.Models;
 
@@ -77,18 +79,61 @@ namespace Zatychka.Server.Services
 
         const string SpecialEmail = "morphio.qwe2@gmail.com";
 
-        decimal CalcIncomePublic(decimal deal)
-            => Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero); 
+        //decimal CalcIncomePublic(decimal deal)
+        //    => Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero); 
 
-        decimal CalcIncomePrivateForActor(decimal deal, string? actorEmail)
+        //decimal CalcIncomePrivateForActor(decimal deal, string? actorEmail)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(actorEmail) &&
+        //        actorEmail.Equals(SpecialEmail, StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        return Math.Round(deal * 1.125m, 2, MidpointRounding.AwayFromZero); // +12.5% для спец-аккаунта
+        //    }
+        //    return Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);      // иначе +6.5%
+        //}
+        public static decimal CalcIncomePublic(decimal deal)
         {
-            if (!string.IsNullOrWhiteSpace(actorEmail) &&
-                actorEmail.Equals(SpecialEmail, StringComparison.OrdinalIgnoreCase))
-            {
-                return Math.Round(deal * 1.125m, 2, MidpointRounding.AwayFromZero); // +12.5% для спец-аккаунта
-            }
-            return Math.Round(deal * 1.065m, 2, MidpointRounding.AwayFromZero);      // иначе +6.5%
+            var rate = GetUsdtToEurRateAsync().GetAwaiter().GetResult(); // USDT→EUR
+            return Math.Round(deal * rate, 2, MidpointRounding.AwayFromZero);
         }
+
+        public static decimal CalcIncomePrivateForActor(decimal deal, string? actorEmail)
+        {
+            var rate = GetUsdtToEurRateAsync().GetAwaiter().GetResult(); // USDT→EUR, actorEmail больше не влияет
+            return Math.Round(deal * rate, 2, MidpointRounding.AwayFromZero);
+        }
+
+        private static async Task<decimal> GetUsdtToEurRateAsync(CancellationToken ct = default)
+        {
+            using var http = new HttpClient
+            {
+                BaseAddress = new Uri("https://api.coinbase.com/"),
+                Timeout = TimeSpan.FromSeconds(10)
+            };
+
+            using var req = new HttpRequestMessage(HttpMethod.Get, "v2/exchange-rates?currency=USDT");
+            req.Headers.TryAddWithoutValidation("User-Agent", "IncomeCalc/1.0");
+
+            using var res = await http.SendAsync(req, ct);
+            res.EnsureSuccessStatusCode();
+
+            using var stream = await res.Content.ReadAsStreamAsync(ct);
+            using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+
+            var eurStr = doc.RootElement
+                            .GetProperty("data")
+                            .GetProperty("rates")
+                            .GetProperty("EUR")
+                            .GetString();
+
+            if (string.IsNullOrWhiteSpace(eurStr) ||
+                !decimal.TryParse(eurStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var rate))
+                throw new InvalidOperationException("Не удалось получить курс USDT→EUR с Coinbase.");
+
+            return rate; // EUR за 1 USDT
+        }
+
+
 
         // ============================================================
         // NEW ADMINKA — Exact Sum
