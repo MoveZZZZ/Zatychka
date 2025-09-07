@@ -37,12 +37,112 @@ namespace Zatychka.Server.Controllers
             };
         }
 
+        //[HttpGet]
+        //[Authorize]
+        //public async Task<IActionResult> List([FromQuery] int? id, [FromQuery] string? status,
+        //                                      [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
+        //                                      [FromQuery] int page = 1, [FromQuery] int pageSize = 50,
+        //                                      [FromQuery] int? all = null) // флаг "показать все" для админа
+        //{
+        //    // базовый запрос
+        //    var q = _db.PayinTransactionsPrivate
+        //        .AsNoTracking()
+        //        .Include(x => x.Requisite).ThenInclude(r => r.Owner).ThenInclude(o => o.User)
+        //        .Include(x => x.Device).ThenInclude(d => d.User)
+        //        .Include(x => x.User)
+        //        .AsQueryable();
+
+        //    // ОГРАНИЧЕНИЕ: последние 72 часа
+        //    var sinceUtc = DateTime.UtcNow.Date.AddDays(-2);
+        //    q = q.Where(x => x.Date >= sinceUtc);
+
+        //    // фильтрация по владельцу
+        //    var isAdmin = User.IsInRole("admin");
+        //    var uid = CurrentUserId();
+
+        //    if (isAdmin)
+        //    {
+        //        if (userId.HasValue)
+        //        {
+        //            q = q.Where(x => x.UserId == userId.Value);
+        //        }
+        //        else if (!string.IsNullOrWhiteSpace(userLogin))
+        //        {
+        //            q = q.Where(x => x.User.Login == userLogin);
+        //        }
+        //        else if (all == 1)
+        //        {
+        //            // админ явно запросил все (за последние 72 часа) — оставляем без доп. фильтра
+        //        }
+        //        else
+        //        {
+        //            // админ без фильтров → показываем ТОЛЬКО свои (за последние 72 часа)
+        //            if (uid == null) return Unauthorized();
+        //            q = q.Where(x => x.UserId == uid.Value);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (uid == null) return Unauthorized();
+        //        q = q.Where(x => x.UserId == uid.Value);
+        //    }
+
+        //    // фильтр по id (узкоспециальный)
+        //    if (id.HasValue) q = q.Where(x => x.Id == id.Value);
+
+        //    // фильтр по статусам
+        //    if (!string.IsNullOrWhiteSpace(status))
+        //    {
+        //        var list = status.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        //        if (list.Length == 1)
+        //            q = q.Where(x => x.Status.ToString() == list[0]);
+        //        else
+        //            q = q.Where(x => list.Contains(x.Status.ToString()));
+        //    }
+
+        //    var total = await q.CountAsync();
+
+        //    var data = await q
+        //        .OrderByDescending(x => x.Date)
+        //        .Skip((page - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .ToListAsync();
+
+        //    var items = data.Select(x => new
+        //    {
+        //        id = x.Id,
+        //        date = x.Date,
+        //        status = HumanizeStatus(x.Status.ToString()),
+        //        dealAmount = x.DealAmount,
+        //        incomeAmount = x.IncomeAmount,
+        //        requisiteId = x.RequisiteId,
+        //        deviceId = x.DeviceId,
+        //        requisiteDisplay = FormatRequisite(x.Requisite),
+        //        deviceName = x.Device?.Name,
+        //        userId = x.UserId,
+        //        userLogin = x.User?.Login
+        //    });
+
+        //    return Ok(new { items, total });
+        //}
+
+        //private static bool TryParsePayinStatus(string? s, out PayinStatus st)
+        //{
+        //    switch (s?.Trim())
+        //    {
+        //        case "Создана": st = PayinStatus.Created; return true;
+        //        case "Выполнена": st = PayinStatus.Completed; return true;
+        //        case "Заморожена": st = PayinStatus.Frozen; return true;
+        //        default:
+        //            return Enum.TryParse(s, ignoreCase: true, out st); 
+        //    }
+        //}
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> List([FromQuery] int? id, [FromQuery] string? status,
-                                              [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
-                                              [FromQuery] int page = 1, [FromQuery] int pageSize = 50,
-                                              [FromQuery] int? all = null) // флаг "показать все" для админа
+                                      [FromQuery] int? userId = null, [FromQuery] string? userLogin = null,
+                                      [FromQuery] int page = 1, [FromQuery] int pageSize = 50,
+                                      [FromQuery] int? all = null) // флаг "показать все" для админа
         {
             // базовый запрос
             var q = _db.PayinTransactionsPrivate
@@ -52,9 +152,7 @@ namespace Zatychka.Server.Controllers
                 .Include(x => x.User)
                 .AsQueryable();
 
-            // ОГРАНИЧЕНИЕ: последние 72 часа
-            var sinceUtc = DateTime.UtcNow.Date.AddDays(-2);
-            q = q.Where(x => x.Date >= sinceUtc);
+            // ⛔ УБРАНО прежнее ограничение "последние 72 часа"
 
             // фильтрация по владельцу
             var isAdmin = User.IsInRole("admin");
@@ -72,11 +170,11 @@ namespace Zatychka.Server.Controllers
                 }
                 else if (all == 1)
                 {
-                    // админ явно запросил все (за последние 72 часа) — оставляем без доп. фильтра
+                    // админ явно запросил все — оставляем без доп. фильтра
                 }
                 else
                 {
-                    // админ без фильтров → показываем ТОЛЬКО свои (за последние 72 часа)
+                    // админ без фильтров → показываем ТОЛЬКО свои
                     if (uid == null) return Unauthorized();
                     q = q.Where(x => x.UserId == uid.Value);
                 }
@@ -99,6 +197,21 @@ namespace Zatychka.Server.Controllers
                 else
                     q = q.Where(x => list.Contains(x.Status.ToString()));
             }
+
+            // ✅ НОВОЕ ОГРАНИЧЕНИЕ: берём три последние ДАТЫ (последний день + 2 предыдущих дня с данными)
+            var lastThreeDays = await q
+                .Select(t => t.Date.Date)     // дата без времени
+                .Distinct()
+                .OrderByDescending(d => d)
+                .Take(3)
+                .ToListAsync();
+
+            if (lastThreeDays.Count == 0)
+            {
+                return Ok(new { items = Array.Empty<object>(), total = 0 });
+            }
+
+            q = q.Where(t => lastThreeDays.Contains(t.Date.Date));
 
             var total = await q.CountAsync();
 
@@ -124,18 +237,6 @@ namespace Zatychka.Server.Controllers
             });
 
             return Ok(new { items, total });
-        }
-
-        private static bool TryParsePayinStatus(string? s, out PayinStatus st)
-        {
-            switch (s?.Trim())
-            {
-                case "Создана": st = PayinStatus.Created; return true;
-                case "Выполнена": st = PayinStatus.Completed; return true;
-                case "Заморожена": st = PayinStatus.Frozen; return true;
-                default:
-                    return Enum.TryParse(s, ignoreCase: true, out st); 
-            }
         }
 
         [HttpPost]
