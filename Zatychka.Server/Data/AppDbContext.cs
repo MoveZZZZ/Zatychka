@@ -11,6 +11,7 @@ namespace Zatychka.Server.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Device> Devices { get; set; }
+        public DbSet<DeviceStatus> DevicesStatus => Set<DeviceStatus>();
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Owner> Owners => Set<Owner>();
         public DbSet<OwnerRequisite> OwnerRequisites => Set<OwnerRequisite>();

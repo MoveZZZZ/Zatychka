@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import './AutomationModal.css';
-import qrImage from '../assets/qr.png';
+import qrImage from '../assets/qr-code-mobile.png';
 
 const AutomationModal = ({ onClose }) => {
     const portalElRef = useRef(null);
@@ -42,7 +42,7 @@ const AutomationModal = ({ onClose }) => {
 
                 <div className="modal-buttons">
                     <a
-                        href="https://static.sharq.pro/app/automatics.apk"
+                        href="https://sharq.space/apk/sharq.apk"
                         download
                         className="apk-button"
                     >

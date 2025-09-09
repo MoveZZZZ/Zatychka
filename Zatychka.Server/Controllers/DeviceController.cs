@@ -55,14 +55,16 @@ namespace Zatychka.Server.Controllers
             if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
 
             var userId = int.Parse(userIdClaim);
-            var devices = await _deviceRepository.GetDevicesByUserIdAsync(userId);
+            var items = await _deviceRepository.GetDevicesWithStatusByUserIdAsync(userId);
 
-            // Вернём ровно то, что нужно на фронт
-            var dto = devices.Select(d => new {
+            // Ровно то, что нужно фронту
+            var dto = items.Select(d => new {
                 id = d.Id,
                 name = d.Name,
+                model = d.Model,
+                status = d.Status // "Online" | "Offline"
             });
-
+            Console.WriteLine(dto);
             return Ok(dto);
         }
         private int? GetUserId() =>

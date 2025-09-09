@@ -205,7 +205,7 @@
 
   .status-label { padding: 4px 8px; font-size: 11.5px; }
 
- s
+ 
   @media (max-width: 380px) {
     .status-label {
       padding: 0;

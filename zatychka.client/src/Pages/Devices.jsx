@@ -5,7 +5,7 @@ import { WifiOff, ChevronRight } from 'lucide-react';
 import EditDeviceModal from './EditDeviceModal';
 import { getDevices } from '../api/devices';
 import Breadcrumbs from '../components/Breadcrumbs';
-
+import AutomationDevicesModal from './AutomationDevicesModal';
 export default function Devices() {
     const [showModal, setShowModal] = useState(false);
     const [devices, setDevices] = useState([]);
@@ -13,16 +13,21 @@ export default function Devices() {
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [error, setError] = useState('');
 
+    const [autoOpen, setAutoOpen] = useState(false);
+    const [autoDeviceId, setAutoDeviceId] = useState(null);
+
     useEffect(() => {
         const ac = new AbortController();
         (async () => {
             try {
                 const data = await getDevices();
+                console.log();
                 if (!ac.signal.aborted) setDevices(Array.isArray(data) ? data : []);
             } catch (e) {
                 if (e.name !== 'AbortError') setError('Не удалось загрузить устройства');
             }
         })();
+
         return () => ac.abort();
     }, []);
 
@@ -31,6 +36,11 @@ export default function Devices() {
 
     const handleDeleteDevice = (id) =>
         setDevices(prev => prev.filter(d => d.id !== id));
+
+    const openAutomation = (deviceId) => {
+        setAutoDeviceId(deviceId);
+        setAutoOpen(true);
+    };
 
     return (
         <div className="devices-page">
@@ -73,8 +83,19 @@ export default function Devices() {
                             </div>
 
                             <div className="device-col model" title={device.model || ''}>
-                                {device.model || ''}
+                                {device.model && device.model.trim() !== '' ? (
+                                    device.model
+                                ) : (
+                                    <button
+                                        className="arrow-btn"
+                                        type="button"
+                                            onClick={() => openAutomation(device.id)}
+                                    >
+                                        Автоматика
+                                    </button>
+                                )}
                             </div>
+
 
                             <div className="device-col actions">
                                 <button
@@ -107,6 +128,12 @@ export default function Devices() {
                 <AddDeviceModal
                     onClose={() => setShowModal(false)}
                     onAdded={(created) => setDevices(prev => [...prev, created])}
+                />
+            )}
+            {autoOpen && autoDeviceId != null && (
+                <AutomationDevicesModal
+                    deviceId={autoDeviceId}
+                    onClose={() => setAutoOpen(false)}
                 />
             )}
         </div>
