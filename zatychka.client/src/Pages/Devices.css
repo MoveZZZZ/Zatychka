@@ -115,8 +115,17 @@
   border-color: rgba(217, 76, 76, 0.35);
   color: #ffdede;
 }
+    .status-label.online {
+        background: rgba(83, 217, 76, 0.12);
+        border-color: rgba(2183, 217, 76, 0.35);
+        color: #07f767;
+    }
+
 .offline-icon {
   color: #d94c4c;
+}
+.online-icon {
+    color:#53d94c;
 }
 
 .device-col.actions {

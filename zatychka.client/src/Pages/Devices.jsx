@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import './Devices.css';
 import AddDeviceModal from './AddDeviceModal';
-import { WifiOff, ChevronRight } from 'lucide-react';
+import { WifiOff, ChevronRight, Wifi } from 'lucide-react';
 import EditDeviceModal from './EditDeviceModal';
 import { getDevices } from '../api/devices';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -68,6 +68,8 @@ export default function Devices() {
                     devices.map((device) => (
                         <div key={device.id} className="devices-row">
                             <div className="device-col status">
+                                {device.status === "Offline" || device.status === "" ? (
+                                    <>
                                 <WifiOff size={18} className="offline-icon" />
                                 <span
                                     className="status-label offline"
@@ -75,7 +77,22 @@ export default function Devices() {
                                     aria-label="Офлайн"
                                 >
                                     Офлайн
+                                        </span>
+                                   </>
+
+                                ) : (
+                                    <>
+                                     <Wifi size={18} className="online-icon" />
+                                <span
+                                    className="status-label online"
+                                    title="Онлайн"
+                                    aria-label="Онлайн"
+                                >
+                                    Онлайн
                                 </span>
+                                </>
+                                )}
+                                
                             </div>
 
                             <div className="device-col name" title={device.name}>
