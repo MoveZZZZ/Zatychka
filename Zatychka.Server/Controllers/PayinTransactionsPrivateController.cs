@@ -216,7 +216,7 @@ namespace Zatychka.Server.Controllers
             var total = await q.CountAsync();
 
             var data = await q
-                .OrderByDescending(x => x.Id)
+                .OrderByDescending(x => x.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

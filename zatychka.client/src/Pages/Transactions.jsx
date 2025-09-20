@@ -117,9 +117,14 @@ export default function Transactions() {
             // ▲ сортировка по id (поменяй 'desc' на 'asc' при необходимости)
             const sortDir = 'desc'; // 'asc' | 'desc'
             const sorted = items.slice().sort((a, b) => {
-                const ai = Number(a?.id ?? 0), bi = Number(b?.id ?? 0);
-                return sortDir === 'asc' ? ai - bi : bi - ai;
+                const ad = new Date(a?.date ?? 0).getTime();
+                const bd = new Date(b?.date ?? 0).getTime();
+                return sortDir === 'asc' ? ad - bd : bd - ad;
             });
+            //const sorted = items.slice().sort((a, b) => {
+            //    const ai = Number(a?.id ?? 0), bi = Number(b?.id ?? 0);
+            //    return sortDir === 'asc' ? ai - bi : bi - ai;
+            //});
 
             setItems(sorted);
             setTotal(response?.total || 0);
@@ -176,11 +181,15 @@ export default function Transactions() {
 
                     // ▼ сортировка по id (сменить на 'asc' при необходимости)
                     const sortDir = 'desc'; // 'asc' | 'desc'
-                    const sorted = items.slice().sort((a, b) => {
+                  /*  const sorted = items.slice().sort((a, b) => {
                         const ai = Number(a?.id ?? 0), bi = Number(b?.id ?? 0);
                         return sortDir === 'asc' ? ai - bi : bi - ai;
+                    });*/
+                    const sorted = items.slice().sort((a, b) => {
+                        const ad = new Date(a?.date ?? 0).getTime();
+                        const bd = new Date(b?.date ?? 0).getTime();
+                        return sortDir === 'asc' ? ad - bd : bd - ad;
                     });
-
                     setItems(sorted);
                     setTotal(response?.total || 0);
                 }
